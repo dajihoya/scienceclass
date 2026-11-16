@@ -70,7 +70,11 @@ canvas{display:block;width:100%;max-width:100%}
 
 .seg{display:inline-flex;background:var(--panel-hi);border:2px solid var(--line);border-radius:999px;padding:3px;gap:2px}
 .seg button{font-family:var(--font-display);font-size:.92rem;border:0;background:transparent;color:var(--muted);padding:5px 12px;border-radius:999px;cursor:pointer;line-height:1.2}
-.seg button[aria-pressed="true"]{background:var(--moon);color:var(--moon-ink)}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--moon);color:var(--moon-ink)}
+.seg.big button{font-size:1rem;padding:8px 16px}
+.tabs-row{margin-bottom:10px;max-width:100%}
+.days-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:12px}
+.days-note{margin-top:12px;max-width:68ch}
 .seg button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
 .view-ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .tilt{display:inline-flex;align-items:center;gap:4px;background:var(--panel-hi);border:2px solid var(--line);border-radius:999px;padding:3px}
@@ -252,9 +256,39 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
       <h2 id="skyTitle">하늘에서 찾아보기</h2>
       <output class="chip" id="timeOut" for="time">오후 6:30 · 해 진 직후</output>
     </div>
-    <p class="hint">남쪽을 바라보고 선 모습이에요. 왼쪽이 동쪽, 오른쪽이 서쪽이에요. 시각을 바꾸며 달이 어디에 있는지 찾아보세요.</p>
+    <div class="seg big tabs-row" role="tablist" aria-label="관찰 방법">
+      <button type="button" role="tab" id="tabDay" aria-selected="true" aria-controls="paneDay">하루 동안 움직임</button>
+      <button type="button" role="tab" id="tabDays" aria-selected="false" aria-controls="paneDays" tabindex="-1">날마다 같은 시각</button>
+    </div>
+    <p class="hint" id="skyHint">남쪽을 바라보고 선 모습이에요. 왼쪽이 동쪽, 오른쪽이 서쪽이에요. 시각을 바꾸며 달이 어디에 있는지 찾아보세요.</p>
     <canvas id="sky" role="img" aria-label="남쪽 하늘에서 본 달과 해의 위치" style="margin-top:12px"></canvas>
     <p class="sky-status" id="skyStatus" aria-live="polite"></p>
+    <div id="paneDays" role="tabpanel" aria-labelledby="tabDays" hidden>
+      <div class="days-row">
+        <div class="seg big" role="group" aria-label="관측 시각">
+          <button type="button" id="obsEve" aria-pressed="true">해 진 직후</button>
+          <button type="button" id="obsDawn" aria-pressed="false">해 뜨기 직전</button>
+        </div>
+      </div>
+      <div class="days-row">
+        <button class="btn btn-soft" id="dayPrev" type="button">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 3l-5 5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          하루 전
+        </button>
+        <button class="btn btn-moon" id="dayNext" type="button">
+          하루 지나기
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn btn-soft" id="dayReset" type="button">처음부터</button>
+      </div>
+      <dl class="stats sky-stats">
+        <div><dt>음력 날짜</dt><dd id="dDay">5일</dd></div>
+        <div><dt>달의 모양</dt><dd id="dShape">초승달</dd></div>
+        <div><dt>뜨는 시각</dt><dd id="dRise">오전 9:30</dd></div>
+      </dl>
+      <p class="hint days-note">같은 시각에 보면 달은 하루에 약 12°씩 서쪽에서 동쪽으로 옮겨 가요. 달이 지구 둘레를 서쪽에서 동쪽으로 공전하기 때문이에요. 그래서 달이 뜨는 시각도 날마다 약 50분씩 늦어져요.</p>
+    </div>
+    <div id="paneDay" role="tabpanel" aria-labelledby="tabDay">
     <div class="sky-controls">
       <button class="btn btn-moon" id="timePlay" type="button" aria-pressed="false">
         <svg class="ico-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>
@@ -283,6 +317,7 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
       <div><dt>남중 시각</dt><dd id="tTransit">오후 3시</dd></div>
       <div><dt>지는 시각</dt><dd id="tSet">오후 9시</dd></div>
     </dl>
+    </div>
   </section>
 
   <section class="panel" aria-labelledby="whyTitle">
@@ -307,7 +342,7 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     <p class="myth"><strong>헷갈리기 쉬워요</strong>지구의 그림자가 달을 가려서 모양이 바뀌는 것이 아니에요. 지구 그림자가 달을 가리는 현상은 보름달일 때 가끔 일어나는 월식이에요.</p>
   </section>
 
-  <p class="note">달의 모양과 방향은 우리나라처럼 북반구에서 남쪽 하늘을 바라본 기준이에요. 우주 그림의 달과 지구는 잘 보이도록 실제보다 크게 그렸어요. 하늘 그림의 처음 시각은 교과서에서 달을 관측하는 기준인 ‘해가 진 직후’(오후 6시 30분)로 맞췄어요. 뜨고 지는 시각은 해가 오전 6시에 뜨고 오후 6시에 진다고 가정한 어림값이에요. ‘오늘의 달’도 하루 정도 차이가 날 수 있어요.</p>
+  <p class="note">달의 모양과 방향은 우리나라처럼 북반구에서 남쪽 하늘을 바라본 기준이에요. 우주 그림의 달과 지구는 잘 보이도록 실제보다 크게 그렸어요. 하늘 그림의 처음 시각은 교과서에서 달을 관측하는 기준인 ‘해가 진 직후’(오후 6시 30분)로 맞췄고, ‘날마다 같은 시각’의 ‘해 뜨기 직전’은 오전 5시 30분이에요. 뜨고 지는 시각은 해가 오전 6시에 뜨고 오후 6시에 진다고 가정한 어림값이에요. ‘오늘의 달’도 하루 정도 차이가 날 수 있어요.</p>
 </div>
 
 <script>
@@ -334,6 +369,7 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
 
   const state = {
     e: 52, playing: false, halves: true, time: 18.5, timePlaying: false,
+    skyMode: 'day', obsKey: 'eve', trail: [],
     touched: false, dragging: false, hover: false,
     el: VIEW_OBLIQUE, elTarget: VIEW_OBLIQUE, az: 0, azTarget: 0
   };
@@ -886,14 +922,41 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
       sunDisc(ctx, p.x, p.y, sr, p.x, sr * 2.2);
     }
     const phM = norm180((t - transitOf(e)) * 15);
+    const k = litFrac(e), up = Math.abs(phM) < 88;
+    const daysMode = state.skyMode === 'days';
+    // same-time comparison: earlier days stay as faint moons
+    const marks = [];
+    const seen = ee => { const ph = norm180((t - transitOf(ee)) * 15); return Math.abs(ph) < 88 && litFrac(ee) >= 0.03 ? ph : null; };
+    if (daysMode) {
+      const tr = state.trail, gr = objR * 0.8;
+      for (let i = 0; i < tr.length - 1; i++) {
+        const ph = seen(tr[i]);
+        if (ph === null) continue;
+        const p = pos(ph);
+        drawPhaseMoon(ctx, p.x, p.y, gr, tr[i], { darkAlpha: 0.3 * (1 - day), litAlpha: 0.5 });
+        marks.push({ x: p.x, y: p.y, r: gr, n: lunarDay(tr[i]) });
+      }
+    }
     if (Math.cos(phM * D2R) > -0.25) {
-      const p = pos(phM), k = litFrac(e);
+      const p = pos(phM);
       if (day < 0.5 && k > 0.05) {
         const mg = ctx.createRadialGradient(p.x, p.y, objR * .9, p.x, p.y, objR * 2.4);
         mg.addColorStop(0, `rgba(255,228,154,${0.3 * k})`); mg.addColorStop(1, 'rgba(255,228,154,0)');
         ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(p.x, p.y, objR * 2.4, 0, TAU); ctx.fill();
       }
       drawPhaseMoon(ctx, p.x, p.y, objR, e, { darkAlpha: 0.85 * (1 - day), litAlpha: 1 - 0.3 * day });
+    }
+    const prevPh = daysMode && state.trail.length > 1 ? seen(state.trail[state.trail.length - 2]) : null;
+    if (prevPh !== null && up && k >= 0.03) {
+      const a = pos(prevPh), b = pos(phM);
+      let ux = b.x - a.x, uy = b.y - a.y; const L = Math.hypot(ux, uy);
+      if (L > objR * 2.4) {
+        ux /= L; uy /= L;
+        const x0 = a.x + ux * (objR * .8 + 4), y0 = a.y + uy * (objR * .8 + 4), x1 = b.x - ux * (objR + 5), y1 = b.y - uy * (objR + 5);
+        ctx.save(); ctx.strokeStyle = '#63d2c3'; ctx.fillStyle = '#63d2c3'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.setLineDash([5, 5]);
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 - ux * 6, y1 - uy * 6); ctx.stroke(); ctx.setLineDash([]);
+        arrowHead(ctx, x1, y1, ux, uy, 9, 5, true); ctx.restore();
+      }
     }
     ctx.restore();
 
@@ -917,10 +980,36 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
       ctx.fillText(lab, cx + rx * Math.sin(p * D2R), ly);
     });
 
-    const up = Math.abs(phM) < 88;
-    const k = litFrac(e);
+    if (daysMode) {
+      const fsz = Math.round(clamp(h * .05, 11, 14)), placed = [];
+      const put = (x, y, r, txt, cur) => {
+        let ly = y + r + fsz * 0.95;
+        if (ly > H - fsz * 0.7) ly = y - r - fsz * 0.95;
+        if (placed.some(q => Math.abs(q.x - x) < fsz * 2.6 && Math.abs(q.y - ly) < fsz * 1.5)) return;
+        placed.push({ x, y: ly });
+        if (cur) pill(ctx, txt, x, ly, fsz, '#3b2c47', '#ffe49a');
+        else {
+          ctx.font = `${fsz}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillStyle = 'rgba(243,241,255,.82)'; ctx.fillText(txt, x, ly);
+        }
+      };
+      if (up && k >= 0.03) { const p = pos(phM); put(p.x, p.y, objR, `${lunarDay(e)}일`, true); }
+      for (let i = marks.length - 1; i >= 0; i--) put(marks[i].x, marks[i].y, marks[i].r, `${marks[i].n}일`, false);
+    }
+
     let msg;
-    if (k < 0.03) msg = '삭이라서 달이 태양 가까이 있어 보이지 않아요.';
+    if (daysMode) {
+      const n = lunarDay(e), eve = state.obsKey === 'eve', when = eve ? '해 진 직후' : '해 뜨기 직전';
+      if (k < 0.03) msg = `음력 ${n}일은 삭 무렵이라 달이 해와 함께 있어 보이지 않아요.`;
+      else if (!up) msg = phM < 0
+        ? `음력 ${n}일 ${when}에는 달이 아직 떠오르지 않았어요.` + (eve ? " '해 뜨기 직전'으로 바꿔 보세요." : '')
+        : `음력 ${n}일 ${when}에는 달이 이미 서쪽으로 졌어요.` + (eve ? '' : " '해 진 직후'로 바꿔 보세요.");
+      else {
+        msg = `음력 ${n}일 ${when}, ${PHASES[sector(e)].name}이 ${dirName(phM)} 하늘에 보여요.`;
+        if (prevPh !== null) msg += ' 어제보다 동쪽으로 약 12° 옮겨 갔어요.';
+      }
+    }
+    else if (k < 0.03) msg = '삭이라서 달이 태양 가까이 있어 보이지 않아요.';
     else if (!up) msg = '지금은 달이 지평선 아래에 있어서 볼 수 없어요.';
     else {
       const dir = dirName(phM);
@@ -999,7 +1088,9 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     const ap = hh < 12 ? '오전' : '오후', h12 = hh % 12 === 0 ? 12 : hh % 12;
     return `${ap} ${h12}:${String(mm).padStart(2, '0')}`;
   }
-  const timeLabel = t => fmtClock(t) + (Math.abs(t - 18.5) < 0.01 ? ' · 해 진 직후' : '');
+  const timeLabel = t => fmtClock(t) + (Math.abs(t - 18.5) < 0.01 ? ' · 해 진 직후' : Math.abs(t - 5.5) < 0.01 ? ' · 해 뜨기 직전' : '');
+  const OBS = { eve: { t: 18.5, start: 3 }, dawn: { t: 5.5, start: 16 } };
+  const eOfDay = n => (n - 0.5) / SYN * 360;
   const ageInput = $('#age'), timeInput = $('#time');
   function updateText(from) {
     const e = norm360(state.e), k = litFrac(e), idx = sector(e), P = PHASES[idx];
@@ -1015,12 +1106,19 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     $('#tRise').textContent = fmtHour(tr - 6);
     $('#tTransit').textContent = fmtHour(tr);
     $('#tSet').textContent = fmtHour(tr + 6);
+    $('#dDay').textContent = `${lunarDay(e)}일`;
+    $('#dShape').textContent = P.name;
+    $('#dRise').textContent = fmtClock(Math.round((tr - 6) * 6) / 6);
     $('#timeOut').textContent = timeLabel(state.time);
     stripItems.forEach(it => it.b.setAttribute('aria-pressed', String(sector(it.e) === idx)));
     cv.orbit.el.setAttribute('aria-label', `우주에서 본 지구와 달. 달은 삭 위치에서 ${Math.round(e) % 360}도 공전한 곳에 있어요. 왼쪽·오른쪽 화살표 키로 달을, 위·아래 화살표 키로 보는 각도를 바꿀 수 있어요.`);
     cv.phase.el.setAttribute('aria-label', `지구에서 본 ${P.name}. 밝게 보이는 부분 ${Math.round(k * 100)}%.`);
   }
   function update(from) {
+    if (state.skyMode === 'days') {
+      const tr = state.trail;
+      if (!tr.length || Math.abs(norm180(tr[tr.length - 1] - state.e)) > 1e-6) state.trail = [state.e];
+    }
     updateText(from);
     drawPhase(); drawSky(); drawTimebar();
     drawOrbit(performance.now());
@@ -1080,6 +1178,66 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
   });
   $('#halves').addEventListener('change', ev => { state.halves = ev.target.checked; drawOrbit(performance.now()); });
   timeInput.addEventListener('input', () => { stopTime(); state.time = parseFloat(timeInput.value); syncTime(); });
+
+  /* ---------- sky tabs: one day vs. the same time on many days ---------- */
+  const tabDay = $('#tabDay'), tabDays = $('#tabDays'), paneDay = $('#paneDay'), paneDays = $('#paneDays');
+  const obsEve = $('#obsEve'), obsDawn = $('#obsDawn');
+  const HINTS = {
+    day: '남쪽을 바라보고 선 모습이에요. 왼쪽이 동쪽, 오른쪽이 서쪽이에요. 시각을 바꾸며 달이 어디에 있는지 찾아보세요.',
+    days: '같은 장소에서 날마다 같은 시각에 남쪽 하늘을 본 모습이에요. ‘하루 지나기’를 누르면 하루 뒤 같은 시각의 달이 나타나고, 지난 날의 달은 흐리게 남아요.'
+  };
+  function setSkyMode(mode, focus) {
+    const days = mode === 'days';
+    state.skyMode = mode;
+    tabDay.setAttribute('aria-selected', String(!days)); tabDays.setAttribute('aria-selected', String(days));
+    tabDay.tabIndex = days ? -1 : 0; tabDays.tabIndex = days ? 0 : -1;
+    paneDay.hidden = days; paneDays.hidden = !days;
+    $('#skyHint').textContent = HINTS[mode];
+    if (days) {
+      stopTime();
+      state.time = OBS[state.obsKey].t; timeInput.value = String(state.time);
+      state.e = eOfDay(lunarDay(state.e));
+      state.trail = [state.e];
+    }
+    if (focus) (days ? tabDays : tabDay).focus();
+    update();
+  }
+  tabDay.addEventListener('click', () => setSkyMode('day'));
+  tabDays.addEventListener('click', () => setSkyMode('days'));
+  [tabDay, tabDays].forEach(b => b.addEventListener('keydown', ev => {
+    if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
+    ev.preventDefault(); setSkyMode(state.skyMode === 'days' ? 'day' : 'days', true);
+  }));
+  function setObs(key) {
+    state.obsKey = key;
+    obsEve.setAttribute('aria-pressed', String(key === 'eve'));
+    obsDawn.setAttribute('aria-pressed', String(key === 'dawn'));
+    state.time = OBS[key].t; timeInput.value = String(state.time);
+    state.trail = [state.e];
+    update();
+  }
+  obsEve.addEventListener('click', () => setObs('eve'));
+  obsDawn.addEventListener('click', () => setObs('dawn'));
+  function stepDay(d) {
+    stopPlay(); state.touched = true;
+    let n = lunarDay(state.e) + d, wrapped = false;
+    if (n > 30) { n = 1; wrapped = true; }
+    if (n < 1) { n = 30; wrapped = true; }
+    const ne = eOfDay(n);
+    if (wrapped) state.trail = [ne];
+    else if (d > 0) state.trail.push(ne);
+    else if (state.trail.length > 1) state.trail.pop();
+    else state.trail = [ne];
+    state.e = ne;
+    update();
+  }
+  $('#dayNext').addEventListener('click', () => stepDay(1));
+  $('#dayPrev').addEventListener('click', () => stepDay(-1));
+  $('#dayReset').addEventListener('click', () => {
+    stopPlay(); state.touched = true;
+    state.e = eOfDay(OBS[state.obsKey].start); state.trail = [state.e];
+    update();
+  });
 
   const vOb = $('#vOblique'), vTop = $('#vTop');
   const tiltUp = $('#tiltUp'), tiltDown = $('#tiltDown'), tiltOut = $('#tiltOut');
