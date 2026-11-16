@@ -379,6 +379,8 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const litFrac = e => (1 - Math.cos(e * D2R)) / 2;
   const sector = e => Math.floor(norm360(e + 22.5) / 45) % 8;
+  const NEW_K = 0.01;   // below this lit fraction the moon counts as 삭 (음력 1일·30일)
+  const phaseIdx = e => { const s = sector(e); return s === 0 && litFrac(e) >= NEW_K ? (norm360(e) < 180 ? 1 : 7) : s; };
   const ageOf = e => norm360(e) / 360 * SYN;
   const lunarDay = e => Math.min(30, Math.floor(ageOf(e)) + 1);
   const transitOf = e => 12 + norm360(e) / 15;
@@ -715,7 +717,7 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     ctx.restore();
 
     // phase positions (labels are drawn last so the light arrows never cover them)
-    const cur = sector(state.e), ghostLabels = [];
+    const cur = phaseIdx(state.e), ghostLabels = [];
     for (let i = 0; i < 8; i++) {
       const a = i * 45 * D2R;
       const p = proj(ORB.R * Math.cos(a), ORB.R * Math.sin(a), 0);
@@ -924,20 +926,33 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     const phM = norm180((t - transitOf(e)) * 15);
     const k = litFrac(e), up = Math.abs(phM) < 88;
     const daysMode = state.skyMode === 'days';
-    // same-time comparison: earlier days stay as faint moons
-    const marks = [];
-    const seen = ee => { const ph = norm180((t - transitOf(ee)) * 15); return Math.abs(ph) < 88 && litFrac(ee) >= 0.03 ? ph : null; };
+    // same-time comparison: earlier days stay as faint moons.
+    // Around 삭 the moon sits beside the Sun near the horizon and cannot be seen, so it gets a dashed outline.
+    const marks = [], newMoons = [];
+    const spot = ee => {
+      const ph = norm180((t - transitOf(ee)) * 15);
+      if (litFrac(ee) < NEW_K) {
+        if (Math.abs(ph) > 112) return null;
+        const p = pos(ph);
+        return { x: p.x, y: Math.min(p.y, H - objR * 0.15), nm: true };
+      }
+      if (Math.abs(ph) >= 88) return null;
+      const p = pos(ph);
+      return { x: p.x, y: p.y, nm: false };
+    };
     if (daysMode) {
       const tr = state.trail, gr = objR * 0.8;
       for (let i = 0; i < tr.length - 1; i++) {
-        const ph = seen(tr[i]);
-        if (ph === null) continue;
-        const p = pos(ph);
-        drawPhaseMoon(ctx, p.x, p.y, gr, tr[i], { darkAlpha: 0.3 * (1 - day), litAlpha: 0.5 });
-        marks.push({ x: p.x, y: p.y, r: gr, n: lunarDay(tr[i]) });
+        const sp = spot(tr[i]);
+        if (!sp) continue;
+        const m = { x: sp.x, y: sp.y, r: gr, n: lunarDay(tr[i]), nm: sp.nm };
+        if (sp.nm) newMoons.push(m);
+        else drawPhaseMoon(ctx, sp.x, sp.y, gr, tr[i], { darkAlpha: 0.3 * (1 - day), litAlpha: 0.5 });
+        marks.push(m);
       }
     }
-    if (Math.cos(phM * D2R) > -0.25) {
+    const curSpot = daysMode ? spot(e) : null;
+    if (Math.cos(phM * D2R) > -0.25 && !(daysMode && k < NEW_K)) {
       const p = pos(phM);
       if (day < 0.5 && k > 0.05) {
         const mg = ctx.createRadialGradient(p.x, p.y, objR * .9, p.x, p.y, objR * 2.4);
@@ -946,9 +961,9 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
       }
       drawPhaseMoon(ctx, p.x, p.y, objR, e, { darkAlpha: 0.85 * (1 - day), litAlpha: 1 - 0.3 * day });
     }
-    const prevPh = daysMode && state.trail.length > 1 ? seen(state.trail[state.trail.length - 2]) : null;
-    if (prevPh !== null && up && k >= 0.03) {
-      const a = pos(prevPh), b = pos(phM);
+    const prevSpot = daysMode && state.trail.length > 1 ? spot(state.trail[state.trail.length - 2]) : null;
+    if (prevSpot && curSpot) {
+      const a = prevSpot, b = curSpot;
       let ux = b.x - a.x, uy = b.y - a.y; const L = Math.hypot(ux, uy);
       if (L > objR * 2.4) {
         ux /= L; uy /= L;
@@ -975,41 +990,64 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
 
     ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = `${Math.round(clamp(h * .055, 12, 15))}px ${FONT}`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    const ly = H + (h - H) * 0.58;
+    const ly = H + (h - H) * 0.75;
     [[-90, '동'], [-45, '남동'], [0, '남'], [45, '남서'], [90, '서']].forEach(([p, lab]) => {
       ctx.fillText(lab, cx + rx * Math.sin(p * D2R), ly);
     });
 
     if (daysMode) {
-      const fsz = Math.round(clamp(h * .05, 11, 14)), placed = [];
+      const fsz = Math.round(clamp(h * .05, 11, 14));
+      // 삭: dashed outline where the moon is, with 삭 written inside
+      const dashed = (x, y, r, cur) => {
+        ctx.save(); ctx.setLineDash([4, 4]); ctx.lineWidth = cur ? 2.2 : 1.8;
+        ctx.strokeStyle = cur ? 'rgba(255,228,154,.95)' : 'rgba(243,241,255,.6)';
+        ctx.fillStyle = 'rgba(255,255,255,.05)';
+        ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.stroke();
+        ctx.setLineDash([]); ctx.font = `${Math.round(Math.min(fsz, r * 0.9))}px ${FONT}`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = cur ? '#ffe49a' : 'rgba(243,241,255,.8)'; ctx.fillText('삭', x, y + 1);
+        ctx.restore();
+      };
+      newMoons.forEach(m => dashed(m.x, m.y, m.r, false));
+      if (curSpot && curSpot.nm) dashed(curSpot.x, curSpot.y, objR, true);
+
+      // day labels: try below, above, left, right; never on another moon or label
+      const boxes = marks.map(m => ({ x0: m.x - m.r, x1: m.x + m.r, y0: m.y - m.r, y1: m.y + m.r }));
+      if (curSpot) boxes.push({ x0: curSpot.x - objR, x1: curSpot.x + objR, y0: curSpot.y - objR, y1: curSpot.y + objR });
+      const hit = b => boxes.some(o => b.x0 < o.x1 + 2 && b.x1 > o.x0 - 2 && b.y0 < o.y1 + 2 && b.y1 > o.y0 - 2);
       const put = (x, y, r, txt, cur) => {
-        let ly = y + r + fsz * 0.95;
-        if (ly > H - fsz * 0.7) ly = y - r - fsz * 0.95;
-        if (placed.some(q => Math.abs(q.x - x) < fsz * 2.6 && Math.abs(q.y - ly) < fsz * 1.5)) return;
-        placed.push({ x, y: ly });
-        if (cur) pill(ctx, txt, x, ly, fsz, '#3b2c47', '#ffe49a');
-        else {
-          ctx.font = `${fsz}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillStyle = 'rgba(243,241,255,.82)'; ctx.fillText(txt, x, ly);
+        ctx.font = `${fsz}px ${FONT}`;
+        const tw = ctx.measureText(txt).width + (cur ? 14 : 2), th = fsz * (cur ? 1.56 : 1.2);
+        const tries = [[x, y + r + th / 2 + 3], [x, y - r - th / 2 - 3], [x - r - tw / 2 - 5, y], [x + r + tw / 2 + 5, y]];
+        for (const [lx, ly] of tries) {
+          const b = { x0: lx - tw / 2, x1: lx + tw / 2, y0: ly - th / 2, y1: ly + th / 2 };
+          if (b.x0 < 2 || b.x1 > w - 2 || b.y0 < 2 || b.y1 > H + 10 || hit(b)) continue;
+          boxes.push(b);
+          if (cur) pill(ctx, txt, lx, ly, fsz, '#3b2c47', '#ffe49a');
+          else {
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'rgba(243,241,255,.82)'; ctx.fillText(txt, lx, ly);
+          }
+          return;
         }
       };
-      if (up && k >= 0.03) { const p = pos(phM); put(p.x, p.y, objR, `${lunarDay(e)}일`, true); }
+      if (curSpot) put(curSpot.x, curSpot.y, objR, `${lunarDay(e)}일`, true);
       for (let i = marks.length - 1; i >= 0; i--) put(marks[i].x, marks[i].y, marks[i].r, `${marks[i].n}일`, false);
     }
 
     let msg;
     if (daysMode) {
       const n = lunarDay(e), eve = state.obsKey === 'eve', when = eve ? '해 진 직후' : '해 뜨기 직전';
-      if (k < 0.03) msg = `음력 ${n}일은 삭 무렵이라 달이 해와 함께 있어 보이지 않아요.`;
+      if (k < NEW_K) msg = `음력 ${n}일은 삭이라 달이 해와 같은 방향에 있어 보이지 않아요.` + (curSpot ? ' 점선이 달이 있는 곳이에요.' : '');
       else if (!up) msg = phM < 0
         ? `음력 ${n}일 ${when}에는 달이 아직 떠오르지 않았어요.` + (eve ? " '해 뜨기 직전'으로 바꿔 보세요." : '')
         : `음력 ${n}일 ${when}에는 달이 이미 서쪽으로 졌어요.` + (eve ? '' : " '해 진 직후'로 바꿔 보세요.");
       else {
-        msg = `음력 ${n}일 ${when}, ${PHASES[sector(e)].name}이 ${dirName(phM)} 하늘에 보여요.`;
-        if (prevPh !== null) msg += ' 어제보다 동쪽으로 약 12° 옮겨 갔어요.';
+        msg = `음력 ${n}일 ${when}, ${PHASES[phaseIdx(e)].name}이 ${dirName(phM)} 하늘에 보여요.`;
+        if (prevSpot) msg += ' 어제보다 동쪽으로 약 12° 옮겨 갔어요.';
       }
     }
-    else if (k < 0.03) msg = '삭이라서 달이 태양 가까이 있어 보이지 않아요.';
+    else if (k < NEW_K) msg = '삭이라서 달이 태양 가까이 있어 보이지 않아요.';
     else if (!up) msg = '지금은 달이 지평선 아래에 있어서 볼 수 없어요.';
     else {
       const dir = dirName(phM);
@@ -1089,11 +1127,11 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     return `${ap} ${h12}:${String(mm).padStart(2, '0')}`;
   }
   const timeLabel = t => fmtClock(t) + (Math.abs(t - 18.5) < 0.01 ? ' · 해 진 직후' : Math.abs(t - 5.5) < 0.01 ? ' · 해 뜨기 직전' : '');
-  const OBS = { eve: { t: 18.5, start: 3 }, dawn: { t: 5.5, start: 16 } };
+  const OBS = { eve: { t: 18.5, start: 1 }, dawn: { t: 5.5, start: 16 } };
   const eOfDay = n => (n - 0.5) / SYN * 360;
   const ageInput = $('#age'), timeInput = $('#time');
   function updateText(from) {
-    const e = norm360(state.e), k = litFrac(e), idx = sector(e), P = PHASES[idx];
+    const e = norm360(state.e), k = litFrac(e), idx = phaseIdx(e), P = PHASES[idx];
     $('#phaseName').textContent = P.name + (P.alt ? ` (${P.alt})` : '');
     $('#phaseDesc').textContent = P.desc;
     $('#statDay').textContent = `약 ${lunarDay(e)}일`;
@@ -1110,7 +1148,7 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     $('#dShape').textContent = P.name;
     $('#dRise').textContent = fmtClock(Math.round((tr - 6) * 6) / 6);
     $('#timeOut').textContent = timeLabel(state.time);
-    stripItems.forEach(it => it.b.setAttribute('aria-pressed', String(sector(it.e) === idx)));
+    stripItems.forEach(it => it.b.setAttribute('aria-pressed', String(phaseIdx(it.e) === idx)));
     cv.orbit.el.setAttribute('aria-label', `우주에서 본 지구와 달. 달은 삭 위치에서 ${Math.round(e) % 360}도 공전한 곳에 있어요. 왼쪽·오른쪽 화살표 키로 달을, 위·아래 화살표 키로 보는 각도를 바꿀 수 있어요.`);
     cv.phase.el.setAttribute('aria-label', `지구에서 본 ${P.name}. 밝게 보이는 부분 ${Math.round(k * 100)}%.`);
   }
