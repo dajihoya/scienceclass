@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>일식과 월식 관찰실험</title>
+<title>일식과 월식 시뮬레이션</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -145,12 +145,14 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
 
 /* 탭: 1 모의실험 · 2 관찰실험 */
 .tabpanel{display:grid;gap:18px;min-width:0}
-.tabs{display:flex;gap:6px;border-bottom:2px solid var(--line);overflow-x:auto}
-.tabs [role="tab"]{flex:none;display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:1.22rem;min-height:52px;padding:.4rem 1.15rem .5rem;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;border-radius:12px 12px 0 0;background:transparent;color:var(--muted)}
-.tabs [role="tab"]:hover{color:var(--ink);background:var(--soft)}
-.tabs [role="tab"][aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
-.tn{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;font-size:.85rem;background:var(--soft);color:var(--muted)}
-[aria-selected="true"] .tn{background:var(--accent);color:var(--accent-ink)}
+.page-top{display:grid;gap:4px}
+.ptitle{font-size:clamp(1.45rem,2.8vw,1.85rem)}
+.tabs{display:inline-flex;justify-self:start;max-width:100%;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.tabs [role="tab"]{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:.45rem 1.35rem;border:0;border-radius:999px;background:none;color:var(--muted);font-family:var(--font-display);font-size:1.15rem;transition:background-color .18s,color .18s}
+.tabs [role="tab"]:hover{color:var(--ink)}
+.tabs [role="tab"][aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs .dot{width:10px;height:10px;border-radius:50%;background:currentColor;opacity:.8}
+@media (prefers-reduced-motion:reduce){.tabs [role="tab"]{transition:none}}
 
 /* 모의실험 */
 .m-block h2{font-size:1.3rem;margin-bottom:12px}
@@ -251,16 +253,19 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
 </style>
 
 <div class="wrap" id="app" data-mode="solar">
+  <header class="page-top">
+    <p class="eyebrow">중1 과학 · Ⅶ. 태양계</p>
+    <h1>일식과 월식</h1>
+  </header>
   <div class="tabs" role="tablist" aria-label="실험 고르기">
-    <button type="button" role="tab" id="tabbtn-model" data-tab="model" aria-controls="tab-model" aria-selected="true"><span class="tn">1</span>모의실험</button>
-    <button type="button" role="tab" id="tabbtn-observe" data-tab="observe" aria-controls="tab-observe" aria-selected="false" tabindex="-1"><span class="tn">2</span>관찰실험</button>
+    <button type="button" role="tab" id="tabbtn-model" data-tab="model" aria-controls="tab-model" aria-selected="true"><span class="dot"></span>모의실험</button>
+    <button type="button" role="tab" id="tabbtn-observe" data-tab="observe" aria-controls="tab-observe" aria-selected="false" tabindex="-1"><span class="dot"></span>관찰실험</button>
   </div>
 
   <div class="tabpanel" id="tab-model" role="tabpanel" aria-labelledby="tabbtn-model">
   <header class="top">
     <div class="intro">
-      <p class="eyebrow">중1 과학 · Ⅶ. 태양계 · 모의실험</p>
-      <h1>태양과 달이 가려지는 원리 알아보기</h1>
+      <h2 class="ptitle">태양과 달이 가려지는 원리 알아보기</h2>
       <p class="lede">손전등(태양), 큰 공(지구), 작은 공(달)으로 일식과 월식이 일어나는 까닭을 알아봐요.</p>
     </div>
   </header>
@@ -361,8 +366,7 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
   <div class="tabpanel" id="tab-observe" role="tabpanel" aria-labelledby="tabbtn-observe" hidden>
   <header class="top">
     <div class="intro">
-      <p class="eyebrow">중1 과학 · 태양계 관찰</p>
-      <h1>일식과 월식 관찰실험</h1>
+      <h2 class="ptitle">일식과 월식 관찰실험</h2>
       <p class="lede">달이 지구 둘레를 돌다가 태양, 지구와 한 줄로 나란히 놓이면 그림자가 생겨요. 재생을 누르고 우주에서 본 모습과 지구에서 본 하늘을 함께 살펴보세요.</p>
     </div>
     <div class="modes" role="group" aria-label="관찰할 현상">
