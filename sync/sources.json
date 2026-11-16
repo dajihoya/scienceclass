@@ -3,5 +3,6 @@
   {"id": "diurnal",     "artifact": "https://claude.ai/artifact/TphDiwA8pMVV7nTtue9WDC", "file": "earth-science/diurnal.html",     "back": "../#earth-science"},
   {"id": "sun-annual",  "artifact": "https://claude.ai/artifact/6b1uPbB9ynRJw6JcMNCUvn", "file": "earth-science/sun-annual.html",  "back": "../#earth-science"},
   {"id": "moon-phases", "artifact": "https://claude.ai/artifact/JP5wrEWMpwbkUsebvssfwT", "file": "earth-science/moon-phases.html", "back": "../#earth-science"},
-  {"id": "eclipse",     "artifact": "https://claude.ai/artifact/GyQLu71BWhpffxf1gBYeeB", "file": "earth-science/eclipse.html",     "back": "../#earth-science"}
+  {"id": "eclipse",     "artifact": "https://claude.ai/artifact/GyQLu71BWhpffxf1gBYeeB", "file": "earth-science/eclipse.html",     "back": "../#earth-science"},
+  {"id": "light-distance", "artifact": "https://claude.ai/artifact/RRQ8JkV2SNWcQn1iEodUap", "file": "earth-science/light-distance.html", "back": "../#earth-science"}
 ]
