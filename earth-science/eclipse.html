@@ -153,6 +153,7 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
 .tabs [role="tab"][aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .tabs .dot{width:10px;height:10px;border-radius:50%;background:currentColor;opacity:.8}
 @media (prefers-reduced-motion:reduce){.tabs [role="tab"]{transition:none}}
+@media (max-width:480px){.tabs [role="tab"]{padding:.45rem .9rem;font-size:1rem}}
 
 /* 모의실험 */
 .m-block h2{font-size:1.3rem;margin-bottom:12px}
@@ -259,7 +260,7 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
   </header>
   <div class="tabs" role="tablist" aria-label="실험 고르기">
     <button type="button" role="tab" id="tabbtn-model" data-tab="model" aria-controls="tab-model" aria-selected="true"><span class="dot"></span>모의실험</button>
-    <button type="button" role="tab" id="tabbtn-observe" data-tab="observe" aria-controls="tab-observe" aria-selected="false" tabindex="-1"><span class="dot"></span>관찰실험</button>
+    <button type="button" role="tab" id="tabbtn-observe" data-tab="observe" aria-controls="tab-observe" aria-selected="false" tabindex="-1"><span class="dot"></span>일식과 월식 시뮬레이션</button>
   </div>
 
   <div class="tabpanel" id="tab-model" role="tabpanel" aria-labelledby="tabbtn-model">
