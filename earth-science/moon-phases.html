@@ -952,7 +952,7 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
       }
     }
     const curSpot = daysMode ? spot(e) : null;
-    if (Math.cos(phM * D2R) > -0.25 && !(daysMode && k < NEW_K)) {
+    if (Math.cos(phM * D2R) > -0.25 && k >= NEW_K) {
       const p = pos(phM);
       if (day < 0.5 && k > 0.05) {
         const mg = ctx.createRadialGradient(p.x, p.y, objR * .9, p.x, p.y, objR * 2.4);
@@ -972,6 +972,15 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
         ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 - ux * 6, y1 - uy * 6); ctx.stroke(); ctx.setLineDash([]);
         arrowHead(ctx, x1, y1, ux, uy, 9, 5, true); ctx.restore();
       }
+    }
+    // one-day view at 삭: the moon travels with the Sun, shown as a dashed outline that rises and sets with it
+    const dayNew = !daysMode && k < NEW_K && Math.cos(phM * D2R) > -0.25 ? pos(phM) : null;
+    if (dayNew) {
+      ctx.save(); ctx.setLineDash([4, 4]); ctx.lineWidth = 2.2;
+      ctx.strokeStyle = day > 0.5 ? 'rgba(59,44,71,.85)' : 'rgba(255,228,154,.95)';
+      ctx.fillStyle = day > 0.5 ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.05)';
+      ctx.beginPath(); ctx.arc(dayNew.x, dayNew.y, objR, 0, TAU); ctx.fill(); ctx.stroke();
+      ctx.restore();
     }
     ctx.restore();
 
@@ -995,6 +1004,21 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
       ctx.fillText(lab, cx + rx * Math.sin(p * D2R), ly);
     });
 
+    if (dayNew && up) {
+      // label the outline beside it, clear of the Sun
+      const fsz = Math.round(clamp(h * .05, 11, 14)), txt = '삭';
+      ctx.font = `${fsz}px ${FONT}`;
+      const tw = ctx.measureText(txt).width + 14, th = fsz * 1.56, r = objR;
+      const sp = Math.abs(phS) <= 90 ? pos(phS) : null, sr = objR * 1.15;
+      const tries = [[dayNew.x, dayNew.y - r - th / 2 - 4], [dayNew.x, dayNew.y + r + th / 2 + 4], [dayNew.x - r - tw / 2 - 6, dayNew.y], [dayNew.x + r + tw / 2 + 6, dayNew.y]];
+      for (const [lx, ly] of tries) {
+        const b = { x0: lx - tw / 2, x1: lx + tw / 2, y0: ly - th / 2, y1: ly + th / 2 };
+        if (b.x0 < 2 || b.x1 > w - 2 || b.y0 < 2 || b.y1 > H + 10) continue;
+        if (sp && b.x0 < sp.x + sr + 2 && b.x1 > sp.x - sr - 2 && b.y0 < sp.y + sr + 2 && b.y1 > sp.y - sr - 2) continue;
+        pill(ctx, txt, lx, ly, fsz, '#3b2c47', '#ffe49a');
+        break;
+      }
+    }
     if (daysMode) {
       const fsz = Math.round(clamp(h * .05, 11, 14));
       // 삭: dashed outline where the moon is, with 삭 written inside
@@ -1047,7 +1071,9 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
         if (prevSpot) msg += ' 어제보다 동쪽으로 약 12° 옮겨 갔어요.';
       }
     }
-    else if (k < NEW_K) msg = '삭이라서 달이 태양 가까이 있어 보이지 않아요.';
+    else if (k < NEW_K) msg = up
+      ? '삭이라서 달이 해와 같은 방향에 있어 보이지 않아요. 점선이 달이 있는 곳이에요.'
+      : '삭이라서 달이 해와 같은 방향에 있어요. 지금은 해와 함께 지평선 아래에 있어요.';
     else if (!up) msg = '지금은 달이 지평선 아래에 있어서 볼 수 없어요.';
     else {
       const dir = dirName(phM);
@@ -1072,7 +1098,7 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
     const segs = end <= 24 ? [[rise, end]] : [[rise, 24], [0, end - 24]];
     const L = lanes[1], k = litFrac(state.e);
     for (const [a, b] of segs) rr(ctx, X(a), L.y, X(b) - X(a), L.h, 8, 'rgba(255,228,154,.28)');
-    if (k > 0.03) {
+    if (k >= NEW_K) {
       ctx.save(); ctx.beginPath();
       ctx.rect(X(0), 0, X(6) - X(0), h); ctx.rect(X(18), 0, X(24) - X(18), h); ctx.clip();
       for (const [a, b] of segs) rr(ctx, X(a), L.y, X(b) - X(a), L.h, 8, '#ffe49a');
