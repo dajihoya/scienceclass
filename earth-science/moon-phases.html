@@ -30,22 +30,23 @@
   --track:rgba(255,255,255,.12);
   --thumb:#ffe49a;
   --bar-bg:transparent;
+  --lab-stage:#0f1534;
   color-scheme:dark;
 }
 /* 밝은 배경: page and panels go light, the space and sky pictures stay dark like screens on paper */
 :root[data-bg="light"]{
-  --night:#f6f2e7;
+  --night:#f3f5fb;
   --panel:#ffffff;
-  --panel-hi:#f1ecdf;
-  --line:#ddd4bf;
-  --ink:#232846;
-  --muted:#5f6584;
+  --panel-hi:#edf0fa;
+  --line:#e1e5f2;
+  --ink:#1c2043;
+  --muted:#5b6187;
   --moon:#ffd96e;
   --moon-shadow:#d4a43a;
   --blush:#d9557a;
   --mint:#1f8577;
   --sun:#c96a12;
-  --shadow:#e4dccb;
+  --shadow:#dde2f0;
   --accent-text:#8a5b00;
   --accent-line:#d9a21b;
   --sel-bg:#fff4d1;
@@ -53,6 +54,7 @@
   --track:rgba(35,40,70,.14);
   --thumb:#e3ab2b;
   --bar-bg:#1a2251;
+  --lab-stage:#e3e7f1;
   color-scheme:light;
 }
 :root[data-bg="light"] body{background-image:none}
@@ -209,7 +211,11 @@ input[type=range]::-moz-range-thumb{box-sizing:border-box;width:22px;height:22px
 .lab-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
 @media (max-width:820px){.lab-grid{grid-template-columns:minmax(0,1fr)}}
 .lab-col{display:flex;flex-direction:column;gap:20px;min-width:0}
-#labBoard{display:block;width:100%;height:auto;border-radius:16px;background:var(--space);touch-action:none;user-select:none;-webkit-user-select:none}
+#labBoard{display:block;width:100%;height:auto;aspect-ratio:10/6.6;border-radius:16px;background:var(--lab-stage);touch-action:manipulation;cursor:ns-resize;user-select:none;-webkit-user-select:none}
+#labBoard:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.lab-viewrow{margin:-2px 0 10px}
+.lab-sw.lab-sw-yel{background:#ffd23f}
+.lab-sw.lab-sw-blk{background:#23263a;box-shadow:0 0 0 1.5px #8f9ad0}
 .lab-sub{font-family:var(--font-body);font-size:.9rem;color:var(--muted);margin-left:8px}
 .btn.lab-small{font-size:.92rem;padding:7px 14px}
 .lab-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin-top:12px;font-size:.9rem;color:var(--muted)}
@@ -464,16 +470,27 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
     <div class="lab-grid">
       <section class="panel">
         <div class="panel-head">
-          <h2>달의 위상 변화판<span class="lab-sub">위에서 본 모습</span></h2>
+          <h2>달의 위상 변화판<span class="lab-sub">책상 위 모형</span></h2>
           <button class="btn btn-soft lab-small" id="labHow" type="button">탐구 과정</button>
         </div>
-        <svg id="labBoard" viewBox="0 0 620 540" role="img" aria-label="위에서 본 달의 위상 변화판"></svg>
+        <div class="view-ctrls lab-viewrow">
+          <div class="seg" role="group" aria-label="보는 방향">
+            <button type="button" id="labVOb" aria-pressed="true">비스듬히</button>
+            <button type="button" id="labVTop" aria-pressed="false">위에서</button>
+          </div>
+          <div class="tilt" role="group" aria-label="보는 각도">
+            <button type="button" id="labTiltDown" aria-label="더 옆에서 보기"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <output id="labTiltOut" aria-live="polite">38°</output>
+            <button type="button" id="labTiltUp" aria-label="더 위에서 보기"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10.5l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <canvas id="labBoard" tabindex="0" role="img" aria-label="책상 위에 놓인 달의 위상 변화판 모형. 가운데 스마트 기기, 둘레에 스타이로폼 공, 오른쪽에 태양"></canvas>
         <p class="lab-legend">
-          <span><i class="lab-sw" style="background:#ffe49a"></i>태양 빛을 받는 쪽</span>
-          <span><i class="lab-sw" style="background:#2a3366;box-shadow:0 0 0 1.5px #8f9ad0"></i>빛을 받지 못하는 쪽</span>
+          <span><i class="lab-sw lab-sw-yel"></i>노란 쪽 · 태양 빛을 받는 쪽</span>
+          <span><i class="lab-sw lab-sw-blk"></i>검은 쪽 · 빛을 받지 못하는 쪽</span>
           <span><i class="lab-sw lab-ring"></i>지구에서 보이는 쪽</span>
         </p>
-        <p class="hint" style="margin-top:6px">공(달)을 끌어서 옮기거나, 번호를 눌러 그 위치로 옮겨 보세요.</p>
+        <p class="hint" style="margin-top:6px">공(달)을 끌어서 옮기거나 판에 적힌 번호를 눌러 보세요. 빈 곳을 위아래로 끌거나 ∧ ∨ 버튼을 누르면 보는 각도가 바뀌어요.</p>
       </section>
 
       <div class="lab-col">
@@ -1652,128 +1669,345 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
     ev.preventDefault(); setTab(tabLab.getAttribute('aria-selected') === 'true' ? 'sim' : 'lab', true);
   }));
 
-  /* ---------- 모형 실험 ---------- */
+  /* ---------- 모의실험: 책상 위 3D 모형 ---------- */
   const FONT = '"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
   const NAMES = ['삭', '초승달', '상현달', '차오르는 볼록달', '보름달 (망)', '기우는 볼록달', '하현달', '그믐달'];
   const SUBS = ['달이 보이지 않아요 · 음력 1일 무렵', '음력 2~3일 무렵', '음력 7~8일 무렵', '상현달과 보름달 사이', '음력 15일 무렵', '보름달과 하현달 사이', '음력 22~23일 무렵', '음력 27~28일 무렵'];
   const SHORT = ['삭', '초승달', '상현달', '볼록달', '보름달', '볼록달', '하현달', '그믐달'];
-  const C = { space: '#0d1330', panelHi: '#232d64', line: '#33407c', muted: '#a9b1db', ink: '#f3f1ff', moon: '#ffe49a', moonInk: '#3b2c47', dark: '#2a3366', blush: '#ff9db3', mint: '#63d2c3', sun: '#ffb357', ray: '#ffd76a', ring: 'rgba(170,185,245,.45)' };
   const TAU = Math.PI * 2, STEP = TAU / 8;
-  let CX = 270; const CY = 270, OR = 190, MR = 24;
-  const svg = document.getElementById('labBoard');
-  const NS = 'http://www.w3.org/2000/svg';
-  const el = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); (p || svg).appendChild(e); return e; };
   const $ = id => document.getElementById(id);
-  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || C.muted;
+  const cssVar = (n, fb) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || fb;
+  const isLight = () => document.documentElement.getAttribute('data-bg') === 'light';
+  const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
-  let phi = 0, sunLeft = false, showName = false, showHalf = true, showSight = true, playing = false, anim = 0, dragging = false, revealed = false, warned = false;
+  let phi = 0, sunLeft = false, showName = false, showHalf = true, showSight = true, playing = false, anim = 0, revealed = false, warned = false;
   const shots = new Array(8).fill(false);
-  const SA = () => sunLeft ? Math.PI : 0, PX = k => (k + (sunLeft ? 4 : 0)) % 8;
+  const PX = k => (k + (sunLeft ? 4 : 0)) % 8;
   const norm = a => ((a % TAU) + TAU) % TAU;
   const nearestIdx = () => Math.round(norm(phi) / STEP) % 8;
   const atPos = () => { const d = Math.abs(norm(phi) - nearestIdx() * STEP); return Math.min(d, TAU - d) < 0.02; };
 
-  /* board */
-  let markers, fov, sight, phoneG, moonG, halfArc, moonLbl, hit;
-  const SX = x => sunLeft ? 620 - x : x;
-  function buildBoard() {
-    CX = sunLeft ? 350 : 270;
-    const SD = sunLeft ? -1 : 1;
-    svg.innerHTML = '';
-    el('circle', { cx: SX(690), cy: CY, r: 150, fill: C.sun });
-    el('text', { x: SX(584), y: CY + 7, 'text-anchor': 'middle', 'font-size': 22, fill: '#7a3b12', 'font-family': FONT }).textContent = '태양';
-    for (const dy of [-130, -60, 60, 130]) {
-      const y = CY + dy;
-      el('line', { x1: SX(520), y1: y, x2: SX(490), y2: y, stroke: C.ray, 'stroke-width': 4, 'stroke-linecap': 'round' });
-      el('path', { d: `M${SX(488)} ${y} l${12 * SD} -9 M${SX(488)} ${y} l${12 * SD} 9`, stroke: C.ray, 'stroke-width': 4, 'stroke-linecap': 'round', fill: 'none' });
+  /* vectors */
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const crs = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const nrm = a => mul(a, 1 / (Math.hypot(a[0], a[1], a[2]) || 1));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  /* the model in board units: orbit radius 1, y is up, +x points to the sun, +z is the far side of the board */
+  const OR = 1, RB = 0.2, HB = 0.46;                 // ball radius; ball centre and phone camera height
+  const PXH = 1.68, PZH = 1.48, PT = 0.025;            // paper half-size and thickness
+  const NR = 1.32, NC = 0.11;                        // printed numbers
+  const PH_W = 0.27, PH_T = 0.05, PH_TOP = HB + 0.07, PH_BOT = 0.07, ST_R = 0.15;
+  const SUN_X = 2.3, SUN_Y = 0.56, SUN_R = 0.55;
+  const sunSide = () => sunLeft ? -1 : 1, SUNV = () => [sunSide(), 0, 0];
+  const INK = { paper: '#fbf8ef', edge: '#d9d1bb', line: '#9aa2c8', faint: '#c6cbe2', text: '#4a5182', title: '#8d92b0', ray: '#f0a018', rayText: '#b97400', hi: '#ffd23f', hiLine: '#d29a00', hiText: '#3b2c47', pink: '#ff6f91' };
+  let DPR = 1;
+
+  /* views: the board seen from a tilted camera, and the phone camera at the centre */
+  let el = 38, elT = 38;
+  function boardView(W, H) {
+    const e = el * Math.PI / 180, f = [0, -Math.sin(e), Math.cos(e)], r = [1, 0, 0], u = [0, Math.cos(e), Math.sin(e)];
+    const C = sub([0, 0.14, 0], mul(f, 6)), s = sunSide();
+    const fit = [[-PXH, 0, -PZH], [PXH, 0, -PZH], [PXH, 0, PZH], [-PXH, 0, PZH], [-PXH, -PT, -PZH], [PXH, -PT, -PZH], [s * 1.98, SUN_Y, 0], [0, PH_TOP, 0], [0, HB + RB + 0.2, OR]];
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const P of fit) {
+      const q = sub(P, C), z = dot(q, f), x = dot(q, r) / z, y = dot(q, u) / z;
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
     }
-    for (let k = 0; k < 8; k++) { const a = k * STEP; el('line', { x1: CX, y1: CY, x2: CX + OR * Math.cos(a), y2: CY - OR * Math.sin(a), stroke: 'rgba(170,185,245,.16)', 'stroke-width': 1.5 }); }
-    el('circle', { cx: CX, cy: CY, r: OR, fill: 'none', stroke: C.ring, 'stroke-width': 5 });
-    const arA = -0.42, arB = -0.12, ar = OR - 34;
-    el('path', { d: `M${CX + ar * Math.cos(arA)} ${CY - ar * Math.sin(arA)} A${ar} ${ar} 0 0 0 ${CX + ar * Math.cos(arB)} ${CY - ar * Math.sin(arB)}`, fill: 'none', stroke: 'rgba(170,185,245,.7)', 'stroke-width': 3, 'stroke-linecap': 'round' });
-    const tip = [CX + ar * Math.cos(arB), CY - ar * Math.sin(arB)];
-    el('path', { d: `M${tip[0]} ${tip[1]} l-9 4 M${tip[0]} ${tip[1]} l1 9`, stroke: 'rgba(170,185,245,.7)', 'stroke-width': 3, 'stroke-linecap': 'round', fill: 'none' });
-    el('text', { x: CX + ar * Math.cos(-0.3) - 30, y: CY - ar * Math.sin(-0.3) + 30, 'font-size': 15, fill: C.muted, 'text-anchor': 'middle', 'font-family': FONT }).textContent = '공전 방향';
-    markers = [];
-    for (let k = 0; k < 8; k++) {
-      const a = k * STEP, lr = OR + 46, x = CX + lr * Math.cos(a), y = CY - lr * Math.sin(a);
-      const g = el('g', { style: 'cursor:pointer' });
-      const c = el('circle', { cx: x, cy: y, r: 18, fill: C.panelHi, stroke: C.line, 'stroke-width': 2 }, g);
-      const t = el('text', { x, y: y + 7, 'text-anchor': 'middle', 'font-size': 20, fill: C.muted, 'font-family': FONT }, g); t.textContent = k + 1;
-      el('circle', { cx: CX + OR * Math.cos(a), cy: CY - OR * Math.sin(a), r: 5, fill: 'rgba(170,185,245,.65)' });
-      g.addEventListener('click', () => { stopPlay(); goTo(k); });
-      markers.push({ c, t });
-    }
-    fov = el('path', { fill: 'rgba(255,157,179,.12)' });
-    sight = el('line', { stroke: C.blush, 'stroke-width': 2, 'stroke-dasharray': '6 6' });
-    phoneG = el('g', {});
-    el('circle', { cx: 0, cy: 0, r: 30, fill: C.panelHi, stroke: C.line, 'stroke-width': 2 }, phoneG);
-    el('path', { d: 'M-14 -16 L-6 -16 L-6 16 L-14 16 Z', fill: '#56619f' }, phoneG);
-    el('rect', { x: -6, y: -24, width: 9, height: 48, rx: 3, fill: '#d6dbf5' }, phoneG);
-    el('circle', { cx: 6, cy: -14, r: 3.4, fill: C.mint }, phoneG);
-    el('text', { x: CX, y: CY + 54, 'text-anchor': 'middle', 'font-size': 16, fill: C.muted, 'font-family': FONT }).textContent = '지구 (스마트 기기)';
-    moonG = el('g', { style: 'cursor:grab' });
-    const ballG = el('g', { transform: sunLeft ? 'rotate(180)' : '' }, moonG);
-    el('circle', { cx: 0, cy: 0, r: MR, fill: C.dark }, ballG);
-    el('path', { d: `M0 ${-MR} A${MR} ${MR} 0 0 1 0 ${MR} Z`, fill: C.moon }, ballG);
-    el('circle', { cx: 0, cy: 0, r: MR, fill: 'none', stroke: 'rgba(170,185,245,.75)', 'stroke-width': 1.5 }, moonG);
-    halfArc = el('path', { fill: 'none', stroke: C.blush, 'stroke-width': 5, 'stroke-linecap': 'round' });
-    moonLbl = el('text', { 'text-anchor': 'middle', 'font-size': 17, fill: C.ink, stroke: C.space, 'stroke-width': 4, 'paint-order': 'stroke', 'font-family': FONT }); moonLbl.textContent = '달';
-    hit = el('circle', { r: 44, fill: 'transparent', style: 'cursor:grab' });
-    hit.addEventListener('pointerdown', startDrag); moonG.addEventListener('pointerdown', startDrag);
+    const pad = W * 0.03, F = Math.min((W - 2 * pad) / (x1 - x0), (H - 2 * pad) / (y1 - y0));
+    const ox = W / 2 - F * (x0 + x1) / 2, oy = H / 2 + F * (y0 + y1) / 2;
+    const V = { C, f, r, u, F, ox, oy, right: r, depth: P => dot(sub(P, C), f),
+      p: P => { const q = sub(P, C), z = dot(q, f); return { x: ox + dot(q, r) * F / z, y: oy - dot(q, u) * F / z, z, s: F / z }; } };
+    V.sRef = V.p([0, 0, 0]).s;
+    return V;
+  }
+  function camView(W, H) {
+    const d = [Math.cos(phi), 0, Math.sin(phi)], rt = [d[2], 0, -d[0]], C = [0, HB, 0], F = 0.3 * W * OR / RB;
+    return { C, right: rt, F, sRef: F, depth: P => dot(sub(P, C), d),
+      p: P => { const q = sub(P, C), z = dot(q, d); return { x: W / 2 + dot(q, rt) * F / z, y: H / 2 - q[1] * F / z, z, s: F / z }; } };
   }
 
+  /* drawing helpers (everything is clipped in front of the camera) */
+  const ZN = 0.06;
+  const circ = (cx, y, cz, r, n) => Array.from({ length: n }, (_, i) => { const a = i / n * TAU; return [cx + r * Math.cos(a), y, cz + r * Math.sin(a)]; });
+  const lw = (V, w, max) => clamp(w * V.sRef, 0.7 * DPR, max * DPR);
+  function clipPoly(V, pts) {
+    const out = [];
+    for (let i = 0; i < pts.length; i++) {
+      const A = pts[i], B = pts[(i + 1) % pts.length], za = V.depth(A), zb = V.depth(B);
+      if (za >= ZN) out.push(A);
+      if ((za >= ZN) !== (zb >= ZN)) out.push(add(A, mul(sub(B, A), (ZN - za) / (zb - za))));
+    }
+    return out;
+  }
+  function pathPoly(ctx, V, pts) {
+    const c = clipPoly(V, pts); if (c.length < 3) return false;
+    ctx.beginPath(); c.forEach((P, i) => { const p = V.p(P); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); }); ctx.closePath();
+    return true;
+  }
+  function fillPoly(ctx, V, pts, color) { if (pathPoly(ctx, V, pts)) { ctx.fillStyle = color; ctx.fill(); } }
+  function seg(ctx, V, A, B) {
+    const za = V.depth(A), zb = V.depth(B);
+    if (za < ZN && zb < ZN) return;
+    if (za < ZN) A = add(A, mul(sub(B, A), (ZN - za) / (zb - za)));
+    else if (zb < ZN) B = add(A, mul(sub(B, A), (ZN - za) / (zb - za)));
+    const a = V.p(A), b = V.p(B); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+  }
+  // text printed flat on the paper, readable from the near edge of the board
+  function paperText(ctx, V, str, x, z, size, color) {
+    const P = [x, 0, z]; if (V.depth(P) < 0.25) return;
+    const p0 = V.p(P), px = V.p([x + 0.01, 0, z]), pz = V.p([x, 0, z + 0.01]), k = size / 100 / 0.01;
+    ctx.save();
+    ctx.setTransform((px.x - p0.x) * k, (px.y - p0.y) * k, -(pz.x - p0.x) * k, -(pz.y - p0.y) * k, p0.x, p0.y);
+    ctx.font = `100px ${FONT}`; ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(str, 0, 6);
+    ctx.restore();
+  }
+  function hull(P) {
+    P = P.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+    const cr = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x), lo = [], up = [];
+    for (const p of P) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+    for (let i = P.length - 1; i >= 0; i--) { const p = P[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+    return lo.slice(0, -1).concat(up.slice(0, -1));
+  }
+  // an upright cylinder (stands, the skewer under the ball)
+  function cyl(ctx, V, x, z, r, y0, y1, light, dark, top) {
+    const n = 24, pts = [];
+    for (let i = 0; i < n; i++) {
+      const a = i / n * TAU, A = [x + r * Math.cos(a), y0, z + r * Math.sin(a)], B = [A[0], y1, A[2]];
+      if (V.depth(A) < ZN || V.depth(B) < ZN) return;
+      pts.push(V.p(A), V.p(B));
+    }
+    const h = hull(pts); let mn = Infinity, mx = -Infinity;
+    ctx.beginPath(); h.forEach((p, i) => { mn = Math.min(mn, p.x); mx = Math.max(mx, p.x); i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); }); ctx.closePath();
+    const g = ctx.createLinearGradient(mn, 0, mx + 0.01, 0);
+    g.addColorStop(0, light); g.addColorStop(0.45, light); g.addColorStop(1, dark);
+    ctx.fillStyle = g; ctx.fill();
+    if (V.C[1] > y1) fillPoly(ctx, V, circ(x, y1, z, r, n), top);
+  }
+  const rgb = (c, k) => `rgb(${Math.round(clamp(c[0] * k, 0, 255))},${Math.round(clamp(c[1] * k, 0, 255))},${Math.round(clamp(c[2] * k, 0, 255))})`;
+
+  /* the styrofoam ball: one half painted yellow (faces the sun), the other half black; drawn pixel by pixel */
+  const bcv = document.createElement('canvas'), bcx = bcv.getContext('2d');
+  const YEL = [255, 206, 60], BLK = [31, 34, 50];
+  function grain(x, y, z) { const v = Math.sin(Math.floor(x * 60) * 127.1 + Math.floor(y * 60) * 311.7 + Math.floor(z * 60) * 74.7) * 43758.5453; return v - Math.floor(v); }
+  function drawBall(ctx, cx, cy, R, V, E, S) {
+    if (!(R > 0.5)) return;
+    const er = nrm(sub(E, mul(V, dot(E, V)))), eu = crs(er, V);
+    const L = nrm(add(mul(V, 0.65), [0, 0.75, 0])), Hv = nrm(add(L, V));
+    const n = Math.ceil(R) + 2, size = 2 * n, aw = 1.2 / R;
+    if (bcv.width < size || bcv.height < size) bcv.width = bcv.height = size;
+    const img = bcx.createImageData(size, size), D = img.data;
+    for (let py = 0; py < size; py++) {
+      const Y = (n - py - 0.5) / R;
+      for (let px = 0; px < size; px++) {
+        const X = (px + 0.5 - n) / R, rr = X * X + Y * Y, al = clamp((1 - Math.sqrt(rr)) * R + 0.5, 0, 1);
+        if (al <= 0) continue;
+        const zc = Math.sqrt(Math.max(0, 1 - rr));
+        const nx = X * er[0] + Y * eu[0] + zc * V[0], ny = X * er[1] + Y * eu[1] + zc * V[1], nz = X * er[2] + Y * eu[2] + zc * V[2];
+        const m = clamp((nx * S[0] + ny * S[1] + nz * S[2]) / aw * 0.5 + 0.5, 0, 1);
+        const dif = Math.max(0, nx * L[0] + ny * L[1] + nz * L[2]);
+        const sp = Math.pow(Math.max(0, nx * Hv[0] + ny * Hv[1] + nz * Hv[2]), 24) * (30 * m + 110 * (1 - m));
+        const lit = (0.5 + 0.58 * dif) * (1 + (grain(nx, ny, nz) - 0.5) * 0.07), rim = Math.pow(1 - zc, 3) * (1 - m);
+        const i = (py * size + px) * 4;
+        D[i] = clamp((BLK[0] + (YEL[0] - BLK[0]) * m) * lit + sp + rim * 40, 0, 255);
+        D[i + 1] = clamp((BLK[1] + (YEL[1] - BLK[1]) * m) * lit + sp + rim * 46, 0, 255);
+        D[i + 2] = clamp((BLK[2] + (YEL[2] - BLK[2]) * m) * lit + sp + rim * 86, 0, 255);
+        D[i + 3] = al * 255;
+      }
+    }
+    bcx.putImageData(img, 0, 0);
+    ctx.drawImage(bcv, 0, 0, size, size, cx - n, cy - n, size, size);
+  }
+  // the ball as the phone sees it from the centre, for records and the summary
+  function ballIcon(cv, k, scale) {
+    const ctx = sizeCanvas(cv), W = cv.width, H = cv.height, a = k * STEP, d = [Math.cos(a), 0, Math.sin(a)];
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
+    drawBall(ctx, W / 2, H / 2, Math.min(W, H) * scale, mul(d, -1), [d[2], 0, -d[0]], SUNV());
+  }
+
+  /* scene parts */
+  function drawPaper(ctx, V, board) {
+    const s = sunSide(), k = nearestIdx(), on = atPos();
+    const top = [[-PXH, 0, PZH], [PXH, 0, PZH], [PXH, 0, -PZH], [-PXH, 0, -PZH]];
+    if (board) {
+      ctx.save();
+      ctx.shadowColor = isLight() ? 'rgba(40,50,110,.24)' : 'rgba(0,0,0,.5)';
+      ctx.shadowBlur = 22 * DPR; ctx.shadowOffsetY = 8 * DPR;
+      fillPoly(ctx, V, [top[0], top[1], top[2], [PXH, -PT, -PZH], [-PXH, -PT, -PZH], top[3]], INK.edge);
+      ctx.restore();
+      fillPoly(ctx, V, [top[2], top[3], [-PXH, -PT, -PZH], [PXH, -PT, -PZH]], INK.edge);
+    }
+    fillPoly(ctx, V, top, INK.paper);
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = INK.faint; ctx.lineWidth = lw(V, 0.008, 2); ctx.setLineDash([5 * DPR, 6 * DPR]);
+    ctx.beginPath(); for (let i = 0; i < 8; i++) seg(ctx, V, [0, 0, 0], [OR * Math.cos(i * STEP), 0, OR * Math.sin(i * STEP)]); ctx.stroke();
+    ctx.setLineDash([]);
+    const oc = circ(0, 0, 0, OR, 96);
+    ctx.strokeStyle = INK.line; ctx.lineWidth = lw(V, 0.012, 3);
+    ctx.beginPath(); for (let i = 0; i < 96; i++) seg(ctx, V, oc[i], oc[(i + 1) % 96]); ctx.stroke();
+    for (let i = 0; i < 8; i++) fillPoly(ctx, V, circ(OR * Math.cos(i * STEP), 0, OR * Math.sin(i * STEP), 0.022, 14), INK.line);
+    // 공전 방향 (counter-clockwise seen from above)
+    const ar = 0.6, a0 = 0.14, a1 = 0.6;
+    ctx.strokeStyle = '#8f97c2'; ctx.lineWidth = lw(V, 0.014, 3);
+    ctx.beginPath();
+    for (let i = 0; i < 16; i++) { const t0 = a0 + (a1 - a0) * i / 16, t1 = a0 + (a1 - a0) * (i + 1) / 16; seg(ctx, V, [ar * Math.cos(t0), 0, ar * Math.sin(t0)], [ar * Math.cos(t1), 0, ar * Math.sin(t1)]); }
+    const T = [ar * Math.cos(a1), 0, ar * Math.sin(a1)], tg = [-Math.sin(a1), 0, Math.cos(a1)], rd = [Math.cos(a1), 0, Math.sin(a1)];
+    seg(ctx, V, T, add(sub(T, mul(tg, 0.075)), mul(rd, 0.045))); seg(ctx, V, T, sub(sub(T, mul(tg, 0.075)), mul(rd, 0.045)));
+    ctx.stroke();
+    paperText(ctx, V, '공전 방향', 0.4 * Math.cos(0.42), 0.4 * Math.sin(0.42) - 0.02, 0.085, '#7d85b3');
+    // 태양 빛
+    ctx.strokeStyle = INK.ray; ctx.lineWidth = lw(V, 0.02, 4);
+    ctx.beginPath();
+    for (const z of [-0.95, -0.42, 0.42, 0.95]) {
+      const A = [s * 1.6, 0, z], B = [s * 1.36, 0, z];
+      seg(ctx, V, A, B); seg(ctx, V, B, [s * 1.43, 0, z + 0.055]); seg(ctx, V, B, [s * 1.43, 0, z - 0.055]);
+    }
+    ctx.stroke();
+    paperText(ctx, V, '태양 빛', s * 1.45, -1.27, 0.085, INK.rayText);
+    paperText(ctx, V, '달의 위상 변화판', -s * 1.1, -1.32, 0.1, INK.title);
+    paperText(ctx, V, '지구 (스마트 기기)', 0, -0.36, 0.085, '#7d85b3');
+    for (let i = 0; i < 8; i++) {
+      const x = NR * Math.cos(i * STEP), z = NR * Math.sin(i * STEP), cur = board && on && i === k;
+      if (pathPoly(ctx, V, circ(x, 0, z, NC, 28))) {
+        ctx.fillStyle = cur ? INK.hi : '#ffffff'; ctx.fill();
+        ctx.strokeStyle = cur ? INK.hiLine : '#b7bdda'; ctx.lineWidth = lw(V, 0.01, 2.5); ctx.stroke();
+      }
+      paperText(ctx, V, String(i + 1), x, z, 0.15, cur ? INK.hiText : INK.text);
+    }
+  }
+  function drawSun(ctx, V, W, label) {
+    const c = [sunSide() * SUN_X, SUN_Y, 0]; if (V.depth(c) < 0.2) return;
+    const p = V.p(c), R = SUN_R * p.s;
+    ctx.fillStyle = 'rgba(255,190,80,.13)';
+    for (const k of [1.55, 1.32, 1.15]) { ctx.beginPath(); ctx.arc(p.x, p.y, R * k, 0, TAU); ctx.fill(); }
+    const g = ctx.createRadialGradient(p.x - R * 0.3, p.y - R * 0.35, R * 0.1, p.x, p.y, R);
+    g.addColorStop(0, '#fff3c4'); g.addColorStop(0.55, '#ffc35c'); g.addColorStop(1, '#f6922e');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, R, 0, TAU); ctx.fill();
+    if (!label) return;
+    const xa = Math.max(p.x - R, 0), xb = Math.min(p.x + R, W);
+    if (xb - xa < 34 * DPR) return;
+    ctx.font = `${Math.round(17 * DPR)}px ${FONT}`; ctx.fillStyle = '#7a3b12'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('태양', (xa + xb) / 2, p.y + 1);
+  }
+  function drawSight(ctx, V) {
+    const d = [Math.cos(phi), 0, Math.sin(phi)], L0 = add(mul(d, PH_T / 2 + 0.01), [0, HB, 0]), w = 0.2, far = OR + 0.06;
+    fillPoly(ctx, V, [L0, [far * Math.cos(phi + w), HB, far * Math.sin(phi + w)], [far * Math.cos(phi - w), HB, far * Math.sin(phi - w)]], 'rgba(255,111,145,.17)');
+    ctx.strokeStyle = INK.pink; ctx.lineWidth = lw(V, 0.01, 2.2); ctx.setLineDash([6 * DPR, 6 * DPR]);
+    ctx.beginPath(); seg(ctx, V, L0, add(mul(d, OR - RB - 0.02), [0, HB, 0])); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  function drawPhone(ctx, V) {
+    const d = [Math.cos(phi), 0, Math.sin(phi)], w = [-d[2], 0, d[0]], ht = PH_T / 2, hw = PH_W / 2, y0 = PH_BOT, y1 = PH_TOP;
+    const P = (sd, sw, y) => add(add(mul(d, sd * ht), mul(w, sw * hw)), [0, y, 0]);
+    const Lr = nrm([-0.35, 0.9, -0.5]);
+    const faces = [
+      { n: d, pts: [P(1, -1, y0), P(1, 1, y0), P(1, 1, y1), P(1, -1, y1)], col: [207, 213, 242], back: true },
+      { n: mul(d, -1), pts: [P(-1, 1, y0), P(-1, -1, y0), P(-1, -1, y1), P(-1, 1, y1)], col: [24, 28, 54], front: true },
+      { n: w, pts: [P(1, 1, y0), P(-1, 1, y0), P(-1, 1, y1), P(1, 1, y1)], col: [160, 168, 210] },
+      { n: mul(w, -1), pts: [P(-1, -1, y0), P(1, -1, y0), P(1, -1, y1), P(-1, -1, y1)], col: [160, 168, 210] },
+      { n: [0, 1, 0], pts: [P(1, -1, y1), P(1, 1, y1), P(-1, 1, y1), P(-1, -1, y1)], col: [186, 193, 230] }
+    ];
+    for (const f of faces) {
+      const c = mul(f.pts.reduce(add, [0, 0, 0]), 0.25);
+      if (dot(f.n, sub(V.C, c)) <= 0) continue;
+      fillPoly(ctx, V, f.pts, rgb(f.col, 0.66 + 0.42 * Math.max(0, dot(f.n, Lr))));
+      if (f.back) {
+        const Lc = add(mul(d, ht + 0.002), [0, HB, 0]), lens = Array.from({ length: 20 }, (_, i) => { const a = i / 20 * TAU; return add(Lc, add(mul(w, 0.036 * Math.cos(a)), [0, 0.036 * Math.sin(a), 0])); });
+        if (pathPoly(ctx, V, lens)) { ctx.fillStyle = '#11152c'; ctx.fill(); ctx.strokeStyle = '#63d2c3'; ctx.lineWidth = lw(V, 0.01, 2.5); ctx.stroke(); }
+      }
+      if (f.front && cam.width > 2) {
+        const yt = y1 - 0.03, yb = yt - 2 * 0.86 * hw * 4 / 3;
+        const TL = V.p(P(-1.06, 0.86, yt)), TR = V.p(P(-1.06, -0.86, yt)), BR = V.p(P(-1.06, -0.86, yb)), BL = V.p(P(-1.06, 0.86, yb));
+        ctx.save();
+        ctx.beginPath(); ctx.moveTo(TL.x, TL.y); ctx.lineTo(TR.x, TR.y); ctx.lineTo(BR.x, BR.y); ctx.lineTo(BL.x, BL.y); ctx.closePath(); ctx.clip();
+        ctx.setTransform((TR.x - TL.x) / cam.width, (TR.y - TL.y) / cam.width, (BL.x - TL.x) / cam.height, (BL.y - TL.y) / cam.height, TL.x, TL.y);
+        ctx.drawImage(cam, 0, 0);
+        ctx.restore();
+      }
+    }
+  }
+  function drawBallGroup(ctx, V, board) {
+    const d = [Math.cos(phi), 0, Math.sin(phi)], Bc = [d[0] * OR, HB, d[2] * OR];
+    if (board) cyl(ctx, V, Bc[0], Bc[2], 0.07, 0, 0.035, '#c09566', '#7d5a35', '#c9a070');
+    cyl(ctx, V, Bc[0], Bc[2], 0.014, 0.035, HB - RB + 0.04, '#e6c48e', '#a07a46', '#e6c48e');
+    const bp = V.p(Bc), R = RB * bp.s, zb = V.depth(Bc);
+    const ring = [];
+    if (board && showHalf) for (let i = 0; i <= 40; i++) { const t = phi + Math.PI / 2 + Math.PI * i / 40; ring.push([Bc[0] + (RB + 0.05) * Math.cos(t), HB, Bc[2] + (RB + 0.05) * Math.sin(t)]); }
+    const strokeRing = behind => {
+      ctx.strokeStyle = INK.pink; ctx.lineWidth = lw(V, 0.024, 5); ctx.lineCap = 'round'; ctx.beginPath();
+      for (let i = 0; i < ring.length - 1; i++) if ((V.depth(mul(add(ring[i], ring[i + 1]), 0.5)) > zb) === behind) seg(ctx, V, ring[i], ring[i + 1]);
+      ctx.stroke();
+    };
+    if (ring.length) strokeRing(true);
+    drawBall(ctx, bp.x, bp.y, R, nrm(sub(V.C, Bc)), V.right, SUNV());
+    const pp = V.p([Bc[0], HB + RB + 0.005, Bc[2]]), pr = Math.max(1.5 * DPR, 0.02 * pp.s);
+    ctx.fillStyle = '#d93a4a'; ctx.beginPath(); ctx.arc(pp.x, pp.y, pr, 0, TAU); ctx.fill();
+    ctx.fillStyle = 'rgba(255,190,198,.9)'; ctx.beginPath(); ctx.arc(pp.x - pr * 0.3, pp.y - pr * 0.35, pr * 0.38, 0, TAU); ctx.fill();
+    if (ring.length) strokeRing(false);
+    // where the '달' tag goes: above the ball, or just inside the orbit when looking from high above
+    const inner = V.p([Bc[0] - d[0] * (RB + 0.2), HB, Bc[2] - d[2] * (RB + 0.2)]);
+    return { x: bp.x, y: bp.y, R, tag: el < 58 ? { x: bp.x, y: Math.min(pp.y - pr, bp.y - R) - 5 * DPR } : { x: inner.x, y: inner.y + 11 * DPR } };
+  }
+  function pill(ctx, x, y, text) {
+    ctx.font = `${Math.round(14 * DPR)}px ${FONT}`;
+    const w = ctx.measureText(text).width + 16 * DPR, h = 22 * DPR, r = h / 2;
+    ctx.fillStyle = 'rgba(18,24,58,.85)';
+    ctx.beginPath(); ctx.moveTo(x - w / 2 + r, y - h); ctx.arcTo(x + w / 2, y - h, x + w / 2, y, r); ctx.arcTo(x + w / 2, y, x - w / 2, y, r); ctx.arcTo(x - w / 2, y, x - w / 2, y - h, r); ctx.arcTo(x - w / 2, y - h, x + w / 2, y - h, r); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#fff1bd'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y - h / 2 + 1);
+  }
+
+  /* the board on the desk */
+  const bc = $('labBoard'); let lastV = null, bDpr = 1;
+  const G = { ball: null, nums: [] };
   function renderBoard() {
-    const mx = CX + OR * Math.cos(phi), my = CY - OR * Math.sin(phi);
-    moonG.setAttribute('transform', `translate(${mx} ${my})`);
-    hit.setAttribute('cx', mx); hit.setAttribute('cy', my);
-    phoneG.setAttribute('transform', `translate(${CX} ${CY}) rotate(${-phi * 180 / Math.PI})`);
-    const a0 = phi + Math.PI / 2, a1 = phi + Math.PI * 1.5, R = MR + 6;
-    halfArc.setAttribute('d', `M${mx + R * Math.cos(a0)} ${my - R * Math.sin(a0)} A${R} ${R} 0 0 0 ${mx + R * Math.cos(a1)} ${my - R * Math.sin(a1)}`);
-    halfArc.style.display = showHalf ? '' : 'none';
-    const sx = CX + 34 * Math.cos(phi), sy = CY - 34 * Math.sin(phi);
-    sight.setAttribute('x1', sx); sight.setAttribute('y1', sy);
-    sight.setAttribute('x2', mx - (MR + 8) * Math.cos(phi)); sight.setAttribute('y2', my + (MR + 8) * Math.sin(phi));
-    const w = 0.22, L = OR + 10;
-    fov.setAttribute('d', `M${sx} ${sy} L${CX + L * Math.cos(phi + w)} ${CY - L * Math.sin(phi + w)} L${CX + L * Math.cos(phi - w)} ${CY - L * Math.sin(phi - w)} Z`);
-    sight.style.display = fov.style.display = showSight ? '' : 'none';
-    const lr = OR - MR - 26;
-    moonLbl.setAttribute('x', CX + lr * Math.cos(phi + 0.16)); moonLbl.setAttribute('y', CY - lr * Math.sin(phi + 0.16) + 6);
-    const idx = nearestIdx(), on = atPos();
-    markers.forEach((m, k) => {
-      const cur = on && k === idx;
-      m.c.setAttribute('fill', cur ? C.moon : C.panelHi); m.c.setAttribute('stroke', cur ? C.moon : C.line);
-      m.t.setAttribute('fill', cur ? C.moonInk : C.muted);
-    });
+    if (paneLab.hidden) return;
+    const r = bc.getBoundingClientRect(); if (!r.width) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(r.width * dpr), H = Math.round(r.height * dpr);
+    if (bc.width !== W || bc.height !== H) { bc.width = W; bc.height = H; }
+    const ctx = bc.getContext('2d'); DPR = bDpr = dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
+    const V = lastV = boardView(W, H);
+    drawPaper(ctx, V, true);
+    G.nums = [];
+    for (let i = 0; i < 8; i++) { const p = V.p([NR * Math.cos(i * STEP), 0, NR * Math.sin(i * STEP)]); G.nums.push({ x: p.x / dpr, y: p.y / dpr, r: Math.max(18, NC * p.s / dpr + 6) }); }
+    const Bx = OR * Math.cos(phi), Bz = OR * Math.sin(phi);
+    fillPoly(ctx, V, circ(0, 0.001, 0, 0.2, 28), 'rgba(30,34,70,.16)');
+    fillPoly(ctx, V, circ(Bx, 0.001, Bz, 0.2, 28), 'rgba(30,34,70,.2)');
+    drawSun(ctx, V, W, true);
+    if (showSight) drawSight(ctx, V);
+    const parts = [
+      { z: V.depth([0, 0.2, 0]), draw: () => { cyl(ctx, V, 0, 0, ST_R, 0, PH_BOT, '#5d659c', '#2f3563', '#6c74aa'); drawPhone(ctx, V); } },
+      { z: V.depth([Bx, HB, Bz]), draw: () => { G.ball = drawBallGroup(ctx, V, true); } }
+    ];
+    parts.sort((a, b) => b.z - a.z).forEach(o => o.draw());
+    if (G.ball) { pill(ctx, G.ball.tag.x, G.ball.tag.y, '달'); G.ball = { x: G.ball.x / dpr, y: G.ball.y / dpr, R: G.ball.R / dpr }; }
   }
 
-  /* what the camera sees */
-  function drawPhase(ctx, w, h, p, opt) {
-    opt = opt || {};
-    ctx.clearRect(0, 0, w, h);
-    if (opt.bg) { ctx.fillStyle = opt.bg; ctx.fillRect(0, 0, w, h); }
-    const R = Math.min(w, h) * (opt.scale || 0.34), cx = w / 2, cy = h / 2;
-    ctx.fillStyle = C.dark; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
-    const waxing = Math.sin(p) >= 0, c = Math.cos(p), N = 90;
-    ctx.fillStyle = C.moon; ctx.beginPath();
-    for (let i = 0; i <= N; i++) { const y = -R + 2 * R * i / N, s = Math.sqrt(Math.max(0, R * R - y * y)); ctx.lineTo(cx + (waxing ? s : -s), cy + y); }
-    for (let i = N; i >= 0; i--) { const y = -R + 2 * R * i / N, s = Math.sqrt(Math.max(0, R * R - y * y)); ctx.lineTo(cx + (waxing ? c * s : -c * s), cy + y); }
-    ctx.closePath(); ctx.fill();
-    const sh = ctx.createRadialGradient(cx - R * .35, cy - R * .4, R * .1, cx, cy, R);
-    sh.addColorStop(0, 'rgba(255,255,255,.22)'); sh.addColorStop(.7, 'rgba(255,255,255,0)'); sh.addColorStop(1, 'rgba(0,0,0,.18)');
-    ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
-    ctx.strokeStyle = 'rgba(120,135,210,.6)'; ctx.lineWidth = Math.max(1, R * .03); ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
-  }
+  /* what the phone camera sees */
   function sizeCanvas(cv) {
     const r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
     cv.width = Math.max(10, Math.round(r.width * d)); cv.height = Math.max(10, Math.round(r.height * d));
     return cv.getContext('2d');
   }
   const cam = $('labCam'); let camCtx = null;
-  function renderCam() { if (!camCtx) camCtx = sizeCanvas(cam); drawPhase(camCtx, cam.width, cam.height, phi - SA(), { scale: .3, bg: C.space }); }
+  function renderCam() {
+    if (!camCtx) camCtx = sizeCanvas(cam);
+    const ctx = camCtx, W = cam.width, H = cam.height;
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = cssVar('--lab-stage', '#0f1534'); ctx.fillRect(0, 0, W, H);
+    const V = camView(W, H);
+    drawPaper(ctx, V, false);
+    drawSun(ctx, V, W, false);
+    drawBallGroup(ctx, V, false);
+  }
 
   /* record slots */
-  const slotEls = [];
+  const slotEls = [], slotKeys = new Array(8).fill('');
   for (let k = 0; k < 8; k++) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'lab-slot';
     b.innerHTML = `<span class="n">${k + 1}</span><canvas></canvas><span class="nm"></span>`;
@@ -1784,20 +2018,25 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
   function renderSlots() {
     const idx = atPos() ? nearestIdx() : -1;
     slotEls.forEach((d, k) => {
-      const cv = d.querySelector('canvas'), ctx = sizeCanvas(cv), W = cv.width, H = cv.height;
-      if (shots[k]) drawPhase(ctx, W, H, k * STEP - SA(), { scale: .42 });
-      else {
-        ctx.clearRect(0, 0, W, H);
-        ctx.strokeStyle = cssVar('--muted'); ctx.setLineDash([4, 4]); ctx.lineWidth = Math.max(1.5, W * .03);
-        ctx.beginPath(); ctx.arc(W / 2, H / 2, W * .38, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = cssVar('--muted'); ctx.font = `${Math.round(W * .32)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('?', W / 2, H / 2 + 1);
+      const cv = d.querySelector('canvas'), key = `${shots[k]}|${sunLeft}|${isLight()}|${Math.round(cv.getBoundingClientRect().width)}`;
+      if (key !== slotKeys[k]) {
+        slotKeys[k] = key;
+        if (shots[k]) ballIcon(cv, k, 0.42);
+        else {
+          const ctx = sizeCanvas(cv), W = cv.width, H = cv.height;
+          ctx.clearRect(0, 0, W, H);
+          ctx.strokeStyle = cssVar('--muted', '#a9b1db'); ctx.setLineDash([4, 4]); ctx.lineWidth = Math.max(1.5, W * 0.03);
+          ctx.beginPath(); ctx.arc(W / 2, H / 2, W * 0.38, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = cssVar('--muted', '#a9b1db'); ctx.font = `${Math.round(W * 0.32)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('?', W / 2, H / 2 + 1);
+        }
       }
       d.querySelector('.nm').textContent = (revealed && shots[k]) ? SHORT[PX(k)] : '';
       d.setAttribute('aria-current', String(k === idx));
     });
     $('labCount').textContent = `${shots.filter(Boolean).length} / 8`;
   }
+  const resetSlots = () => slotKeys.fill('');
   function renderInfo() {
     const idx = nearestIdx(), on = atPos();
     const pos = $('labPos'), pn = $('labName'), ps = $('labNameSub');
@@ -1807,7 +2046,7 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
     if (showName) { const q = PX(idx); pn.textContent = NAMES[q]; pn.classList.remove('hidden'); ps.textContent = SUBS[q]; }
     else { pn.textContent = '어떤 모양일까?'; pn.classList.add('hidden'); ps.textContent = '‘위상 이름 보기’를 켜면 이름이 나와요'; }
   }
-  function render() { if (paneLab.hidden) return; renderBoard(); renderCam(); renderInfo(); renderSlots(); }
+  function render() { if (paneLab.hidden) return; renderCam(); renderBoard(); renderInfo(); renderSlots(); }
 
   /* motion */
   function animateTo(target, dur, done) {
@@ -1853,12 +2092,79 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
     animateTo(phi + d, Math.max(250, Math.abs(d) / STEP * 300), () => { phi = 0; run(); });
   });
 
-  /* dragging the ball */
-  function svgPt(e) { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
-  function startDrag(e) { stopPlay(); cancelAnimationFrame(anim); dragging = true; try { svg.setPointerCapture(e.pointerId); } catch (_) {} svg.style.cursor = 'grabbing'; e.preventDefault(); }
-  svg.addEventListener('pointermove', e => { if (!dragging) return; const p = svgPt(e); phi = norm(Math.atan2(-(p.y - CY), p.x - CX)); render(); });
-  const endDrag = () => { if (!dragging) return; dragging = false; svg.style.cursor = ''; goTo(nearestIdx()); };
-  svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+  /* viewing angle */
+  const vOb = $('labVOb'), vTop = $('labVTop'), tUp = $('labTiltUp'), tDown = $('labTiltDown'), tOut = $('labTiltOut');
+  const VIEW_OB = 38, VIEW_TOP = 90, T_MIN = 12, T_MAX = 90, T_STEP = 6;
+  let elRaf = 0;
+  function setView(v, now) {
+    elT = clamp(Math.round(v), T_MIN, T_MAX);
+    tOut.textContent = `${elT}°`; tUp.disabled = elT >= T_MAX; tDown.disabled = elT <= T_MIN;
+    vOb.setAttribute('aria-pressed', String(elT === VIEW_OB)); vTop.setAttribute('aria-pressed', String(elT === VIEW_TOP));
+    cancelAnimationFrame(elRaf);
+    if (now || reduceMotion) { el = elT; renderBoard(); return; }
+    const tick = () => { el += (elT - el) * 0.22; if (Math.abs(elT - el) < 0.05) el = elT; renderBoard(); if (el !== elT) elRaf = requestAnimationFrame(tick); };
+    elRaf = requestAnimationFrame(tick);
+  }
+  vOb.addEventListener('click', () => setView(VIEW_OB));
+  vTop.addEventListener('click', () => setView(VIEW_TOP));
+  function holdButton(btn, step) {
+    let wait = 0, rep = 0, repeated = false;
+    const stop = () => { clearTimeout(wait); clearInterval(rep); };
+    btn.addEventListener('pointerdown', () => {
+      repeated = false; stop();
+      wait = setTimeout(() => { rep = setInterval(() => { repeated = true; setView(elT + step / 3, true); if (btn.disabled) stop(); }, 60); }, 350);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(n => btn.addEventListener(n, stop));
+    btn.addEventListener('click', () => { if (!repeated) setView(elT + step); repeated = false; });
+  }
+  holdButton(tUp, T_STEP); holdButton(tDown, -T_STEP);
+
+  /* pointer: drag the ball, tap a printed number, or (mouse) drag empty space to tilt */
+  const local = ev => { const r = bc.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; };
+  const onBall = p => !!G.ball && Math.hypot(p.x - G.ball.x, p.y - G.ball.y) < G.ball.R * 1.5 + 10;
+  const numAt = p => { let best = -1, bd = Infinity; G.nums.forEach((n, i) => { const d = Math.hypot(p.x - n.x, p.y - n.y); if (d < n.r && d < bd) { bd = d; best = i; } }); return best; };
+  function phiAt(p) {
+    const V = lastV; if (!V) return null;
+    const X = p.x * bDpr - V.ox, Y = V.oy - p.y * bDpr, dir = add(add(mul(V.r, X), mul(V.u, Y)), mul(V.f, V.F));
+    if (dir[1] > -1e-6) return null;
+    const P = add(V.C, mul(dir, (HB - V.C[1]) / dir[1]));
+    return norm(Math.atan2(P[2], P[0]));
+  }
+  let drag = null;
+  bc.addEventListener('pointerdown', ev => {
+    const p = local(ev);
+    if (onBall(p)) {
+      stopPlay(); cancelAnimationFrame(anim); drag = { type: 'ball' };
+      try { bc.setPointerCapture(ev.pointerId); } catch (_) {}
+      bc.style.cursor = 'grabbing'; ev.preventDefault(); return;
+    }
+    const k = numAt(p);
+    if (k >= 0) { drag = { type: 'tap', k, x: p.x, y: p.y }; return; }
+    if (ev.pointerType === 'touch') return;
+    drag = { type: 'view', y: p.y, el: elT };
+    try { bc.setPointerCapture(ev.pointerId); } catch (_) {}
+    bc.style.cursor = 'grabbing'; ev.preventDefault();
+  });
+  bc.addEventListener('pointermove', ev => {
+    const p = local(ev);
+    if (drag && drag.type === 'ball') { const a = phiAt(p); if (a !== null) { phi = a; render(); } return; }
+    if (drag && drag.type === 'view') { setView(drag.el + (p.y - drag.y) * 0.4, true); return; }
+    if (drag && drag.type === 'tap') { if (Math.hypot(p.x - drag.x, p.y - drag.y) > 10) drag = null; return; }
+    bc.style.cursor = onBall(p) ? 'grab' : numAt(p) >= 0 ? 'pointer' : 'ns-resize';
+  });
+  const endDrag = ev => {
+    if (!drag) return;
+    const d = drag; drag = null; bc.style.cursor = '';
+    if (d.type === 'ball') goTo(nearestIdx());
+    else if (d.type === 'tap' && ev.type === 'pointerup') { stopPlay(); goTo(d.k); }
+  };
+  bc.addEventListener('pointerup', endDrag); bc.addEventListener('pointercancel', endDrag);
+  bc.addEventListener('touchstart', ev => { const t = ev.touches[0]; if (t && onBall(local(t))) ev.preventDefault(); }, { passive: false });
+  bc.addEventListener('touchmove', ev => { if (drag && drag.type === 'ball') ev.preventDefault(); }, { passive: false });
+  bc.addEventListener('keydown', ev => {
+    if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') { ev.preventDefault(); setView(elT + (ev.key === 'ArrowUp' ? T_STEP : -T_STEP)); }
+    else if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { ev.preventDefault(); stopPlay(); animateTo(nearestIdx() * STEP + (ev.key === 'ArrowRight' ? STEP : -STEP), 520); }
+  });
 
   /* switches */
   $('labNameT').addEventListener('change', e => { showName = e.target.checked; render(); });
@@ -1867,7 +2173,7 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
   $('labSunT').addEventListener('change', e => {
     stopPlay(); sunLeft = e.target.checked;
     const had = shots.some(Boolean); shots.fill(false); revealed = false; warned = false;
-    buildBoard(); render();
+    resetSlots(); render();
     toast((sunLeft ? '태양이 왼쪽으로 옮겨졌어요.' : '태양이 오른쪽으로 돌아왔어요.') + (had ? ' 관찰 기록을 새로 시작해요.' : ''));
   });
 
@@ -1891,7 +2197,7 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
       const cv = document.createElement('canvas'); d.appendChild(cv);
       d.insertAdjacentHTML('beforeend', `위치 ${k + 1}<br><b>${SHORT[PX(k)]}</b>`);
       t.appendChild(d);
-      const ctx = sizeCanvas(cv); drawPhase(ctx, cv.width, cv.height, k * STEP - SA(), { scale: .44 });
+      ballIcon(cv, k, 0.44);
     }
   }
   $('labReset').addEventListener('click', () => { stopPlay(); shots.fill(false); revealed = false; warned = false; goTo(0); renderSlots(); toast('처음 상태로 돌아왔어요.'); });
@@ -1899,10 +2205,9 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
   let tt = 0;
   function toast(m) { const e = $('labToast'); e.textContent = m; e.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => e.classList.remove('show'), 2200); }
 
-  buildBoard();
   let rz = 0;
-  window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { camCtx = null; render(); }); });
-  document.addEventListener('bgchange', () => render());
+  window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { camCtx = null; resetSlots(); render(); }); });
+  document.addEventListener('bgchange', () => { resetSlots(); render(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { camCtx = null; render(); });
   render();
 })();
