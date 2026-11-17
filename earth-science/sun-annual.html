@@ -46,7 +46,9 @@ input[type=range]{width:100%;accent-color:var(--pink)}
 .check{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:14px}
 .foot{font-size:12.5px;color:var(--muted);max-width:80ch;margin:0}
 .head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-.rose{flex:none}
+.rose{flex:none;margin-left:auto}
+.head .chips{margin-left:auto}
+.head .chips + .rose{margin-left:0}
 .rose text{font-family:var(--display);font-size:12px;fill:var(--ink)}
 .rose .n{fill:#e5383b}
 #orbit{cursor:grab;touch-action:none;border-radius:14px}
@@ -119,16 +121,6 @@ input[type=range]{width:100%;accent-color:var(--pink)}
   <div class="card">
     <div class="head">
       <div class="label">지구에서 본 황도와 별자리 — 남쪽 하늘을 바라본 모습 (왼쪽이 동쪽)</div>
-      <svg class="rose" width="76" height="76" viewBox="0 0 76 76" role="img" aria-label="방위: 위 북, 아래 남, 왼쪽 동, 오른쪽 서">
-        <circle cx="38" cy="38" r="22" fill="#fff" stroke="#c9d1f2" stroke-width="2"/>
-        <path d="M38 22 L42 38 L38 54 L34 38 Z" fill="#b9c2e6"/>
-        <path d="M22 38 L38 35 L54 38 L38 41 Z" fill="#d5dbf3"/>
-        <path d="M38 22 L42 38 L34 38 Z" fill="#e5383b"/>
-        <text class="n" x="38" y="12" text-anchor="middle">북</text>
-        <text x="38" y="72" text-anchor="middle">남</text>
-        <text x="7" y="42" text-anchor="middle">동</text>
-        <text x="69" y="42" text-anchor="middle">서</text>
-      </svg>
     </div>
     <canvas id="strip" aria-label="황도를 따라 이동하는 태양"></canvas>
   </div>
@@ -352,7 +344,17 @@ function drawOrbit(lam){
   // ── 앞쪽 띠: 안쪽 그림을 가리는 불투명한 벽 ──
   drawFaces(front);drawCons(false);drawLabels();
   x.globalAlpha=1;
+  drawRose(x,w-8,8,clamp(w/560,.8,1.05));
 }
+// 방위 표시 (모형 오른쪽 위 구석)
+function drawRose(x,R,T,s){x.save();x.translate(R-76*s,T);x.scale(s,s);
+  x.fillStyle='rgba(255,255,255,.12)';x.beginPath();x.arc(38,38,37,0,7);x.fill();
+  x.fillStyle='#fff';x.strokeStyle='#c9d1f2';x.lineWidth=2;x.beginPath();x.arc(38,38,22,0,7);x.fill();x.stroke();
+  const poly=(pts,c)=>{x.fillStyle=c;x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.closePath();x.fill();};
+  poly([[38,22],[42,38],[38,54],[34,38]],'#b9c2e6');poly([[22,38],[38,35],[54,38],[38,41]],'#d5dbf3');poly([[38,22],[42,38],[34,38]],'#e5383b');
+  x.font=`13px ${FONT}`;x.textAlign='center';x.textBaseline='middle';
+  [['북',38,8,'#ff8a8c'],['남',38,68,'#ffffff'],['동',7,38,'#ffffff'],['서',69,38,'#ffffff']].forEach(([n,X,Y,c])=>{x.fillStyle=c;x.fillText(n,X,Y);});
+  x.restore();}
 
 // ---- 지구에서 본 황도 띠 (실제 별자리) ----
 const trail=[];
