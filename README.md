@@ -8,6 +8,8 @@
 - `earth-science/sun-annual.html` — 태양의 연주운동 3D 시뮬레이션
 - `earth-science/moon-phases.html` — 달의 위상 변화 관찰 시뮬레이션
 - `earth-science/eclipse.html` — 일식과 월식 관찰실험 시뮬레이션
+- `earth-science/light-distance.html` — 광원으로부터의 거리에 따른 빛의 밝기
+- `earth-science/star-distance.html` — 별까지의 거리 (시차 & 연주시차)
 
 `life-science/index.html`, `earth-science/index.html`은 첫 화면의 해당 과목 줄로 넘겨 주는 페이지입니다.
 
