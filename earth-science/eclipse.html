@@ -153,6 +153,9 @@ canvas{display:block;width:100%;max-width:100%;border-radius:14px}
 .ev-kr-list p{margin:0}
 .ev-kr-list strong{font-family:var(--font-display);font-weight:400;margin-right:8px}
 .ev-src{margin:0;font-size:.8rem;color:var(--muted)}
+.ev-next{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ev-next .ev{background:transparent;border:1.5px dashed var(--line)}
+@media (max-width:480px){.ev-next{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:880px){.stage{grid-template-areas:"space" "sky" "info";grid-template-rows:auto}}
 @media (max-width:480px){.ev-grid{grid-template-columns:minmax(0,1fr)}}
 /* 비교하기 · 궁금해요: 옆으로 넘기는 탭 */
@@ -462,43 +465,44 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
       <p class="safety" id="safety"></p>
     </figure>
     <section class="card evcard p-info" aria-labelledby="evTitle">
-      <div class="ev-head"><h2 id="evTitle">최근과 다음 일식·월식</h2><span>시간은 모두 한국 시간이에요</span></div>
+      <div class="ev-head"><h2 id="evTitle">우리나라에서 보는 일식·월식</h2><span>시간은 모두 한국 시간이에요</span></div>
       <div class="ev-grid">
         <article class="ev ev-solar">
-          <div class="ev-top"><span class="ev-k">최근 일식</span><span class="ev-date">2026. 8. 12.</span></div>
-          <b>개기일식</b>
-          <p>그린란드, 아이슬란드, 스페인에서 개기일식, 유럽 여러 곳에서 부분일식</p>
-          <p>가장 많이 가려진 때: 8월 13일 새벽 2시 46분</p>
-          <p class="ev-kr">우리나라는 밤이라 볼 수 없었어요.</p>
+          <div class="ev-top"><span class="ev-k">최근 일식</span><span class="ev-date">2020. 6. 21.</span></div>
+          <b>부분일식</b>
+          <p>서울에서 태양의 약 45%가 가려졌어요.</p>
+          <p>오후 3시 53분 ~ 6시 4분 (가장 많이 가려진 때 5시 2분, 서울 기준)</p>
         </article>
         <article class="ev ev-lunar">
-          <div class="ev-top"><span class="ev-k">최근 월식</span><span class="ev-date">2026. 8. 28.</span></div>
-          <b>부분월식 (달의 약 96%가 가려짐)</b>
-          <p>아메리카, 유럽, 아프리카에서 관측</p>
-          <p>가장 많이 가려진 때: 낮 1시 12분</p>
-          <p class="ev-kr">우리나라는 낮이라 달이 떠 있지 않아 볼 수 없었어요.</p>
+          <div class="ev-top"><span class="ev-k">최근 월식</span><span class="ev-date">2026. 3. 3.</span></div>
+          <b>개기월식</b>
+          <p>달 전체가 지구 그림자에 들어가 붉게 보였어요.</p>
+          <p>저녁 6시 50분 ~ 밤 10시 17분 (달 전체가 가려진 때 8시 4분 ~ 9시 3분)</p>
         </article>
         <article class="ev ev-solar">
-          <div class="ev-top"><span class="ev-k">다음 일식</span><span class="ev-date">2027. 2. 6.</span></div>
-          <b>금환일식</b>
-          <p>칠레, 아르헨티나, 서아프리카에서 태양 가장자리가 반지처럼 남아요</p>
-          <p>가장 많이 가려질 때: 2월 7일 새벽 1시</p>
-          <p class="ev-kr">우리나라에서는 볼 수 없어요.</p>
+          <div class="ev-top"><span class="ev-k">다음 일식</span><span class="ev-date">2030. 6. 1.</span></div>
+          <b>부분일식</b>
+          <p>오후에 태양의 일부가 달에 가려져요.</p>
+          <p class="ev-kr">2020년 이후 10년 만에 우리나라에서 보는 일식이에요.</p>
         </article>
         <article class="ev ev-lunar">
-          <div class="ev-top"><span class="ev-k">다음 월식</span><span class="ev-date">2027. 2. 21.</span></div>
-          <b>반영월식</b>
-          <p>유럽, 아프리카 등에서 관측 · 달이 반그림자에만 들어가 아주 조금 어두워져요</p>
-          <p>가장 많이 가려질 때: 아침 8시 13분</p>
-          <p class="ev-kr">우리나라에서는 달이 진 뒤라 보기 어려워요.</p>
+          <div class="ev-top"><span class="ev-k">다음 월식</span><span class="ev-date">2028. 7. 7.</span></div>
+          <b>부분월식</b>
+          <p>새벽에 달의 일부가 지구 그림자에 가려져요.</p>
+          <p>새벽 2시 9분 ~ 4시 30분 (가장 많이 가려질 때 3시 20분)</p>
         </article>
       </div>
-      <div class="ev-kr-list">
-        <p><strong>우리나라에서 볼 수 있는 다음 개기월식</strong>2028년 12월 31일 밤 ~ 2029년 1월 1일 새벽 (달 전체가 가려지는 때: 1월 1일 새벽 1시 16분 ~ 2시 28분)</p>
-        <p><strong>우리나라에서 볼 수 있는 다음 일식</strong>2030년 6월 1일 오후, 부분일식</p>
-        <p><strong>우리나라에서 볼 수 있는 다음 개기일식</strong>2035년 9월 2일 오전 9시 40분쓰음. 남한에서는 강원도 고성 등 북쪽 끝 일부 지역에서만 개기일식으로 보이고, 서울 등 나머지 지역에서는 부분일식으로 보여요.</p>
+      <div class="ev-next">
+        <article class="ev ev-lunar">
+          <div class="ev-top"><span class="ev-k">다음 개기월식</span><span class="ev-date">2028. 12. 31. ~ 2029. 1. 1.</span></div>
+          <p>1월 1일 새벽 1시 16분 ~ 2시 28분에 달 전체가 가려져 붉게 보여요.</p>
+        </article>
+        <article class="ev ev-solar">
+          <div class="ev-top"><span class="ev-k">다음 개기일식</span><span class="ev-date">2035. 9. 2.</span></div>
+          <p>오전 9시 40분쯤. 남한에서는 강원도 고성 등 북쪽 끝 일부 지역에서만 개기일식으로 보이고, 서울 등 나머지 지역에서는 부분일식으로 보여요.</p>
+        </article>
       </div>
-      <p class="ev-src">자료: NASA 일식·월식 목록, 한국천문연구원 (2026년 11월 확인)</p>
+      <p class="ev-src">맨눈으로 알아보기 어려운 반영월식은 뺐어요. 자료: 한국천문연구원, NASA (2026년 11월 확인)</p>
     </section>
   </section>
 
