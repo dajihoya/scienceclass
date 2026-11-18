@@ -504,9 +504,9 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
       </div>
       <p class="ev-src">맨눈으로 알아보기 어려운 반영월식은 뺐어요. 자료: 한국천문연구원, NASA (2026년 11월 확인)</p>
     </section>
-  </section>
-
-  <section class="card control">
+.stage{grid-template-areas:"space ctrl" "space sky" "info sky";grid-template-rows:auto auto 1fr}
+.p-ctrl{grid-area:ctrl}
+  <section class="card control p-ctrl"">
     <div class="status">
       <div class="order" id="order"></div>
       <div class="phase" aria-live="polite"><span class="chip" id="phaseChip"></span><p id="phaseText"></p></div>
