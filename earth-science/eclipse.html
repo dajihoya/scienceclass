@@ -131,9 +131,8 @@ canvas{display:block;width:100%;max-width:100%;border-radius:14px}
 .learn{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
 .compare h2,.qa-title{font-size:1.3rem;margin-bottom:10px}
 /* 메인 그림 아래 빈칸: 최근과 다음 일식·월식 */
-.stage{grid-template-areas:"space sky" "space ctrl" "space info";grid-template-rows:auto auto auto}
-.p-ctrl{grid-area:ctrl}
-.p-info{grid-area:info}.p-space{grid-area:space}
+.stage{grid-template-areas:"space sky" "info sky";grid-template-rows:auto 1fr}
+.p-space{grid-area:space}
 .p-sky{grid-area:sky}
 .p-info{grid-area:info;align-self:start}
 .evcard{padding:16px;display:grid;gap:12px;min-width:0}
@@ -505,9 +504,9 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
       </div>
       <p class="ev-src">맨눈으로 알아보기 어려운 반영월식은 뺐어요. 자료: 한국천문연구원, NASA (2026년 11월 확인)</p>
     </section>
-.stage{grid-template-areas:"space ctrl" "space sky" "info sky";grid-template-rows:auto auto 1fr}
-.p-ctrl{grid-area:ctrl}
-  <section class="card control p-ctrl"">
+  </section>
+
+  <section class="card control">
     <div class="status">
       <div class="order" id="order"></div>
       <div class="phase" aria-live="polite"><span class="chip" id="phaseChip"></span><p id="phaseText"></p></div>
