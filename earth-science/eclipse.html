@@ -131,8 +131,8 @@ canvas{display:block;width:100%;max-width:100%;border-radius:14px}
 .learn{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
 .compare h2,.qa-title{font-size:1.3rem;margin-bottom:10px}
 /* 메인 그림 아래 빈칸: 최근과 다음 일식·월식 */
-.stage{grid-template-areas:"space sky" "info sky";grid-template-rows:auto 1fr}
-.p-space{grid-area:space}
+.stage{grid-template-areas:"space ctrl" "space sky" "info sky";grid-template-rows:auto auto 1fr}
+.p-ctrl{grid-area:ctrl}.p-space{grid-area:space}
 .p-sky{grid-area:sky}
 .p-info{grid-area:info;align-self:start}
 .evcard{padding:16px;display:grid;gap:12px;min-width:0}
