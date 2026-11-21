@@ -374,6 +374,7 @@ button.neph:hover{border-style:solid}
           <li><i class="sw" style="background:var(--tube-lumen);border-color:var(--tube)"></i><b>방광</b><span>오줌을 잠시 모아 두어요</span></li>
           <li><i class="sw" style="background:var(--tube);border-color:var(--tube)"></i><b>요도</b><span>오줌이 몸 밖으로 나가는 통로예요</span></li>
         </ul>
+        <p class="note-small" style="margin:0">3D 모형 속 <b class="em">부신</b>은 콩팥 위에 붙어 있는 기관으로, 호르몬을 만드는 내분비샘이에요. 이름에 ‘신(콩팥)’이 들어가지만 배설 기관은 아니에요.</p>
         <div class="term"><b>콩팥 단위</b> = 토리 + 보먼주머니 + 세뇨관<br>오줌을 만드는 단위로, 콩팥 하나에 약 100만 개가 있어요. 콩팥겉질과 콩팥속질에 걸쳐 있어요.</div>
         <button class="btn primary go" type="button" data-go="unit">콩팥 단위 들여다보기
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -1719,6 +1720,16 @@ function buildSystem(){
   V.label('콩팥속질',new V3(mnx-W*.75,cy-H*.12,zc+.05),'medulla',isCut,new V3(mnx+W*.3,cy-H*.12,zc+.03));
   V.label('콩팥깔때기',new V3(mnx-W*.6,mny-H*.22,zc+.05),'pelvis',isCut,new V3(PC.x,PC.y-H*.04,zc+.06));
   V.label('콩팥 단위',new V3(mnx-W*.2,mxy+H*.38,zc+.05),'neph',isCut,new V3(nephG[0].x,nephG[0].y,zc+.01));
+  (function(){const ref=new V3(cx,cy,zc),z=zc+.03,on=function(L,p){L.near=new V3(p.x,p.y,z);L.nearRef=ref;L.nearD=7;};
+    const Ls=V.labels,find=function(t){return Ls.find(function(L){return L.el.textContent===t;});};
+    const pA=function(i,f){return polar(PA[i],ray2(PA[i])*f);};
+    on(find('콩팥겉질'),pA(1,.92));on(find('콩팥속질'),pA(4,.62));on(find('콩팥깔때기'),{x:PC.x+W*.02,y:PC.y-H*.05});on(find('콩팥 단위'),{x:nephG[2].x+W*.05,y:nephG[2].y+H*.06});
+    const m=(PA[4]+PA[5])/2,col=V.label('콩팥기둥',new V3(),'cortex',isCut);on(col,polar(m,ray2(m)*.6));col.onlyNear=true;
+    V.part('kcap','피막','콩팥 겉을 싸고 있는 얇고 질긴 막이에요.',[]);
+    const cp=V.label('피막',new V3(),'kcap',isCut);on(cp,polar(PA[2]+.05,ray2(PA[2]+.05)*1.02));cp.onlyNear=true;
+    const sm2=V.label('작은 깔때기',new V3(),'pelvis',isCut);on(sm2,{x:apex[5].A.x+W*.06,y:apex[5].A.y-H*.03});sm2.onlyNear=true;
+    V.part('ilv','콩팥 속 혈관','콩팥동맥에서 갈라진 동맥(빨강)과 정맥(파랑)이 피라미드 사이(콩팥기둥)를 지나고, 피라미드 바닥을 따라 활처럼 휘어요. 여기서 가는 가지가 겉질로 뻗어 콩팥 단위로 혈액을 보내요.',[]);const ia=V.label('콩팥 속 혈관',new V3(),'ilv',isCut);const m2=(PA[2]+PA[3])/2;on(ia,polar(m2,ray2(m2)*.64));ia.onlyNear=true;
+  })();
   sysBox.querySelector('.m3-info').addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.m3-go')){const g=document.querySelector('[data-go=unit]');if(g)g.click();}});
   V.label('오줌관',new V3().fromArray(L.urtL[18]).add(new V3(.3,0,0)),'ureter');
   V.label('방광',bc.clone().add(new V3(1.1,.1,0)),'bladder');V.label('요도',C('ureth').add(new V3(.35,-.3,0)),'urethra');
@@ -1902,9 +1913,10 @@ function frame(now){
     V.ctl.update();V.R.render(V.scene,V.cam);
     const w=V.R.domElement.clientWidth,h=V.R.domElement.clientHeight;
     V.labels.forEach(function(L){
-      tmpV.copy(L.pos).project(V.cam);
-      const show=V.showL&&tmpV.z<1&&(!L.vis||L.vis());
-      L.el.hidden=!show;if(L.line)L.line.visible=show;if(!show)return;
+      const near=!!L.nearRef&&V.cam.position.distanceTo(L.nearRef)<L.nearD;
+      tmpV.copy(near&&L.near?L.near:L.pos).project(V.cam);
+      let show=V.showL&&tmpV.z<1&&(!L.vis||L.vis());if(L.onlyNear&&!near)show=false;
+      L.el.hidden=!show;if(L.line)L.line.visible=show&&!near;if(!show)return;
       L.el.style.transform='translate('+((tmpV.x+1)/2*w).toFixed(1)+'px,'+((1-tmpV.y)/2*h).toFixed(1)+'px) translate(-50%,-50%)';
     });
   });
