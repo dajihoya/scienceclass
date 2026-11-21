@@ -1750,7 +1750,7 @@ function buildSystem(){
 
 /* ---------- 콩팥 단위(네프론) 모형 ---------- */
 function buildNephron(){
-  const V=Viewer(unitBox,{minD:5,maxD:30,w:8.9,h:9.8,camPos:new V3(1.6,1.0,12.6),target:new V3(.4,-.4,0),shadow:7,
+  const V=Viewer(unitBox,{minD:5,maxD:40,w:15.4,h:11.6,camPos:new V3(.8,.6,12.6),target:new V3(-1.75,-.35,0),shadow:9,
     hint:'<b>콩팥 단위</b>토리 + 보먼주머니 + 세뇨관. 콩팥 하나에 약 100만 개가 있어요.'});
   const S=V.scene;
   const RED=0xC8233F,BLUE=0x3D4FA8,PUR=0x86398F;
@@ -1829,23 +1829,44 @@ function buildNephron(){
   const netM=new THREE.Mesh(merge(net),pmat(0xffffff,{vertexColors:true,roughness:.4,clearcoat:.4,transparent:true,depthWrite:false,opacity:.6}));S.add(netM);
   V.part('cap','모세혈관','토리에서 나온 혈관이 세뇨관을 그물처럼 감싸요. 세뇨관에서 재흡수된 물질을 받고, 남은 노폐물을 세뇨관으로 분비해요. 지나면서 동맥혈이 정맥혈로 바뀌어요.',[netM]);
   /* 겉질 · 속질 경계 */
-  const bdY=-.45,BX0=-4.0,BX1=4.8,BY0=-5.2,BY1=4.4,BW=BX1-BX0,BH=BY1-BY0;
-  /* 콩팥 조직 배경(겉질 · 속질) — 콩팥 단위가 어디에 놓여 있는지 보여 줌 */
-  const bc=document.createElement('canvas');bc.width=1100;bc.height=Math.round(1100*BH/BW);
+  const bdY=-.45,BX0=-9.4,BX1=5.9,BY0=-6.1,BY1=5.4,BW=BX1-BX0,BH=BY1-BY0;
+  /* 배경: 작은 콩팥 단면 + 그 한 곳을 확대한 동그라미(겉질 · 속질) — 아주 연하게 */
+  const bc=document.createElement('canvas');bc.width=1600;bc.height=Math.round(1600*BH/BW);
   const b=bc.getContext('2d'),bx=bc.width/BW,by=bc.height/BH,bp=1/bx,RB=rng(17);b.setTransform(bx,0,0,-by,-BX0*bx,BY1*by);
+  const C0={x:.25,y:-.45},RR=5.45;
+  /* 확대 동그라미 안: 겉질(위) · 속질 피라미드(아래) */
+  b.save();b.beginPath();b.arc(C0.x,C0.y,RR,0,6.2832);b.clip();b.globalAlpha=.18;
   b.fillStyle='#B0573F';b.fillRect(BX0,BY0,BW,BH);
-  for(let i=0;i<9000;i++){b.fillStyle=RB()<.55?'rgba(95,28,20,.18)':'rgba(240,195,170,.13)';b.beginPath();b.arc(BX0+RB()*BW,BY0+RB()*BH,bp*(1+RB()*1.8),0,6.2832);b.fill();}
-  const PY=new Path2D();PY.moveTo(-2.2,bdY);PY.quadraticCurveTo(1.3,bdY-.25,BX1,bdY);PY.lineTo(BX1,-2.6);PY.quadraticCurveTo(3.9,-4.4,3.3,BY0-.1);PY.lineTo(1.9,BY0-.1);PY.quadraticCurveTo(-.4,-3.2,-2.2,bdY);PY.closePath();
+  for(let i=0;i<7000;i++){b.fillStyle=RB()<.55?'rgba(95,28,20,.3)':'rgba(255,215,190,.25)';b.beginPath();b.arc(C0.x+(RB()*2-1)*RR,C0.y+(RB()*2-1)*RR,bp*(1+RB()*1.8),0,6.2832);b.fill();}
+  const PY=new Path2D();PY.moveTo(-5.4,bdY+.3);PY.quadraticCurveTo(1.3,bdY-.3,5.9,bdY+.2);PY.lineTo(5.9,-2.8);PY.quadraticCurveTo(3.9,-4.6,3.3,BY0);PY.lineTo(1.9,BY0);PY.quadraticCurveTo(-1.2,-3.0,-5.4,bdY+.3);PY.closePath();
   const gM=b.createLinearGradient(0,bdY,0,BY0);gM.addColorStop(0,'#6E2219');gM.addColorStop(.6,'#953A2E');gM.addColorStop(1,'#C48170');b.fillStyle=gM;b.fill(PY);
-  b.save();b.clip(PY);for(let k=0;k<160;k++){const x0=-2.4+7.4*k/160,tipx=2.6+(RB()-.5)*.6;b.strokeStyle=k%2?'rgba(50,10,8,.35)':'rgba(240,175,155,.18)';b.lineWidth=bp*(1.2+RB());
-    b.beginPath();b.moveTo(x0,bdY+.1);b.quadraticCurveTo((x0+tipx)/2,(bdY+BY0)/2,tipx,BY0-.2);b.stroke();}b.restore();
-  for(let k=0;k<70;k++){const x0=-1.9+6.6*k/70;b.strokeStyle='rgba(110,35,25,.25)';b.lineWidth=bp*1.4;b.beginPath();b.moveTo(x0,bdY-.05);b.lineTo(x0+(RB()-.5)*.08,bdY+2.6+RB()*1.0);b.stroke();}
-  for(let i=0;i<260;i++){const x=BX0+RB()*BW,y=bdY+.3+RB()*(BY1-bdY-.55);b.fillStyle='rgba(110,10,22,.85)';b.beginPath();b.arc(x,y,bp*3.2,0,6.2832);b.fill();b.strokeStyle='rgba(255,215,180,.55)';b.lineWidth=bp;b.stroke();}
-  b.strokeStyle='#EADBD0';b.lineWidth=bp*10;b.beginPath();b.moveTo(BX0,BY1-.06);b.lineTo(BX1,BY1-.06);b.stroke();
+  b.save();b.clip(PY);for(let k=0;k<170;k++){const x0=-5.6+11.6*k/170,tipx=2.6+(RB()-.5)*.6;b.strokeStyle=k%2?'rgba(50,10,8,.5)':'rgba(240,175,155,.3)';b.lineWidth=bp*(1.4+RB());
+    b.beginPath();b.moveTo(x0,bdY+.2);b.quadraticCurveTo((x0+tipx)/2,(bdY+BY0)/2,tipx,BY0);b.stroke();}b.restore();
+  for(let i=0;i<220;i++){const x=C0.x+(RB()*2-1)*RR,y=bdY+.3+RB()*5.5;b.fillStyle='rgba(110,10,22,.9)';b.beginPath();b.arc(x,y,bp*3.4,0,6.2832);b.fill();}
+  b.strokeStyle='#EADBD0';b.lineWidth=bp*12;b.beginPath();b.moveTo(BX0,4.35);b.quadraticCurveTo(C0.x,4.6,BX1,4.35);b.stroke();
+  b.restore();
+  b.globalAlpha=.5;b.strokeStyle='#8E5A4A';b.lineWidth=bp*5;b.beginPath();b.arc(C0.x,C0.y,RR,0,6.2832);b.stroke();
+  /* 작은 콩팥 단면 */
+  const K={x:-7.35,y:2.35},KA=1.45,KB=2.1,ind=function(c,s){return c>0?KA*.45*c*Math.exp(-s*s/.07):0;};
+  const KP=new Path2D();for(let k=0;k<=120;k++){const tt=k/120*6.2832,c=Math.cos(tt),sn=Math.sin(tt),x=K.x+c*KA-ind(c,sn),y=K.y+sn*KB;k?KP.lineTo(x,y):KP.moveTo(x,y);}KP.closePath();
+  b.globalAlpha=.55;b.fillStyle='#B0573F';b.fill(KP);
+  b.save();b.clip(KP);const SCk={x:K.x+KA*.38,y:K.y};
+  [70,108,145,180,215,252,290].forEach(function(dg){const a=dg*Math.PI/180,r1=1.15,P=new Path2D(),A={x:SCk.x+Math.cos(a)*.45,y:SCk.y+Math.sin(a)*.6};
+    P.moveTo(A.x,A.y);for(let k=0;k<=8;k++){const t2=a-.24+.48*k/8;P.lineTo(SCk.x+Math.cos(t2)*r1*.98,SCk.y+Math.sin(t2)*r1*1.38);}P.closePath();b.fillStyle='#7A2620';b.fill(P);});
+  b.beginPath();b.ellipse(SCk.x+.25,SCk.y,.45,.75,0,0,6.2832);b.fillStyle='#F0DCA6';b.fill();b.restore();
+  b.strokeStyle='#EADBD0';b.lineWidth=bp*6;b.stroke(KP);b.strokeStyle='#7E3024';b.lineWidth=bp*2;b.stroke(KP);
+  b.strokeStyle='#E0B54E';b.lineWidth=bp*8;b.beginPath();b.moveTo(K.x+KA*.62,K.y-.2);b.quadraticCurveTo(K.x+KA*1.1,K.y-1.4,K.x+KA*.9,K.y-2.9);b.stroke();
+  /* 확대한 곳 표시와 이어지는 선 */
+  const c1={x:K.x+.05,y:K.y+KB-.42},r1=.36;
+  b.globalAlpha=.85;b.strokeStyle='#3A3F5C';b.lineWidth=bp*4;b.beginPath();b.arc(c1.x,c1.y,r1,0,6.2832);b.stroke();
+  const dx=C0.x-c1.x,dy=C0.y-c1.y,dl=Math.hypot(dx,dy),nx=-dy/dl,ny=dx/dl;b.setLineDash([bp*14,bp*10]);b.lineWidth=bp*3;b.globalAlpha=.55;
+  [1,-1].forEach(function(sg){b.beginPath();b.moveTo(c1.x+nx*r1*sg,c1.y+ny*r1*sg);b.lineTo(C0.x+nx*RR*sg,C0.y+ny*RR*sg);b.stroke();});
+  b.setLineDash([]);b.globalAlpha=1;
   const bTex=new THREE.CanvasTexture(bc);bTex.anisotropy=4;
-  const back=new THREE.Mesh(new THREE.PlaneGeometry(BW,BH),new THREE.MeshStandardMaterial({map:bTex,color:0xCDB6AC,roughness:.85,side:THREE.FrontSide}));
-  back.position.set((BX0+BX1)/2,(BY0+BY1)/2,-1.05);back.receiveShadow=true;S.add(back);
-  V.part('tissue','콩팥 조직','콩팥 단위가 놓인 콩팥 조직이에요. 위쪽 알갱이 무늬 부분이 콩팥겉질(작은 붉은 점은 다른 콩팥 단위의 토리), 아래쪽 짙은 줄무늬 원뿔이 콩팥속질(콩팥 피라미드)이에요. 맨 위 흰 줄은 콩팥을 싸는 막이에요.',[back]);
+  const back=new THREE.Mesh(new THREE.PlaneGeometry(BW,BH),new THREE.MeshBasicMaterial({map:bTex,transparent:true,depthWrite:false,side:THREE.FrontSide}));
+  back.position.set((BX0+BX1)/2,(BY0+BY1)/2,-1.05);back.renderOrder=-1;S.add(back);
+  V.part('tissue','콩팥 안을 확대한 모습','왼쪽 위 작은 콩팥 단면에서 동그라미 친 곳을 크게 확대했어요. 위쪽 알갱이 무늬가 콩팥겉질(작은 붉은 점은 다른 콩팥 단위의 토리), 아래쪽 줄무늬 원뿔이 콩팥속질(콩팥 피라미드)이에요. 콩팥 단위는 겉질에서 시작해 속질까지 내려갔다 올라와요.',[back]);
+  V.label('콩팥 단면',[K.x,K.y-KB-.45,-1],'tissue');V.label('확대',[c1.x+.9,c1.y+.25,-1],'tissue');
   castAll(S);
   /* 이름표 */
   V.label('토리',G.clone().add(new V3(.05,.02,.5)),'glom');
