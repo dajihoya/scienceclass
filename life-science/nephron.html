@@ -234,6 +234,25 @@ button.neph:hover{border-style:solid}
   *{transition:none!important;animation:none!important}
 }
 </style>
+<style>
+/* 3D 입체 표현 */
+.k-cortex{fill:url(#g3Cortex);filter:url(#f3d)}
+.k-medulla{fill:url(#g3Med)}
+.k-pelvis{fill:url(#g3Pel)}
+.k-bladder-fill{fill:url(#g3Blad);filter:url(#f3d)}
+.k-edge{fill:none;stroke:rgba(70,30,30,.28);stroke-width:13.5;stroke-linecap:round;stroke-linejoin:round}
+.k-edge.big{stroke-width:15.5}.k-edge.rn{stroke-width:10.5}.k-edge.br{stroke-width:8}
+.k-edge.ur{stroke-width:11.5}
+.k-art-in{stroke:#F6B4C3}.k-vein-in{stroke:#C3CCF2}.k-ureter-in{stroke:#F4D990}
+.k-core{fill:none;stroke-width:3.8;stroke-linecap:round;stroke-linejoin:round}
+.k-core.a{stroke:var(--vessel-lumen)}.k-core.v{stroke:var(--vein-lumen)}.k-core.u{stroke:var(--tube-lumen);stroke-width:2.8}
+.k-core.big{stroke-width:4.7}.k-core.rn{stroke-width:2.8}.k-core.br{stroke-width:2}
+.k-shine{fill:none;stroke:#fff;opacity:.85;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.k-shine.big{stroke-width:1.9}.k-shine.rn,.k-shine.u{stroke-width:1.1}.k-shine.br{stroke-width:.8}
+.k-cap{fill:url(#g3Pel)}
+.p-rbc{fill:url(#g3Rbc)}
+.p-urine{fill:url(#g3Uri)}
+</style>
 
 <div class="page">
   <header class="top">
@@ -734,8 +753,9 @@ function stageColor(k){return k==='filter'?col['c-filter']:k==='reab'?col['c-rea
 
 /* ---------- 입자 그리기 ---------- */
 function roundRect(c,x,y,w,h,r){c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function ball(c,hex,r){const g=c.createRadialGradient(-r*0.38,-r*0.45,r*0.08,0,0,r*1.25);g.addColorStop(0,shade(hex,.62));g.addColorStop(.5,hex);g.addColorStop(1,shade(hex,-.22));return g;}
 function drawBody(c,type,r,t){
-  const T=TYPES[type]; c.lineWidth=Math.max(1,r*0.17); c.strokeStyle=FACE; c.fillStyle=T.color; c.lineJoin='round';
+  const T=TYPES[type]; c.lineWidth=Math.max(1,r*0.17); c.strokeStyle=FACE; c.fillStyle=ball(c,T.color,r); c.lineJoin='round';
   c.beginPath();
   if(type==='rbc'){
     c.ellipse(0,0,r,r*0.86,0,0,Math.PI*2);c.fill();c.stroke();
@@ -775,6 +795,7 @@ function drawFace(c,type,r,closed){
 }
 function drawParticle(c,type,x,y,r,t,phase,still){
   c.save();c.translate(x,y);
+  if(!still){c.fillStyle='rgba(80,50,30,.16)';c.beginPath();c.ellipse(r*0.18,r*1.02,r*0.85,r*0.26,0,0,Math.PI*2);c.fill();}
   if(!still){const w=Math.sin(t*6+phase)*0.05;c.rotate(Math.sin(t*3+phase)*0.18);c.scale(1+w,1-w);}
   drawBody(c,type,r,t);
   const closed=!still&&((t*0.8+phase)%3.6)<0.13;
@@ -828,20 +849,50 @@ function drawZoneOver(t){
     });
   }
 }
+function mixHex(a,b,t){
+  function p(h){h=String(h).trim().replace('#','');if(h.length===3)h=h.replace(/./g,'$&$&');const n=parseInt(h,16);return [(n>>16)&255,(n>>8)&255,n&255];}
+  const A=p(a),B=p(b);return 'rgb('+A.map(function(v,i){return Math.round(v+(B[i]-v)*t);}).join(',')+')';
+}
+function shade(h,t){return mixHex(h,t>0?'#FFFFFF':'#000000',Math.abs(t));}
+let structCache=null,structKey='';
+function walls(c,list,wall){
+  [[0,-.24],[3,0],[5.5,.3]].forEach(function(s){c.strokeStyle=s[1]?shade(wall,s[1]):wall;list.forEach(function(it){c.lineWidth=it[1]-s[0];c.stroke(it[0]);});});
+}
+function lumens(c,list,lumen,wall){
+  [[1,mixHex(lumen,wall,.4)],[.7,lumen],[.32,shade(lumen,.6)]].forEach(function(s){c.strokeStyle=s[1];list.forEach(function(it){c.lineWidth=it[1]*s[0];c.stroke(it[0]);});});
+}
+function buildStruct(){
+  const cv=document.createElement('canvas');cv.width=canvas.width;cv.height=canvas.height;
+  const c=cv.getContext('2d'),k=dpr*scale,C=L.C,tube=col.tube,tl=col['tube-lumen'],ves=col.vessel,vl=col['vessel-lumen'];
+  c.setTransform(k,0,0,k,0,0);c.lineCap='round';c.lineJoin='round';
+  /* 그림자 */
+  c.save();c.shadowColor='rgba(90,55,35,.28)';c.shadowBlur=16*k;c.shadowOffsetX=3*k;c.shadowOffsetY=8*k;
+  c.strokeStyle=tube;c.lineWidth=34;c.stroke(P2D.tube);
+  c.fillStyle=tl;c.beginPath();c.arc(C[0],C[1],72,0,Math.PI*2);c.fill();
+  c.strokeStyle=ves;c.lineWidth=28;c.stroke(P2D.blood);
+  c.restore();
+  /* 세뇨관 */
+  walls(c,[[P2D.tube,34]],tube);lumens(c,[[P2D.tube,25]],tl,tube);
+  /* 보먼주머니 */
+  const g=c.createRadialGradient(C[0]-24,C[1]-28,4,C[0],C[1],74);
+  g.addColorStop(0,shade(tl,.7));g.addColorStop(.55,tl);g.addColorStop(1,mixHex(tl,tube,.45));
+  c.fillStyle=g;c.beginPath();c.arc(C[0],C[1],72,0,Math.PI*2);c.fill();
+  c.lineCap='butt';
+  [[9.5,76,shade(tube,-.24)],[6.5,76,tube],[2.2,73.6,shade(tube,.4)]].forEach(function(s){
+    c.strokeStyle=s[2];c.lineWidth=s[0];
+    c.beginPath();c.arc(C[0],C[1],s[1],0.27,130*DEG);c.stroke();
+    c.beginPath();c.arc(C[0],C[1],s[1],230*DEG,Math.PI*2-0.27);c.stroke();
+  });
+  c.lineCap='round';
+  /* 혈관(토리 포함) */
+  walls(c,[[P2D.blood,28],[P2D.flower,24],[P2D.flower2,24]],ves);
+  lumens(c,[[P2D.flower2,16],[P2D.flower,16],[P2D.blood,20]],vl,ves);
+  return cv;
+}
 function drawStructures(){
-  const C=L.C;
-  ctx.lineCap='round';ctx.lineJoin='round';
-  ctx.strokeStyle=col.tube;ctx.lineWidth=34;ctx.stroke(P2D.tube);
-  ctx.strokeStyle=col['tube-lumen'];ctx.lineWidth=25;ctx.stroke(P2D.tube);
-  ctx.fillStyle=col['tube-lumen'];ctx.beginPath();ctx.arc(C[0],C[1],72,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle=col.tube;ctx.lineWidth=8;ctx.lineCap='butt';
-  ctx.beginPath();ctx.arc(C[0],C[1],76,0.27,130*DEG);ctx.stroke();
-  ctx.beginPath();ctx.arc(C[0],C[1],76,230*DEG,Math.PI*2-0.27);ctx.stroke();
-  ctx.lineCap='round';
-  ctx.strokeStyle=col.vessel;ctx.lineWidth=28;ctx.stroke(P2D.blood);
-  ctx.lineWidth=24;ctx.stroke(P2D.flower);ctx.stroke(P2D.flower2);
-  ctx.strokeStyle=col['vessel-lumen'];ctx.lineWidth=16;ctx.stroke(P2D.flower2);ctx.stroke(P2D.flower);
-  ctx.lineWidth=20;ctx.stroke(P2D.blood);
+  const key=canvas.width+'x'+canvas.height+'|'+layoutKey+'|'+col.tube+col.vessel;
+  if(!structCache||key!==structKey){structCache=buildStruct();structKey=key;}
+  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(structCache,0,0);ctx.restore();
 }
 function drawCup(t){
   const cx=L.cup[0],cy=L.cup[1],top=cy-28,bot=cy+28,tw=34,bw=25;
@@ -1221,4 +1272,32 @@ requestAnimationFrame(frame);
 </script>
 
 <a href="../#life-science" data-sync-home style="position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:2147483000;font-family:Jua,'Gowun Dodum',sans-serif;font-size:14px;text-decoration:none;color:#2b2f55;background:#fff;border:2px solid #dde2f7;border-radius:999px;padding:4px 12px;box-shadow:0 4px 12px rgba(90,100,170,.18)">⌂ 처음으로</a>
+<script>
+(function(){
+'use strict';
+const svg=document.getElementById('kidSvg');if(!svg)return;
+let defs=svg.querySelector('defs');
+if(!defs){defs=document.createElementNS('http://www.w3.org/2000/svg','defs');svg.insertBefore(defs,svg.firstChild);}
+defs.insertAdjacentHTML('beforeend',
+ '<radialGradient id="g3Cortex" cx=".4" cy=".34" r=".78" fx=".33" fy=".24"><stop offset="0" stop-color="#FFF4EE"/><stop offset=".45" stop-color="#F3D5C8"/><stop offset="1" stop-color="#C98572"/></radialGradient>'+
+ '<radialGradient id="g3Med" cx=".42" cy=".36" r=".8" fx=".36" fy=".26"><stop offset="0" stop-color="#F0C7B8"/><stop offset=".55" stop-color="#DDA897"/><stop offset="1" stop-color="#B36F5C"/></radialGradient>'+
+ '<radialGradient id="g3Pel" cx=".42" cy=".38" r=".75" fx=".35" fy=".28"><stop offset="0" stop-color="#FFFDF3"/><stop offset=".55" stop-color="#FFF3CB"/><stop offset="1" stop-color="#EECB6E"/></radialGradient>'+
+ '<radialGradient id="g3Blad" cx=".4" cy=".34" r=".8" fx=".33" fy=".24"><stop offset="0" stop-color="#FFFEF7"/><stop offset=".5" stop-color="#FFF3CB"/><stop offset="1" stop-color="#E8C362"/></radialGradient>'+
+ '<radialGradient id="g3Rbc" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FF8FA6"/><stop offset="1" stop-color="#B8213F"/></radialGradient>'+
+ '<radialGradient id="g3Uri" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FFF0B8"/><stop offset="1" stop-color="#C98F12"/></radialGradient>'+
+ '<filter id="f3d" x="-15%" y="-15%" width="130%" height="140%"><feDropShadow dx="2" dy="7" stdDeviation="6" flood-color="#5A3424" flood-opacity=".26"/></filter>');
+/* 관(혈관·오줌관)을 둥근 관처럼: 테두리 그늘 + 안쪽 밝은 결 + 반짝임 */
+const KIND={'k-art':'a','k-vein':'v','k-ureter':'u'};
+svg.querySelectorAll('.k-art,.k-vein,.k-ureter').forEach(function(p){
+  const base=p.getAttribute('class').split(/\s+/),kind=KIND[base[0]],mods=base.slice(1).join(' ');
+  const e=p.cloneNode(false);e.setAttribute('class','k-edge '+(kind==='u'?'ur ':'')+mods);e.setAttribute('aria-hidden','true');p.parentNode.insertBefore(e,p);
+});
+svg.querySelectorAll('.k-art-in,.k-vein-in,.k-ureter-in').forEach(function(p){
+  const base=p.getAttribute('class').split(/\s+/),kind=base[0].charAt(2)==='a'?'a':base[0].charAt(2)==='v'?'v':'u',mods=base.slice(1).join(' ');
+  const core=p.cloneNode(false);core.setAttribute('class','k-core '+kind+' '+mods);core.setAttribute('aria-hidden','true');
+  const sh=p.cloneNode(false);sh.setAttribute('class','k-shine '+kind+' '+mods);sh.setAttribute('aria-hidden','true');
+  p.parentNode.insertBefore(sh,p.nextSibling);p.parentNode.insertBefore(core,sh);
+});
+})();
+</script>
 </body></html>
