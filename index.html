@@ -77,6 +77,13 @@ a.note .go{margin-top:auto;padding-top:4px;font-family:var(--display);font-size:
 .tab .badge svg{width:28px;height:28px}
 .tab:focus-visible{outline:3px solid #FFE08A;outline-offset:2px;border-radius:6px}
 .tabbed > h2{display:none}
+/* 물화생지: 인덱스 탭 */
+#topicTabs{gap:4px;border-bottom:0;margin-bottom:-30px;flex-wrap:nowrap}
+#topicTabs .tab{opacity:1;color:var(--chalk-dim);background:rgba(0,0,0,.24);border:0;border-top:4px solid var(--tc);border-radius:14px 14px 0 0;margin:0;padding:9px 16px 10px 10px}
+#topicTabs .tab .badge{background:rgba(255,255,255,.08)}
+#topicTabs .tab[aria-selected="true"]{color:var(--chalk);background:rgba(244,241,230,.1)}
+#topicTabs .tab:not([aria-selected="true"]) .badge svg{opacity:.6}
+section.tabbed{background:rgba(244,241,230,.1);border-radius:0 14px 14px 14px;padding:30px 18px 22px}
 .empty{color:var(--chalk-dim);margin:6px 0 0;font-size:15px}
 .unit-h{font-family:var(--display);font-size:19px;color:var(--chalk);margin:0 0 14px;display:flex;align-items:center;gap:8px}
 .unit-h .rn{color:var(--c);min-width:1.4em}
@@ -96,6 +103,9 @@ a.note .go{margin-top:auto;padding-top:4px;font-family:var(--display);font-size:
   .row h2{font-size:25px}
   .tab{font-size:20px;gap:7px;padding:4px 6px 8px 2px}
   .tab .badge{width:32px;height:32px;border-radius:10px}.tab .badge svg{width:22px;height:22px}
+  #topicTabs .tab{font-size:17px;padding:8px 9px 9px;flex:1;justify-content:center}
+  #topicTabs .tab .badge{display:none}
+  section.tabbed{padding:28px 10px 18px}
   .notes{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
   a.note{padding:17px 11px 12px}
   a.note b{font-size:16.5px}
