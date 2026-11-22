@@ -408,7 +408,7 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
         <div><dt>달의 모양</dt><dd id="dShape">초승달</dd></div>
         <div><dt>뜨는 시각</dt><dd id="dRise">오전 9:30</dd></div>
       </dl>
-      <p class="hint days-note">같은 시각에 보면 달은 하루에 약 12°씩 서쪽에서 동쪽으로 옮겨 가요. 달이 지구 둘레를 서쪽에서 동쪽으로 공전하기 때문이에요. 그래서 달이 뜨는 시각도 날마다 약 50분씩 늦어져요.</p>
+      <p class="hint days-note">같은 시각에 보면 달은 하루에 약 13°씩 서쪽에서 동쪽으로 옮겨 가요. 달이 지구 둘레를 서쪽에서 동쪽으로 공전하기 때문이에요. 그래서 달이 뜨는 시각도 날마다 약 50분씩 늦어져요.</p>
     </div>
     <div id="paneDay" role="tabpanel" aria-labelledby="tabDay">
     <div class="sky-controls">
@@ -1315,7 +1315,7 @@ try { if (localStorage.getItem('moonPhasesBg') === 'light') document.documentEle
         : `음력 ${n}일 ${when}에는 달이 이미 서쪽으로 졌어요.` + (eve ? '' : " '해 진 직후'로 바꿔 보세요.");
       else {
         msg = `음력 ${n}일 ${when}, ${PHASES[phaseIdx(e)].name}이 ${dirName(phM)} 하늘에 보여요.`;
-        if (prevSpot) msg += ' 어제보다 동쪽으로 약 12° 옮겨 갔어요.';
+        if (prevSpot) msg += ' 어제보다 동쪽으로 약 13° 옮겨 갔어요.';
       }
     }
     else if (k < NEW_K) msg = up
