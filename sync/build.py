@@ -76,7 +76,7 @@ def mirror_cards(main_page: pathlib.Path) -> bool:
         lab = LABEL.get(topic)
         if not lab:
             continue
-        pat = r'(<section class="sub[^"]*" aria-labelledby="%s">.*?<div class="cards">\n)(.*?)(\n        </div>)' % lab
+        pat = r'(<section class="sub[^"]*"[^>]*aria-labelledby="%s">.*?<div class="cards">\n)(.*?)(\n        </div>)' % lab
         new = re.sub(pat, lambda m: m.group(1) + "\n".join(cards) + m.group(3), new, count=1, flags=re.S)
     if new != s:
         main_page.write_text(new)
