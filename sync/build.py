@@ -17,15 +17,33 @@ BTN = ('<a href="{back}" data-sync-home style="position:fixed;right:max(12px,env
        'font-size:14px;text-decoration:none;color:#2b2f55;background:#fff;border:2px solid #dde2f7;border-radius:999px;'
        'padding:4px 12px;box-shadow:0 4px 12px rgba(90,100,170,.18)">⌂ 처음으로</a>\n')
 
+SITE = "Science Class by Teacher 노글라쓰"
+WM = ("<!--wm-->\n<!-- © " + SITE + " · https://dajihoya.github.io/scienceclass/ -->\n"
+  '<div data-wm style="position:fixed;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));'
+  'z-index:2147483000;pointer-events:none;font:12px/1.4 IsYun,Jua,\'Gowun Dodum\',sans-serif;color:#2b2f55;background:#fff;'
+  'border:1px solid #dde2f7;border-radius:999px;padding:2px 10px;opacity:.9">© ' + SITE + '</div>\n'
+  "<script>(function(){var T='© " + SITE + "',S='position:fixed;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));"
+  "z-index:2147483647;pointer-events:none;font:12px/1.4 IsYun,Jua,sans-serif;color:#2b2f55;background:#fff;border:1px solid #dde2f7;"
+  "border-radius:999px;padding:2px 10px;opacity:.9;display:block;visibility:visible;transform:none;filter:none;clip-path:none';"
+  "var h,r,t;function mk(){h=document.createElement('noh-mark');h.setAttribute('style','all:initial;'+S);r=h.attachShadow({mode:'closed'});"
+  "t=document.createElement('span');t.textContent=T;r.appendChild(t);}"
+  "function ok(){if(!h||!h.isConnected||!t.isConnected||t.textContent!==T)return false;var c=getComputedStyle(h);"
+  "return c.display!=='none'&&c.visibility!=='hidden'&&+c.opacity>.5&&c.position==='fixed';}"
+  "function fix(){if(ok())return;if(h&&h.remove)h.remove();mk();(document.body||document.documentElement).appendChild(h);"
+  "document.querySelectorAll('[data-wm]').forEach(function(e){e.style.display='none'});}"
+  "fix();new MutationObserver(fix).observe(document.documentElement,{childList:true,subtree:true,attributes:true});setInterval(fix,1500);})();</script>\n"
+  "<!--/wm-->\n")
+
 def build(src: str, back: str) -> str:
     out = re.sub(r"<html(\s[^>]*)?>", lambda m: m.group(0) if "lang=" in m.group(0) else m.group(0)[:-1].rstrip() + ' lang="ko">', src, count=1, flags=re.I)
     out = re.sub(r'<a [^>]*data-sync-home[^>]*>.*?</a>\n?', "", out, flags=re.S)  # 예전 버튼 지우기
+    out = re.sub(r'<!--wm-->.*?<!--/wm-->\n?', "", out, flags=re.S)  # 예전 표시 지우기
     i = out.lower().rfind("</body>")
     if i < 0:
         i = out.lower().rfind("</html>")
     if i < 0:
         i = len(out)
-    return out[:i] + BTN.format(back=back) + out[i:]
+    return out[:i] + BTN.format(back=back) + WM + out[i:]
 
 def set_card_title(page: pathlib.Path, sid: str, title: str) -> bool:
     if not page.exists():
@@ -34,6 +52,34 @@ def set_card_title(page: pathlib.Path, sid: str, title: str) -> bool:
     new = re.sub(r'(<b data-sync="%s">)(.*?)(</b>)' % re.escape(sid), lambda m: m.group(1) + html.escape(title, quote=False) + m.group(3), s)
     if new != s:
         page.write_text(new)
+        return True
+    return False
+
+BASE = "https://dajihoya.github.io/scienceclass/"
+LABEL = {"life-science": "hLife", "earth-science": "hEarth"}
+
+def mirror_cards(main_page: pathlib.Path) -> bool:
+    """수업페이지 첫 화면의 쪽지(.note)를 메인페이지 '수업 자료' 카드로 그대로 옮긴다."""
+    if not main_page.exists():
+        return False
+    idx = (ROOT / "index.html").read_text()
+    groups = {}
+    for m in re.finditer(r'<a class="note"([^>]*)>(.*?)</a>', idx, re.S):
+        attrs, body = m.groups()
+        topic = re.search(r'data-topic="([^"]+)"', attrs).group(1)
+        href = re.search(r'href="([^"]+)"', attrs).group(1)
+        hd = re.search(r'<span class="hd">.*?</b></span>', body, re.S).group(0)
+        groups.setdefault(topic, []).append(
+            f'        <a class="card" href="{BASE}{href}" target="_blank" rel="noopener">{hd}</a>')
+    s = new = main_page.read_text()
+    for topic, cards in groups.items():
+        lab = LABEL.get(topic)
+        if not lab:
+            continue
+        pat = r'(<section class="sub[^"]*" aria-labelledby="%s">.*?<div class="cards">\n)(.*?)(\n        </div>)' % lab
+        new = re.sub(pat, lambda m: m.group(1) + "\n".join(cards) + m.group(3), new, count=1, flags=re.S)
+    if new != s:
+        main_page.write_text(new)
         return True
     return False
 
@@ -64,6 +110,8 @@ def main(argv):
                 changed.append(f"index.html (카드 제목: {title})")
             if main_page and set_card_title(main_page, sid, title):
                 changed.append(f"{main_page} (카드 제목: {title})")
+    if main_page and mirror_cards(main_page):
+        changed.append(f"{main_page} (수업 자료 카드)")
     print("\n".join(changed) if changed else "no changes")
 
 if __name__ == "__main__":
