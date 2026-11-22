@@ -532,7 +532,7 @@ const SCEN={
 const LAYOUTS={
   land:{W:1000,H:600,C:[290,150],a0:205,a1:-80,font:15,vp:[195,285],bd:[0,410,500,360,1000,410],
     aff:[[96,660],[96,420],[96,200],[100,96],[130,52],[190,36],[236,58]],
-    eff:[[300,82],[312,48],[360,26],[440,32],[520,58],[590,84],[650,90],[704,102],[746,132],[772,180],[768,236],[730,262],[660,272],[606,290],[586,330],[586,400],[586,460],[580,512],[556,556],[500,572],[448,566],[408,540],[398,490],[398,430],[396,378],[356,370],[286,372],[220,364],[178,340],[150,302],[112,284],[78,292],[56,330],[56,450],[56,560],[56,660]],
+    eff:[[300,82],[312,48],[360,26],[440,30],[520,58],[592,92],[650,82],[712,100],[760,128],[780,165],[778,210],[758,252],[712,272],[650,280],[606,296],[586,336],[586,400],[586,460],[580,512],[556,556],[500,572],[448,566],[408,540],[398,490],[398,430],[396,378],[356,370],[286,372],[220,364],[178,340],[150,302],[112,284],[78,292],[56,330],[56,450],[56,560],[56,660]],
     tube:[[353,150],[380,170],[398,205],[384,240],[350,262],[312,256],[276,272],[240,262],[214,290],[236,320],[276,312],[316,330],[356,316],[396,330],[430,350],[440,384],[442,440],[444,494],[462,524],[492,534],[518,518],[530,480],[530,400],[530,320],[532,270],[548,226],[580,200],[562,170],[588,140],[624,156],[652,128],[690,146],[700,182],[740,198],[790,192],[828,204],[845,236],[845,320],[845,420],[845,512],[845,524]],
     cup:[845,552],
     labels:[
@@ -543,12 +543,12 @@ const LAYOUTS={
     ]},
   port:{W:620,H:900,C:[230,150],a0:205,a1:-80,font:19,vp:[195,285],bd:[0,470,310,425,620,470],
     aff:[[78,960],[78,600],[78,220],[82,100],[110,54],[150,38],[176,60]],
-    eff:[[240,82],[252,46],[300,26],[380,30],[440,50],[500,70],[506,120],[506,190],[500,250],[474,284],[474,320],[474,500],[474,700],[464,790],[430,830],[384,836],[340,826],[304,800],[294,740],[294,600],[294,440],[292,392],[250,396],[190,394],[140,384],[100,360],[60,350],[40,380],[40,600],[40,960]],
+    eff:[[240,82],[252,46],[300,26],[350,26],[388,48],[396,100],[396,200],[390,330],[386,480],[386,640],[386,760],[384,830],[350,850],[310,836],[294,790],[294,740],[294,600],[294,440],[292,392],[250,396],[190,394],[140,384],[100,360],[60,350],[40,380],[40,600],[40,960]],
     tube:[[293,150],[320,170],[338,205],[324,240],[290,262],[252,256],[216,272],[180,262],[154,290],[176,320],[216,312],[256,330],[296,316],[330,340],[340,380],[342,500],[342,640],[344,740],[360,780],[390,792],[418,776],[430,740],[430,600],[430,440],[430,320],[432,270],[448,226],[480,200],[462,170],[488,140],[524,156],[540,190],[558,206],[582,236],[582,400],[582,600],[582,790],[582,806]],
     cup:[582,834],
     labels:[
       {t:'콩팥동맥에서 ↑',x:100,y:830,a:'left'},{t:'콩팥정맥으로 ↓',x:100,y:874,a:'left'},
-      {t:'보먼주머니',x:380,y:110},{t:'토리',x:230,y:150},{t:'세뇨관',x:386,y:540},
+      {t:'보먼주머니',x:380,y:110},{t:'토리',x:230,y:150},{t:'세뇨관',x:492,y:540},
       {t:'모세혈관',x:228,y:580},{t:'콩팥깔때기로 →',x:462,y:878},
       {t:'콩팥겉질 ↑',x:100,y:428,a:'left'},{t:'콩팥속질 ↓',x:100,y:482,a:'left'}
     ]}
@@ -601,7 +601,7 @@ function toPath2D(P,i0,i1){
 let L=null,layoutKey=null,BLOOD=null,TUBE=null,glomS0=0,glomS1=0;
 let tubeNear,tubeDist,bloodNear,bloodDist,TZ,BZ;
 const P2D={}; let ARROWS=[];
-const ZONE=52;
+const ZONE=46;
 
 function glomR(a){return 28+14*Math.sin(4*a);}
 function buildLayout(key){
@@ -629,6 +629,11 @@ function buildLayout(key){
   }
   for(let i=0;i<TUBE.n;i++)tubeDist[i]=Math.sqrt(tubeDist[i]);
   for(let j=0;j<BLOOD.n;j++)bloodDist[j]=Math.sqrt(bloodDist[j]);
+  /* 혈관이 세뇨관 뒤로 지나가는 곳(겹친 곳)과 그 둘레는 물질이 오가지 않게 함 */
+  (function(){const wT=Math.round(70/TUBE.step),wB=Math.round(70/BLOOD.step),xT=[],xB=[];
+    for(let i=0;i<TUBE.n;i++)if(tubeDist[i]<34)xT.push(i);for(let j=0;j<BLOOD.n;j++)if(bloodDist[j]<34)xB.push(j);
+    xT.forEach(function(i){for(let k=Math.max(0,i-wT);k<=Math.min(TUBE.n-1,i+wT);k++)tubeDist[k]=1e6;});
+    xB.forEach(function(j){for(let k=Math.max(0,j-wB);k<=Math.min(BLOOD.n-1,j+wB);k++)bloodDist[k]=1e6;});})();
   let i0=-1,i1=-1; for(let i=0;i<TUBE.n;i++){if(tubeDist[i]<ZONE){if(i0<0)i0=i;i1=i;}}
   let j0=-1,j1=-1; for(let j=jMin;j<BLOOD.n;j++){if(bloodDist[j]<ZONE){if(j0<0)j0=j;j1=j;}}
   TZ={i0:i0,i1:i1,s0:i0*TUBE.step,s1:i1*TUBE.step};
@@ -904,51 +909,43 @@ const SEGPTS={land:[[430,350],[530,440],[532,270],[845,236]],port:[[340,380],[43
 function idxNear(P,pt,from){let b=from,bd=1e12;for(let i=from;i<P.n;i++){const dx=P.xs[i]-pt[0],dy=P.ys[i]-pt[1],d=dx*dx+dy*dy;if(d<bd){bd=d;b=i;}}return b;}
 function nrm(P,i){const i0=Math.max(0,i-2),i1=Math.min(P.n-1,i+2),dx=P.xs[i1]-P.xs[i0],dy=P.ys[i1]-P.ys[i0],l=Math.hypot(dx,dy)||1;return [-dy/l,dx/l,dx/l,dy/l];}
 function buildStruct(){
-  /* 평면 그림: 단색 벽 + 단색 속, 그림자·음영 없음 */
-  const cv=document.createElement('canvas');cv.width=canvas.width;cv.height=canvas.height;
-  const c=cv.getContext('2d'),k=dpr*scale,C=L.C,tube=col.tube,tl=col['tube-lumen'],ves=col.vessel,vl=col['vessel-lumen'];
+  const mk=function(){const cv=document.createElement('canvas');cv.width=canvas.width;cv.height=canvas.height;const c=cv.getContext('2d');c.setTransform(dpr*scale,0,0,dpr*scale,0,0);c.lineCap='round';c.lineJoin='round';return {cv:cv,c:c};};
+  const A=mk(),B=mk(),T=mk(),C=L.C,tube=col.tube,tl=col['tube-lumen'],ves=col.vessel,vl=col['vessel-lumen'];
   const cs=getComputedStyle(document.documentElement),vein=(cs.getPropertyValue('--vein').trim()||'#5468D4'),veinL=(cs.getPropertyValue('--vein-lumen').trim()||'#E1E6FA');
-  c.setTransform(k,0,0,k,0,0);c.lineCap='round';c.lineJoin='round';
-  if(L.bd){const B=L.bd;c.save();c.strokeStyle='#3FA266';c.globalAlpha=.8;c.lineWidth=3.2;c.setLineDash([9,8]);c.beginPath();c.moveTo(B[0],B[1]);c.quadraticCurveTo(B[2],B[3],B[4],B[5]);c.stroke();c.restore();}
-  const sp=SEGPTS[layoutKey],ix=[0];let from=0;sp.forEach(function(p){from=idxNear(TUBE,p,from);ix.push(from);});ix.push(TUBE.n-1);
-  const SEG=[{w:38,lu:25},{w:31,lu:25},{w:35,lu:25},{w:35,lu:25},{w:38,lu:28}];
-  const segP=SEG.map(function(s,q){return toPath2D(TUBE,ix[q],ix[q+1]);});
-  /* 세뇨관 */
-  c.strokeStyle=tube;segP.forEach(function(p,q){c.lineWidth=SEG[q].w;c.stroke(p);});
-  c.strokeStyle=tl;segP.forEach(function(p,q){c.lineWidth=SEG[q].lu;c.stroke(p);});
-  /* 세뇨관을 감싸는 모세혈관 */
-  const loops=[],segOf=function(i){for(let q=0;q<SEG.length;q++)if(i<=ix[q+1])return SEG[q];return SEG[SEG.length-1];};
-  if(TZ.i0>=0){for(let i=TZ.i0+6;i<TZ.i1-6;i+=18){if(tubeDist[i]>ZONE)continue;const j=tubeNear[i];if(j<0)continue;
-    const tx=TUBE.xs[i],ty=TUBE.ys[i],bx=BLOOD.xs[j],by=BLOOD.ys[j],l=Math.hypot(tx-bx,ty-by)||1,ux=(tx-bx)/l,uy=(ty-by)/l,n=nrm(TUBE,i);
-    const hw=segOf(i).w/2+1,fx=tx+ux*hw,fy=ty+uy*hw,j0=Math.max(0,j-6),j1=Math.min(BLOOD.n-1,j+6),p=new Path2D();
-    p.moveTo(BLOOD.xs[j0],BLOOD.ys[j0]);p.quadraticCurveTo(tx-n[2]*12+ux*2,ty-n[3]*12+uy*2,fx,fy);p.quadraticCurveTo(tx+n[2]*12-ux*2,ty+n[3]*12-uy*2,BLOOD.xs[j1],BLOOD.ys[j1]);
-    loops.push({p:p,t:Math.max(0,Math.min(1,(j*BLOOD.step-BZ.s0)/Math.max(1,BZ.s1-BZ.s0)))});}}
-  loops.forEach(function(o){c.strokeStyle=mixHex(ves,vein,o.t);c.lineWidth=5;c.stroke(o.p);});
-  loops.forEach(function(o){c.strokeStyle=mixHex(vl,veinL,o.t);c.lineWidth=2;c.stroke(o.p);});
-  /* 보먼주머니 */
+  /* (가) 겉질 · 속질 경계와 보먼주머니 */
+  let c=A.c;
+  if(L.bd){const Bd=L.bd;c.save();c.strokeStyle='#3FA266';c.globalAlpha=.8;c.lineWidth=3.2;c.setLineDash([9,8]);c.beginPath();c.moveTo(Bd[0],Bd[1]);c.quadraticCurveTo(Bd[2],Bd[3],Bd[4],Bd[5]);c.stroke();c.restore();}
   c.fillStyle=tl;c.beginPath();c.arc(C[0],C[1],72,0,Math.PI*2);c.fill();
   c.lineCap='butt';c.strokeStyle=tube;c.lineWidth=8;
   c.beginPath();c.arc(C[0],C[1],76,0.27,L.vp[0]*DEG);c.stroke();
   c.beginPath();c.arc(C[0],C[1],76,L.vp[1]*DEG,Math.PI*2-0.27);c.stroke();
-  c.lineCap='round';
-  /* 혈관: 동맥(빨강) → 모세혈관 → 정맥(파랑) */
-  const g0=Math.round(glomS0/BLOOD.step),g1=Math.round(glomS1/BLOOD.step),CH=6,chunks=[];
-  for(let i=0;i<BLOOD.n-1;i+=CH){const e=Math.min(BLOOD.n-1,i+CH+1);let t=0;const s=i*BLOOD.step;if(i>=g1)t=Math.max(0,Math.min(1,(s-BZ.s0)/Math.max(1,BZ.s1-BZ.s0)));
-    chunks.push({p:toPath2D(BLOOD,i,e),t:t,w:i<g0?30:i<g1?24:26,lu:i<g0?22:i<g1?16:20});}
-  chunks.forEach(function(o){c.strokeStyle=mixHex(ves,vein,o.t);c.lineWidth=o.w;c.stroke(o.p);});
+  /* (나) 혈관: 들어오는 동맥을 먼저 다 그리고, 토리, 나가는 혈관(모세혈관 → 정맥)을 나중에 그려 겹치는 곳이 뚫려 보이지 않게 */
+  c=B.c;
+  const g0=Math.round(glomS0/BLOOD.step),g1=Math.round(glomS1/BLOOD.step);
+  const aff=toPath2D(BLOOD,0,g0+1);
+  c.strokeStyle=ves;c.lineWidth=30;c.stroke(aff);c.strokeStyle=vl;c.lineWidth=22;c.stroke(aff);
   c.strokeStyle=ves;c.lineWidth=24;c.stroke(P2D.flower);c.stroke(P2D.flower2);
   c.strokeStyle=vl;c.lineWidth=16;c.stroke(P2D.flower2);c.stroke(P2D.flower);
-  chunks.forEach(function(o){c.strokeStyle=mixHex(vl,veinL,o.t);c.lineWidth=o.lu;c.stroke(o.p);});
-  /* 토리: 모세혈관 고리 */
   for(let q=0;q<11;q++){const a=(q*33+12)*DEG,rr=14+(q%3)*10,cx=C[0]+rr*Math.cos(a),cy=C[1]+rr*Math.sin(a),rx=12+(q%2)*5,ry=5.5+(q%3)*1.6,rot=a+(q%2?0.9:-0.7);
     c.beginPath();c.ellipse(cx,cy,rx,ry,rot,0,Math.PI*2);c.strokeStyle=ves;c.lineWidth=9;c.stroke();c.strokeStyle=vl;c.lineWidth=4;c.stroke();}
-  return cv;
+  const CH=6,chunks=[];
+  for(let i=Math.max(0,g1-1);i<BLOOD.n-1;i+=CH){const e=Math.min(BLOOD.n-1,i+CH+1),s=i*BLOOD.step,t=Math.max(0,Math.min(1,(s-BZ.s0)/Math.max(1,BZ.s1-BZ.s0)));chunks.push({p:toPath2D(BLOOD,i,e),t:t});}
+  chunks.forEach(function(o){c.strokeStyle=mixHex(ves,vein,o.t);c.lineWidth=26;c.stroke(o.p);});
+  chunks.forEach(function(o){c.strokeStyle=mixHex(vl,veinL,o.t);c.lineWidth=20;c.stroke(o.p);});
+  /* (다) 세뇨관: 혈관 위에 그려 혈관이 뒤로 지나가게 */
+  c=T.c;
+  const sp=SEGPTS[layoutKey],ix=[0];let from=0;sp.forEach(function(p){from=idxNear(TUBE,p,from);ix.push(from);});ix.push(TUBE.n-1);
+  const SEG=[{w:38,lu:25},{w:31,lu:25},{w:35,lu:25},{w:35,lu:25},{w:38,lu:28}],segP=SEG.map(function(s,q){return toPath2D(TUBE,ix[q],ix[q+1]);});
+  c.strokeStyle=tube;segP.forEach(function(p,q){c.lineWidth=SEG[q].w;c.stroke(p);});
+  c.strokeStyle=tl;segP.forEach(function(p,q){c.lineWidth=SEG[q].lu;c.stroke(p);});
+  return {a:A.cv,b:B.cv,t:T.cv};
 }
 function drawStructures(){
   const key=canvas.width+'x'+canvas.height+'|'+layoutKey+'|'+col.tube+col.vessel;
   if(!structCache||key!==structKey){structCache=buildStruct();structKey=key;}
-  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(structCache,0,0);ctx.restore();
+  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(structCache.a,0,0);ctx.drawImage(structCache.b,0,0);ctx.restore();
 }
+function drawTubeLayer(){if(!structCache)return;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(structCache.t,0,0);ctx.restore();}
 function drawCup(t){
   const cx=L.cup[0],cy=L.cup[1],top=cy-28,bot=cy+28,tw=34,bw=25;
   const shape=new Path2D();
@@ -981,11 +978,11 @@ function draw(t,dtReal){
   ctx.fillStyle=col.stage;ctx.fillRect(0,0,L.W,L.H);
   drawZoneUnder(t);
   drawStructures();
-  cupLevel+=(cupCount/CUP_CAP-cupLevel)*Math.min(1,dtReal*4);
-  drawCup(t);
-  drawZoneOver(t);
+  for(let pass=0;pass<2;pass++){
+  if(pass===1){drawTubeLayer();cupLevel+=(cupCount/CUP_CAP-cupLevel)*Math.min(1,dtReal*4);drawCup(t);drawZoneOver(t);}
   for(let k=0;k<parts.length;k++){
     const p=parts[k],r=TYPES[p.type].r;
+    if((p.mode!=='hop'&&p.path===BLOOD)!==(pass===0))continue;
     if(p.mode==='hop'){
       const h=p.hop,hl=stage==='all'||stage===h.kind;
       ctx.save();ctx.strokeStyle=stageColor(h.kind);ctx.globalAlpha=hl?0.8:0.35;ctx.lineWidth=2;ctx.setLineDash([3,4]);
@@ -998,6 +995,7 @@ function draw(t,dtReal){
       ctx.save();ctx.strokeStyle=col.ink;ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.lineDashOffset=-t*20;
       ctx.beginPath();ctx.arc(p.x,p.y,r+6,0,Math.PI*2);ctx.stroke();ctx.restore();
     }
+  }
   }
   for(let k=splashes.length-1;k>=0;k--){
     const s=splashes[k];s.age+=dtReal;if(s.age>0.6){splashes.splice(k,1);continue;}
@@ -1438,7 +1436,7 @@ function Viewer(root,o){
   const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});
   R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.setClearColor(0xF3F6FB,1);R.localClippingEnabled=true;
   const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(34,1,0.1,200);
-  const ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.dampingFactor=.09;ctl.enablePan=false;ctl.rotateSpeed=.85;ctl.minDistance=o.minD;ctl.maxDistance=o.maxD;
+  const ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.dampingFactor=.09;ctl.enablePan=true;ctl.screenSpacePanning=true;ctl.panSpeed=.9;ctl.rotateSpeed=.85;ctl.minDistance=o.minD;ctl.maxDistance=o.maxD;
   scene.add(new THREE.HemisphereLight(0xffffff,0xc9b8a8,.62));
   const d1=new THREE.DirectionalLight(0xfff6ec,.85);d1.position.set(4,7,8);scene.add(d1);
   const d2=new THREE.DirectionalLight(0xdfe8ff,.32);d2.position.set(-6,-2,-5);scene.add(d2);
@@ -1447,7 +1445,9 @@ function Viewer(root,o){
   const V={root:root,scene:scene,cam:cam,ctl:ctl,R:R,parts:{},pick:[],labels:[],sel:null,showL:true,flow:true,ticks:[],o:o,ctlBar:ctlBar};
   V.part=function(key,name,desc,meshes){
     const P=V.parts[key]||(V.parts[key]={name:name,desc:desc,meshes:[]});
-    meshes.forEach(function(m){m.userData.key=key;P.meshes.push(m);V.pick.push(m);});return P;
+    meshes.forEach(function(m){if(!m.userData.own){m.material=m.material.clone();m.userData.own=1;}m.userData.key=key;P.meshes.push(m);V.pick.push(m);});return P;
+  };
+  V.group=function(key,name,desc,meshes){V.parts[key]={name:name,desc:desc,meshes:meshes};return V.parts[key];
   };
   V.label=function(text,pos,key,vis,to){
     const e=el('button','m3-l',text);e.type='button';lbl.appendChild(e);
@@ -1456,7 +1456,10 @@ function Viewer(root,o){
     if(key)e.addEventListener('click',function(ev){ev.stopPropagation();V.select(key);});else e.classList.add('plain');
     V.labels.push(L);return L;
   };
-  function glow(m,on){const ms=Array.isArray(m.material)?m.material:[m.material];ms.forEach(function(x){if(x.emissive){if(x.userData.e0==null)x.userData.e0=x.emissive.getHex();x.emissive.setHex(on?0x5a3a10:x.userData.e0);}});}
+  function glow(m,on){const ms=Array.isArray(m.material)?m.material:[m.material];ms.forEach(function(x){
+    if(x.emissive){if(x.userData.e0==null){x.userData.e0=x.emissive.getHex();x.userData.c0=x.color.getHex();}x.emissive.setHex(on?0x5a3600:x.userData.e0);x.color.setHex(on?0xFFC44A:x.userData.c0);}
+    else if(x.color&&x.opacity>0){if(x.userData.c0==null)x.userData.c0=x.color.getHex();x.color.setHex(on?0xFFD27A:x.userData.c0);}
+    if(x.transparent&&x.opacity>0){if(x.userData.o0==null)x.userData.o0=x.opacity;x.opacity=on?Math.max(.85,x.userData.o0):x.userData.o0;}});}
   V.select=function(key){
     if(V.sel&&V.parts[V.sel])V.parts[V.sel].meshes.forEach(function(m){glow(m,false);});
     V.sel=(V.sel===key)?null:key;
@@ -1489,7 +1492,7 @@ function stdButtons(V,extra){
   if(extra)extra();
   const f=V.addBtn('흐름 멈추기',true,function(b){V.flow=!V.flow;toggleText(b,V.flow,'흐름 멈추기','흐름 보기');});
   V.addBtn('처음 모습으로',null,function(){V.home();});
-  const h=el('span','m3-hint','한 손가락: 돌리기 · 두 손가락: 크게');V.ctlBar.appendChild(h);
+  const h=el('span','m3-hint','한 손가락: 돌리기 · 두 손가락: 크게 보기 · 끌어서 옮기기');V.ctlBar.appendChild(h);
 }
 
 /* 흐르는 알갱이 */
@@ -1506,7 +1509,7 @@ function Flow(V,routes,o){
   }
   V.ticks.push(function(dt){
     for(let i=0;i<list.length;i++){const p=list[i];
-      if(V.flow){p.s+=p.v*dt;while(p.s>p.r[p.seg].len){p.s-=p.r[p.seg].len;p.seg++;if(p.seg>=p.r.length){start(p);break;}}}
+      if(V.flow){p.s+=p.v*dt*(p.r[p.seg].spd||1);while(p.s>p.r[p.seg].len){p.s-=p.r[p.seg].len;p.seg++;if(p.seg>=p.r.length){start(p);break;}}}
       const P=p.r[p.seg],u=p.s/P.len;p.m.position.copy(P.at(u)).add(p.off);
       let k=1;if(p.r.fadeIn&&p.seg===0)k=Math.min(1,u*5);if(p.r.fadeOut&&p.seg===p.r.length-1)k=Math.min(k,(1-u)*4);
       if(o.colorAt){p.m.material.color.copy(o.colorAt(p,u));}
@@ -1580,13 +1583,23 @@ function buildSystem(){
   /* 뼈 · 근육 (위치를 알려 주는 몸의 틀) */
   const VB=['T11','T12','L1','L2','L3','L4','L5','sacrum'],DK=['dT11','dT12','dL1','dL2','dL3','dL4','dL5'],RB=['rib11R','rib11L','rib12R','rib12L'],HP=['hipR','hipL'],FM=['femR','femL'];
   VB.concat(RB,HP,FM).forEach(function(k){boneColors(k,0xE6D9BC,.07);});DK.forEach(function(k){boneColors(k,0xCBD8DD,.04);});
-  const spine=VB.map(function(k){return mesh(k,mBone);}).concat(DK.map(function(k){return mesh(k,mDisc);}));
-  const ribs=RB.map(function(k){return mesh(k,mBone);}),hips=HP.map(function(k){return mesh(k,mBone);}),fem=FM.map(function(k){return mesh(k,mBone);});
-  const ctx=spine.concat(ribs,hips,fem);
-  V.part('spine','척추뼈(등뼈 11번 ~ 허리뼈 5번, 엉치뼈)','콩팥은 등뼈 12번 ~ 허리뼈 3번 높이, 척추 양옆에 있어요. 뼈 사이의 연한 파란 원판은 척추사이원반이에요.',spine);
-  V.part('ribs','갈비뼈(11 · 12번)','콩팥의 위쪽 뒤를 감싸 보호하는 아래쪽 갈비뼈예요.',ribs);
-  V.part('hip','골반뼈(볼기뼈)','방광은 골반뼈로 둘러싸인 골반 안쪽 앞에 있어요.',hips);
-  V.part('femur','넙다리뼈','허벅지 뼈의 윗부분이에요.',fem);
+  /* 뼈는 하나하나 따로 누르고 강조돼요 */
+  const BN={T11:['등뼈 11번','가슴 부분 척추뼈(등뼈) 중 11번째 뼈예요.'],T12:['등뼈 12번','가슴 부분 척추뼈(등뼈)의 마지막 뼈예요. 콩팥의 위쪽 끝이 대략 이 높이에 있어요.'],
+    L1:['허리뼈 1번','허리 부분의 척추뼈(허리뼈) 다섯 개 중 1번째예요. 콩팥은 대략 등뼈 12번 ~ 허리뼈 3번 높이, 척추 양옆에 있어요.'],L2:['허리뼈 2번','허리 부분의 척추뼈(허리뼈) 다섯 개 중 2번째예요. 콩팥의 가운데(콩팥문)가 대략 이 높이에 있어요.'],
+    L3:['허리뼈 3번','허리 부분의 척추뼈(허리뼈) 다섯 개 중 3번째예요. 콩팥의 아래쪽 끝이 대략 이 높이에 있어요.'],L4:['허리뼈 4번','허리 부분의 척추뼈(허리뼈) 다섯 개 중 4번째예요. 대동맥과 대정맥이 이 근처에서 좌우 엉덩동맥 · 엉덩정맥으로 나뉘어요.'],
+    L5:['허리뼈 5번','허리 부분의 척추뼈(허리뼈) 다섯 개 중 마지막 뼈예요.'],sacrum:['엉치뼈','허리뼈 아래에 있는 삼각형 모양의 뼈로, 골반의 뒤쪽을 이뤄요.'],
+    rib11R:['11번 갈비뼈(몸의 오른쪽)','아래쪽 갈비뼈로, 콩팥 위쪽의 뒤를 감싸 보호해요.'],rib11L:['11번 갈비뼈(몸의 왼쪽)','아래쪽 갈비뼈로, 콩팥 위쪽의 뒤를 감싸 보호해요.'],
+    rib12R:['12번 갈비뼈(몸의 오른쪽)','가장 아래쪽 갈비뼈로, 콩팥 위쪽의 뒤를 감싸 보호해요.'],rib12L:['12번 갈비뼈(몸의 왼쪽)','가장 아래쪽 갈비뼈로, 콩팥 위쪽의 뒤를 감싸 보호해요.'],
+    hipR:['볼기뼈(몸의 오른쪽)','골반을 이루는 큰 뼈예요. 방광은 골반 안쪽 앞에 있어요.'],hipL:['볼기뼈(몸의 왼쪽)','골반을 이루는 큰 뼈예요. 방광은 골반 안쪽 앞에 있어요.'],
+    femR:['넙다리뼈(몸의 오른쪽)','허벅지 뼈의 윗부분이에요.'],femL:['넙다리뼈(몸의 왼쪽)','허벅지 뼈의 윗부분이에요.']};
+  const BM={};VB.concat(RB,HP,FM).forEach(function(k){BM[k]=mesh(k,mBone);V.part('b_'+k,BN[k][0],BN[k][1],[BM[k]]);});
+  const discs=DK.map(function(k){return mesh(k,mDisc);});V.part('disc','척추사이원반','척추뼈와 척추뼈 사이에 끼어 있는 말랑한 원판이에요. 충격을 줄여 줘요.',discs);
+  const bonesArr=function(a){return a.map(function(k){return BM[k];});};
+  V.group('g_lumbar','허리뼈(1 ~ 5번)','허리 부분의 척추뼈 다섯 개예요. 콩팥은 대략 등뼈 12번 ~ 허리뼈 3번 높이, 척추 양옆에 있어요. 뼈 하나를 누르면 그 뼈만 보여 줘요.',bonesArr(['L1','L2','L3','L4','L5']));
+  V.group('g_ribs','11 · 12번 갈비뼈','가장 아래쪽 갈비뼈들로, 콩팥 위쪽의 뒤를 감싸 보호해요.',bonesArr(RB));
+  V.group('g_hip','볼기뼈(골반뼈)','골반을 이루는 큰 뼈예요. 방광은 골반 안쪽 앞에 있어요.',bonesArr(HP));
+  V.group('g_fem','넙다리뼈','허벅지 뼈의 윗부분이에요.',bonesArr(FM));
+  const ctx=bonesArr(VB.concat(RB,HP,FM)).concat(discs);
   /* 콩팥 · 부신 */
   boneColors('kidR',0x8A392C,.09);boneColors('kidL',0x8A392C,.09);
   const kR=mesh('kidR',mKid),kL=mesh('kidL',mKidL);
@@ -1636,7 +1649,7 @@ function buildSystem(){
     const inPyr=PA.some(function(p){const d=Math.atan2(Math.sin(a-p),Math.cos(a-p));return Math.abs(d)<HW&&f<.8;});if(inPyr)continue;
     const q=polar(a,r0*f);t.fillStyle='rgba(110,10,22,.9)';t.beginPath();t.arc(q.x,q.y,px*2.7,0,6.2832);t.fill();t.strokeStyle='rgba(255,220,180,.5)';t.lineWidth=px*.8;t.stroke();}
   /* 혈관: 콩팥기둥 속 엽사이동맥 · 정맥, 피라미드 바닥의 활꼴동맥 · 정맥, 겉질로 뻗는 소엽사이동맥 */
-  const vline=function(pts,c,w){t.strokeStyle=c;t.lineWidth=w;t.beginPath();pts.forEach(function(p,i){i?t.lineTo(p.x,p.y):t.moveTo(p.x,p.y);});t.stroke();};
+  const vA=[],vV=[],vline=function(pts,c,w){(c==='#3B4C9B'?vV:vA).push([pts,w/2]);};
   for(let i=0;i<PA.length-1;i++){const m=(PA[i]+PA[i+1])/2,r0=ray2(m),A=[],Vn=[];
     for(let k=0;k<=12;k++){const f=.32+.5*k/12,w=Math.sin(k*1.3+i)*.012;A.push(polar(m-.018+w,r0*f));Vn.push(polar(m+.022+w,r0*f));}
     vline(Vn,'#3B4C9B',px*6);vline(A,'#B8263A',px*4.5);}
@@ -1644,7 +1657,7 @@ function buildSystem(){
     vline(arcV,'#3B4C9B',px*4.2);vline(arcA,'#B8263A',px*3.4);
     for(let k=0;k<9;k++){const tt=a-HW+2*HW*(k+.5)/9,r0=ray2(tt),pts=[];for(let j=0;j<=8;j++){pts.push(polar(tt+Math.sin(j*1.7+k)*.008,r0*(.8+.16*j/8)));}vline(pts,'rgba(184,38,58,.85)',px*1.7);}});
   /* 콩팥 단위(네프론) — 실제보다 크게: 겉질의 토리 → 구불구불한 세뇨관 → 속질로 내려가는 고리 → 집합관 → 피라미드 꼭지 */
-  const nephG=[];
+  const nephG=[],nephL=[];
   [1,2,3,4,5].forEach(function(pi,ii){const a=PA[pi]+.07,r0=ray2(a),G=polar(a,r0*.9),dirr=new THREE.Vector2(Math.cos(a),Math.sin(a)),tn=new THREE.Vector2(-dirr.y,dirr.x);nephG.push(G);
     const P=function(f,side){return polar(a+side,r0*f);};
     const pct=[G];for(let k=1;k<=6;k++){pct.push(G.clone().addScaledVector(tn,(k%2?1:-1)*px*26).addScaledVector(dirr,-px*10*k));}
@@ -1653,7 +1666,7 @@ function buildSystem(){
     const cd=[dct[dct.length-1],P(.86,-.06),P(.7,-.062),P(.5,-.05),P(.38,-.03)];
     const draw=function(pts,w,smooth){t.beginPath();t.moveTo(pts[0].x,pts[0].y);for(let k=1;k<pts.length;k++){if(smooth&&k<pts.length-1){const m=pts[k].clone().add(pts[k+1]).multiplyScalar(.5);t.quadraticCurveTo(pts[k].x,pts[k].y,m.x,m.y);}else t.lineTo(pts[k].x,pts[k].y);}
       t.strokeStyle='#3E2006';t.lineWidth=w+px*4;t.stroke();t.strokeStyle='#FFE27A';t.lineWidth=w;t.stroke();};
-    draw(cd,px*9,false);draw(pct,px*7,true);draw(loop,px*6,true);draw(dct,px*6.5,true);
+    draw(cd,px*9,false);draw(pct,px*7,true);draw(loop,px*6,true);draw(dct,px*6.5,true);nephL.push({G:G,lines:[[cd,px*4.5],[pct,px*3.5],[loop,px*3],[dct,px*3.2]]});
     t.beginPath();t.arc(G.x,G.y,px*20,0,6.2832);t.fillStyle='#FFF0B8';t.fill();t.strokeStyle='#3E2006';t.lineWidth=px*3;t.stroke();
     t.beginPath();t.arc(G.x,G.y,px*13,0,6.2832);t.fillStyle='#C8102E';t.fill();t.strokeStyle='#6E0A18';t.lineWidth=px*1.5;t.stroke();
     for(let k=0;k<5;k++){t.beginPath();t.arc(G.x+Math.cos(k*1.3)*px*5,G.y+Math.sin(k*1.3)*px*5,px*4,0,6.2832);t.strokeStyle='rgba(255,170,170,.7)';t.lineWidth=px*1.2;t.stroke();}
@@ -1661,6 +1674,21 @@ function buildSystem(){
   t.restore();
   /* 피막(콩팥을 싸는 얇은 흰 막) */
   t.strokeStyle='#EADBD0';t.lineWidth=px*6;t.stroke(OP);t.strokeStyle='#7E3024';t.lineWidth=px*1.4;t.stroke(OP);
+  const nephMeshes=[],mNeph=pmat(0xF5D776,{roughness:.4,clearcoat:.5}),mGlo=pmat(0xC8102E,{roughness:.35,clearcoat:.5}),mBow=pmat(0xFFF0B8,{roughness:.5}),mHit=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+  nephL.forEach(function(n){
+    n.lines.forEach(function(l){const pts=l[0].map(function(p){return new V3(p.x,p.y,.016);});if(pts.length<2)return;
+      const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*10,l[1],8,false),mNeph);sec.add(m);nephMeshes.push(m);});
+    const g=new THREE.Mesh(new THREE.SphereGeometry(px*12,16,12),mGlo);g.position.set(n.G.x,n.G.y,.02);sec.add(g);nephMeshes.push(g);
+    const bw=new THREE.Mesh(new THREE.TorusGeometry(px*19,px*3.5,8,32),mBow);bw.position.set(n.G.x,n.G.y,.018);sec.add(bw);nephMeshes.push(bw);
+    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;n.lines.forEach(function(l){l[0].forEach(function(p){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y);});});
+    const hb=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0+px*40,y1-y0+px*40),mHit);hb.position.set((x0+x1)/2,(y0+y1)/2,.03);sec.add(hb);nephMeshes.push(hb);
+  });
+  /* 콩팥 속 혈관(입체, 누를 수 있음) */
+  const mkV=function(list,color){const gs=list.map(function(l){const p=l[0].map(function(q){return new V3(q.x,q.y,.013);});return solid(vtube(new THREE.CatmullRomCurve3(p),Math.max(10,p.length*5),6,function(){return l[1];}),0xffffff);});
+    return new THREE.Mesh(merge(gs),pmat(color,{roughness:.45,clearcoat:.3}));};
+  const ilvA=mkV(vA,0xB8263A),ilvV=mkV(vV,0x3B4C9B);sec.add(ilvV);sec.add(ilvA);
+  /* 피막(단면 가장자리의 흰 테두리) */
+  const capRim=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(O.map(function(p){return new V3(p.x,p.y,.006);}),true),O.length*2,W*.009,6,true),pmat(0xEFE5DA,{roughness:.6,clearcoat:.2}));sec.add(capRim);
   const tex=new THREE.CanvasTexture(cvT);tex.repeat.set(1/W,1/H);tex.offset.set(-mnx/W,-mny/H);tex.anisotropy=4;
   const sh=new THREE.Shape(O);
   const cortex=new THREE.Mesh(new THREE.ShapeGeometry(sh,1),pmat(0xC9B0A6,{map:tex,roughness:.8,clearcoat:.12,side:THREE.DoubleSide}));cortex.position.z=.003;sec.add(cortex);
@@ -1669,33 +1697,39 @@ function buildSystem(){
   /* 깔때기: 작은 컵 → 큰 깔때기 → 콩팥깔때기 → 콩팥 밖 오줌관으로 */
   const urt=M.lines.urtR,uTop=new V3().fromArray(urt[0]);
   const PC=new V3(SC2.x+W*.08,SC2.y,0),HIL=new V3(mxx-W*.06,SC2.y-H*.06,0);
-  const pg=[],mPel=pmat(0xF0DCA6,{roughness:.45,clearcoat:.4});
+  const pgC=[],pgP=[],mPel=pmat(0xF0DCA6,{roughness:.45,clearcoat:.4});
   apex.forEach(function(o){const a=new V3(o.A.x,o.A.y,0),d=new V3(o.d.x,o.d.y,0);
-    const cup=new THREE.SphereGeometry(W*.045,16,10,0,Math.PI*2,0,Math.PI*.5);cup.lookAt(d.clone().negate());cup.translate(a.x-d.x*W*.01,a.y-d.y*W*.01,0);pg.push(solid(cup,0xffffff));
+    const cup=new THREE.SphereGeometry(W*.045,16,10,0,Math.PI*2,0,Math.PI*.5);cup.lookAt(d.clone().negate());cup.translate(a.x-d.x*W*.01,a.y-d.y*W*.01,0);pgC.push(solid(cup,0xffffff));
     const c=new THREE.CatmullRomCurve3([a.clone().addScaledVector(d,-W*.04),a.clone().lerp(PC,.5),PC.clone().add(new V3(-W*.03,(a.y-PC.y)*.15,0))]);
-    pg.push(solid(vtube(c,24,10,function(u){return W*(.024+.018*u);}),0xffffff));});
+    pgC.push(solid(vtube(c,24,10,function(u){return W*(.024+.018*u);}),0xffffff));});
   const fun=new THREE.CatmullRomCurve3([PC.clone().add(new V3(-W*.08,0,0)),PC,HIL]);
-  pg.push(solid(vtube(fun,30,14,function(u){return W*(.12-.06*u);}),0xffffff));
-  const pelvis=new THREE.Mesh(merge(pg),mPel);sec.add(pelvis);
+  pgP.push(solid(vtube(fun,30,14,function(u){return W*(.12-.06*u);}),0xffffff));
+  const calyx=new THREE.Mesh(merge(pgC),mPel),pelvis=new THREE.Mesh(merge(pgP),mPel);sec.add(calyx);sec.add(pelvis);
   const hilW=new V3(HIL.x,HIL.y,zc),link=P3([hilW,new V3(hilW.x+.12,hilW.y-.08,zc+.14),uTop]);
   const linkM=new THREE.Mesh(vtube(link.curve,30,10,function(u){return W*.06-W*.025*u;}),mUre);S.add(linkM);
   let cut=true;
-  function setCut(v){cut=v;mKid.clippingPlanes=v?[cutPlane]:[];mKid.needsUpdate=true;sec.visible=v;linkM.visible=v;}
+  function setCut(v){cut=v;kR.material.clippingPlanes=v?[cutPlane]:[];kR.material.needsUpdate=true;sec.visible=v;linkM.visible=v;}
   V.part('kidney','콩팥','강낭콩 모양으로 척추 양옆 등 쪽에 좌우 한 쌍이 있어요(길이 약 10~12 cm). 오른쪽 콩팥은 간 때문에 왼쪽보다 조금 낮아요. 혈액 속 노폐물을 걸러 오줌을 만들어요.',[kR,kL]);
-  V.part('cortex','콩팥겉질','콩팥의 바깥 부분이에요. 오돌토돌한 알갱이와 작은 붉은 점(토리)이 보여요. 콩팥 단위의 토리와 보먼주머니가 주로 여기에 있어요. 피라미드 사이로 파고든 부분은 콩팥기둥이에요.',[cortex]);
-  V.part('neph','콩팥 단위(네프론)','노란 관이 콩팥 단위예요(실제로는 너무 작아서 크게 그렸어요). 겉질의 토리와 보먼주머니에서 시작해 구불구불한 세뇨관이 속질까지 내려갔다 올라오고, 집합관을 따라 피라미드 꼭지로 오줌이 나와요. 콩팥 하나에 약 100만 개가 있어요. <button type="button" class="btn m3-go">콩팥 단위 크게 보기 →</button>',[]);
+  V.part('cortex','콩팥겉질','콩팥의 바깥 부분이에요. 오돌토돌한 알갱이와 작은 붉은 점(토리)이 보여요. 콩팥 단위의 토리와 보먼주머니가 주로 여기에 있어요. 겉질은 피라미드 사이로도 파고들어 있어요.',[cortex]);
+  V.part('neph','콩팥 단위(네프론)','노란 관이 콩팥 단위예요(실제로는 너무 작아서 크게 그렸어요). 겉질의 토리와 보먼주머니에서 시작해 구불구불한 세뇨관이 속질까지 내려갔다 올라오고, 집합관을 따라 피라미드 꼭지로 오줌이 나와요. 콩팥 하나에 약 100만 개가 있어요. 잠시 뒤 ‘콩팥 단위 들여다보기’로 넘어가요. <button type="button" class="btn m3-go">바로 들여다보기 →</button>',nephMeshes);
+  const sel0=V.select;V.select=function(k){sel0(k);clearTimeout(V._go);if(k==='neph'&&V.sel==='neph'){V._go=setTimeout(function(){if(V.sel==='neph'){const g=document.querySelector('[data-go=unit]');if(g)g.click();V.select('neph');}},1100);}};
   V.part('medulla','콩팥속질','콩팥의 중간 부분으로, 줄무늬가 있는 원뿔 모양 덩어리(콩팥 피라미드)들이에요. 줄무늬는 세뇨관과 집합관, 곧은 혈관이 나란히 지나가서 생겨요. 피라미드 꼭지에서 오줌이 작은 깔때기로 나와요.',[med]);
-  V.part('pelvis','콩팥깔때기','가장 안쪽의 빈 공간이에요. 속질 끝마다 작은 컵이 오줌을 받아 모으고, 모인 오줌은 오줌관으로 나가요.',[pelvis,linkM]);
+  V.part('pelvis','콩팥깔때기','콩팥 가장 안쪽의 빈 공간이에요. 작은 깔때기들이 모은 오줌이 여기에 모였다가 오줌관으로 나가요.',[pelvis]);
+  V.part('calyx','작은 깔때기(콩팥잔)','콩팥 피라미드 꼭지를 컵처럼 감싸서, 꼭지에서 나오는 오줌을 받아 콩팥깔때기로 보내요.',[calyx]);
+  V.part('kcap','피막','콩팥 겉을 싸고 있는 얇고 질긴 막이에요. 단면에서는 가장자리의 흰 테두리로 보여요.',[capRim]);
+  V.part('ilv','콩팥 속 혈관','콩팥동맥에서 갈라진 동맥(빨강)과 정맥(파랑)이 피라미드 사이를 지나고, 피라미드 바닥을 따라 활처럼 휘어요. 여기서 가는 동맥 가지가 겉질로 뻗어 콩팥 단위로 혈액을 보내요.',[ilvA,ilvV]);
   /* 혈관 */
   const art=['aorta','rarR','rarL','ciaR','ciaL','eiaR','eiaL','iiaR','iiaL'].map(function(k){return mesh(k,mArt);});
   const vei=['ivc','rvnR','rvnL','civR','civL','eivR','eivL','iivR','iivL'].map(function(k){return mesh(k,mVein);});
-  V.part('aorta','대동맥','심장에서 나온 혈액이 온몸으로 가는 굵은 동맥이에요. 여기서 콩팥동맥이 갈라지고, 아래에서 두 다리 쪽(엉덩동맥)으로 나뉘어요.',[art[0]].concat(art.slice(3)));
-  V.part('ivc','대정맥','온몸을 돈 혈액이 심장으로 돌아가는 굵은 정맥이에요. 콩팥정맥이 여기로 이어져요.',[vei[0]].concat(vei.slice(3)));
+  V.part('aorta','대동맥','심장에서 나온 혈액이 온몸으로 가는 굵은 동맥이에요. 여기서 좌우 콩팥동맥이 갈라지고, 아래쪽에서 좌우 엉덩동맥으로 나뉘어요.',[art[0]]);
+  V.part('ivc','대정맥','온몸을 돈 혈액이 심장으로 돌아가는 굵은 정맥이에요. 좌우 콩팥정맥이 여기로 이어져요.',[vei[0]]);
+  V.part('iliacA','엉덩동맥','대동맥이 배 아래쪽에서 좌우로 나뉜 동맥이에요. 골반과 다리로 혈액을 보내요.',art.slice(3));
+  V.part('iliacV','엉덩정맥','다리와 골반의 혈액을 모아 대정맥으로 보내는 정맥이에요.',vei.slice(3));
   V.part('rart','콩팥동맥','대동맥에서 갈라져 노폐물이 많은 혈액을 콩팥으로 보내요.',[art[1],art[2]]);
   V.part('rvein','콩팥정맥','콩팥에서 걸러진 혈액이 대정맥으로 나가요. 콩팥동맥의 혈액보다 요소가 적어요. 왼쪽 콩팥정맥은 대동맥 앞을 지나요.',[vei[1],vei[2]]);
   /* 오줌관 · 방광 · 요도 */
   const ure=[mesh('urtR',mUre),mesh('urtL',mUre)];
-  V.part('ureter','오줌관','콩팥깔때기에서 나와 척추 옆을 따라 내려가 방광 뒤쪽 아래로 비스듬히 들어가는 가는 관(길이 약 25~30 cm)이에요.',ure);
+  V.part('ureter','오줌관','콩팥깔때기에서 나와 척추 옆을 따라 내려가 방광 뒤쪽 아래로 비스듬히 들어가는 가는 관(길이 약 25~30 cm)이에요.',ure.concat([linkM]));
   const bc=C('blad'),front=new THREE.Plane(new V3(0,0,-1),bc.z+.05);
   const bO=mesh('blad',pmat(0xC98676,{roughness:.55,clearcoat:.35,side:THREE.FrontSide,clippingPlanes:[front]}));
   const bI=new THREE.Mesh(G.blad,pmat(0xEDBFB0,{roughness:.75,clearcoat:.1,side:THREE.BackSide,clippingPlanes:[front]}));S.add(bI);
@@ -1714,27 +1748,27 @@ function buildSystem(){
   V.label('대정맥',new V3().fromArray(L.ivc[24]).add(new V3(-.3,0,0)),'ivc');
   V.label('콩팥동맥',new V3().fromArray(L.rarL[7]).add(new V3(0,.18,0)),'rart');
   V.label('콩팥정맥',new V3().fromArray(L.rvnL[4]).add(new V3(0,-.2,0)),'rvein');
+  V.label('엉덩동맥',new V3().fromArray(L.eiaL[3]).add(new V3(.3,0,.1)),'iliacA');V.label('엉덩정맥',new V3().fromArray(L.eivR[3]).add(new V3(-.35,0,.1)),'iliacV');
   V.label('콩팥',C('kidL').add(new V3(.7,-.3,.2)),'kidney');V.label('부신',C('adrL').add(new V3(.55,.45,0)),'adrenal');
-  V.label('콩팥겉질',new V3(mnx-W*.75,mxy-H*.05,zc+.05),'cortex',isCut,new V3(mnx+W*.06,mxy-H*.22,zc+.01));
-  V.label('콩팥속질',new V3(mnx-W*.75,cy-H*.12,zc+.05),'medulla',isCut,new V3(mnx+W*.3,cy-H*.12,zc+.03));
+  V.label('콩팥겉질',new V3(mnx-W*.75,mxy-H*.05,zc+.05),'cortex',isCut,(function(){const q=polar(PA[1],ray2(PA[1])*.92);return new V3(q.x,q.y,zc+.01);})());
+  V.label('콩팥속질',new V3(mnx-W*.75,cy-H*.12,zc+.05),'medulla',isCut,(function(){const q=polar(PA[3],ray2(PA[3])*.6);return new V3(q.x,q.y,zc+.015);})());
   V.label('콩팥깔때기',new V3(mnx-W*.6,mny-H*.22,zc+.05),'pelvis',isCut,new V3(PC.x,PC.y-H*.04,zc+.06));
   V.label('콩팥 단위',new V3(mnx-W*.2,mxy+H*.38,zc+.05),'neph',isCut,new V3(nephG[0].x,nephG[0].y,zc+.01));
   (function(){const ref=new V3(cx,cy,zc),z=zc+.03,on=function(L,p){L.near=new V3(p.x,p.y,z);L.nearRef=ref;L.nearD=7;};
     const Ls=V.labels,find=function(t){return Ls.find(function(L){return L.el.textContent===t;});};
     const pA=function(i,f){return polar(PA[i],ray2(PA[i])*f);};
     on(find('콩팥겉질'),pA(1,.92));on(find('콩팥속질'),pA(4,.62));on(find('콩팥깔때기'),{x:PC.x+W*.02,y:PC.y-H*.05});on(find('콩팥 단위'),{x:nephG[2].x+W*.05,y:nephG[2].y+H*.06});
-    const m=(PA[4]+PA[5])/2,col=V.label('콩팥기둥',new V3(),'cortex',isCut);on(col,polar(m,ray2(m)*.6));col.onlyNear=true;
-    V.part('kcap','피막','콩팥 겉을 싸고 있는 얇고 질긴 막이에요.',[]);
     const cp=V.label('피막',new V3(),'kcap',isCut);on(cp,polar(PA[2]+.05,ray2(PA[2]+.05)*1.02));cp.onlyNear=true;
-    const sm2=V.label('작은 깔때기',new V3(),'pelvis',isCut);on(sm2,{x:apex[5].A.x+W*.06,y:apex[5].A.y-H*.03});sm2.onlyNear=true;
-    V.part('ilv','콩팥 속 혈관','콩팥동맥에서 갈라진 동맥(빨강)과 정맥(파랑)이 피라미드 사이(콩팥기둥)를 지나고, 피라미드 바닥을 따라 활처럼 휘어요. 여기서 가는 가지가 겉질로 뻗어 콩팥 단위로 혈액을 보내요.',[]);const ia=V.label('콩팥 속 혈관',new V3(),'ilv',isCut);const m2=(PA[2]+PA[3])/2;on(ia,polar(m2,ray2(m2)*.64));ia.onlyNear=true;
+    const sm2=V.label('작은 깔때기',new V3(),'calyx',isCut);on(sm2,{x:apex[5].A.x+W*.06,y:apex[5].A.y-H*.03});sm2.onlyNear=true;
+    const ia=V.label('콩팥 속 혈관',new V3(),'ilv',isCut);const m2=(PA[2]+PA[3])/2;on(ia,polar(m2,ray2(m2)*.64));ia.onlyNear=true;
   })();
   sysBox.querySelector('.m3-info').addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.m3-go')){const g=document.querySelector('[data-go=unit]');if(g)g.click();}});
   V.label('오줌관',new V3().fromArray(L.urtL[18]).add(new V3(.3,0,0)),'ureter');
   V.label('방광',bc.clone().add(new V3(1.1,.1,0)),'bladder');V.label('요도',C('ureth').add(new V3(.35,-.3,0)),'urethra');
   const bonesOn=function(){return ctx[0].visible;};
-  V.label('척추뼈',C('L3').add(new V3(0,-.1,-.5)),'spine',bonesOn);V.label('갈비뼈',C('rib11L').add(new V3(.9,-.4,0)),'ribs',bonesOn);
-  V.label('골반뼈',C('hipL').add(new V3(1.0,.6,0)),'hip',bonesOn);V.label('넙다리뼈',C('femL').add(new V3(.6,-.2,0)),'femur',bonesOn);
+  V.label('등뼈 12번',C('T12').add(new V3(-.62,.5,-.3)),'b_T12',bonesOn);V.label('허리뼈',C('L3').add(new V3(-.7,-.1,-.3)),'g_lumbar',bonesOn);V.label('엉치뼈',C('sacrum').add(new V3(0,-.2,.2)),'b_sacrum',bonesOn);
+  V.label('갈비뼈',C('rib11L').add(new V3(.9,-.4,0)),'g_ribs',bonesOn);
+  V.label('볼기뼈',C('hipL').add(new V3(1.0,.6,0)),'g_hip',bonesOn);V.label('넙다리뼈',C('femL').add(new V3(.6,-.2,0)),'g_fem',bonesOn);
 
   /* 흐름 */
   const pts=function(a){return a.map(function(p){return new V3(p[0],p[1],p[2]);});};
@@ -1772,8 +1806,8 @@ function buildNephron(){
   const artM=new THREE.Mesh(organic(vtube(art.curve,160,14,function(u){return u<.8?.13:.13-(u-.8)*.25;}),.006,6),pmat(RED,{roughness:.35,clearcoat:.5,transparent:true,depthWrite:false,opacity:.45}));
   const veinM=new THREE.Mesh(organic(vtube(vein.curve,140,14,function(u){return .09+.07*u;}),.006,6),pmat(BLUE,{roughness:.35,clearcoat:.5,transparent:true,depthWrite:false,opacity:.45}));
   S.add(artM);S.add(veinM);
-  V.part('art','들어오는 혈관','콩팥동맥에서 갈라져 나온 혈관이에요. 노폐물이 많은 혈액을 토리로 보내요.',[artM]);
-  V.part('vein','나가는 혈관','세뇨관을 감싼 모세혈관이 모여 콩팥정맥으로 이어져요. 걸러진 혈액이 나가요.',[veinM]);
+  V.part('art','콩팥동맥에서 들어오는 혈관','콩팥동맥에서 갈라져 나온 혈관이에요. 노폐물이 많은 혈액을 토리로 보내요.',[artM]);
+  V.part('vein','콩팥정맥으로 나가는 혈관','세뇨관을 감싼 모세혈관이 모여 콩팥정맥으로 이어져요. 걸러진 혈액이 나가요.',[veinM]);
   /* 토리: 모세혈관 고리 여러 덩이 */
   const rnd=rng(11),gp=[new V3(-.78,3.0,.08),new V3(-.7,2.85,.05)];
   for(let k=0;k<18;k++){const v=new V3(rnd()*2-1,rnd()*2-1,rnd()*2-1).normalize().multiplyScalar(.16+.24*rnd());gp.push(v.add(G));}
@@ -1799,9 +1833,9 @@ function buildNephron(){
   const U1=uOf(tp[10]),U2=uOf([.3,-.8,0]),U3=uOf([1.0,-1.5,0]),U4=uOf(tp[20]);
   const sm=function(a,b,x){const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
   const rf=function(u){return .125-.06*sm(U1,U2,u)+.035*sm(U3,U3+.03,u)+.005*sm(U4,U4+.03,u);};
-  const cPCT=new THREE.Color(0xDDAF52),cThin=new THREE.Color(0xF3E3AE),cTAL=new THREE.Color(0xE5BE62),tmpc=new THREE.Color();
+  const cPCT=new THREE.Color(0xDDA53A),cThin=new THREE.Color(0xEDCF7A),cTAL=new THREE.Color(0xE2B24A),tmpc=new THREE.Color();
   const cf=function(u){tmpc.copy(cPCT).lerp(cThin,sm(U1,U2,u));if(u>U3)tmpc.copy(cThin).lerp(cTAL,sm(U3,U3+.03,u));return tmpc;};
-  const tubM=new THREE.Mesh(organic(vtube(tub.curve,1000,14,rf,cf),.006,10),pmat(0xffffff,{vertexColors:true,roughness:.5,clearcoat:.35,transparent:true,depthWrite:false,opacity:.42}));S.add(tubM);
+  const tubM=new THREE.Mesh(organic(vtube(tub.curve,1000,14,rf,cf),.006,10),pmat(0xffffff,{vertexColors:true,roughness:.5,clearcoat:.35,transparent:true,depthWrite:false,opacity:.62}));S.add(tubM);
   V.part('tubule','세뇨관','보먼주머니와 이어진 긴 관이에요. 처음엔 굵고 구불구불하다가, 가늘어져 콩팥속질까지 U자로 내려갔다 다시 굵어져 올라와요. 지나는 동안 필요한 물질은 모세혈관으로 재흡수되고, 노폐물은 분비받아 오줌이 돼요.',[tubM]);
   /* 집합관과 다른 콩팥 단위에서 오는 관 */
   const duct=P3([[2.9,3.4,0],[2.9,2.0,0],[2.92,0,0],[2.95,-4.7,0]]),mDuct=pmat(0xD7B262,{roughness:.5,clearcoat:.35,transparent:true,depthWrite:false,opacity:.42});
@@ -1809,35 +1843,39 @@ function buildNephron(){
   [[[3.6,1.0,.4],[3.25,.75,.2],[2.95,.55,0]],[[3.55,-1.4,-.4],[3.2,-1.6,-.2],[2.97,-1.85,0]]].forEach(function(p){ductG.push(vtube(new THREE.CatmullRomCurve3(p.map(function(a){return new V3(a[0],a[1],a[2]);})),30,10,function(){return .085;}));});
   const ductM=new THREE.Mesh(organic(merge(ductG),.005,10),mDuct);S.add(ductM);S.add(cap(duct.at(0),.14,mDuct));
   V.part('duct','집합관','여러 콩팥 단위의 세뇨관이 모이는 관이에요(오른쪽 짧은 관들은 다른 콩팥 단위에서 와요). 오줌을 콩팥깔때기로 보내요.',[ductM]);
-  /* 토리에서 나간 혈관 → 속질의 곧은 모세혈관 → 세뇨관 둘레 그물 → 정맥 */
-  const eff=P3([[-.42,3.02,.08],[-.28,3.38,.1],[.42,3.62,0],[1.3,3.42,-.3],[1.48,2.0,-.46],[1.42,.5,-.42],[1.36,-2.0,-.36],[1.2,-3.95,-.3],[.66,-4.2,-.3],[.02,-3.95,-.3],[-.16,-2.0,-.36],[-.2,.2,-.42],[-.9,.42,-.62],[-1.62,.6,-.6],[-2.2,.5,-.3]]);
-  const effCol=function(u){return tmpc.copy(cR).lerp(cP,sm(.3,.6,u)).lerp(cB,sm(.6,.95,u));};
-  const net=[vtube(eff.curve,300,10,function(u){return u<.06?.06:.04;},function(u){return effCol(u).clone();})];
-  const effPts=eff.curve.getSpacedPoints(300),nearEff=function(p){let b=0,bd=1e9;effPts.forEach(function(q,i){const d=q.distanceToSquared(p);if(d<bd){bd=d;b=i;}});return {p:effPts[b],u:b/300,d:Math.sqrt(bd)};};
-  /* 속질의 곧은 모세혈관(고리 옆을 따라 내려갔다 올라옴) */
-  [[-.32,.28],[.3,-.3]].forEach(function(o){
-    const a0=nearEff(new V3(1.42,-.3+o[0],-.4)).p,a1=nearEff(new V3(-.18,-.3-o[0],-.4)).p;
-    const c=new THREE.CatmullRomCurve3([a0,new V3(.9+o[0]*.2,-.6,o[1]),new V3(.6+o[0]*.3,-2.4,o[1]),new V3(.62,-4.0,o[1]*.6),new V3(.7-o[0]*.3,-2.4,-o[1]),new V3(.4-o[0]*.2,-.6,-o[1]),a1]);
-    net.push(vtube(c,120,6,function(){return .028;},function(u){return tmpc.copy(cR).lerp(cB,u).clone();}));});
-  /* 세뇨관 둘레의 모세혈관 그물: 고리 + 세로 가닥 */
-  const r3=rng(23);
-  function netAround(u0,u1,step,c0,c1){
-    for(let u=u0;u<=u1;u+=step*(.7+.6*r3())){const f=tframe(tub.curve,u),p=tub.curve.getPointAt(u),R=rf(u)+.04,pts=[];
-      for(let k=0;k<10;k++){const a=k/10*Math.PI*2+r3()*.35,rr=R*(1+.18*(r3()-.5));pts.push(p.clone().addScaledVector(f.N,Math.cos(a)*rr).addScaledVector(f.B,Math.sin(a)*rr).addScaledVector(f.T,(r3()-.5)*.1));}
-      const col=tmpc.copy(new THREE.Color(c0)).lerp(new THREE.Color(c1),(u-u0)/(u1-u0)).clone();
-      net.push(solid(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),40,.016,5,false),col.getHex()));
-      const ne=nearEff(p);if(ne.d<1.6&&r3()<.55){let bp=pts[0],bd=1e9;pts.forEach(function(q){const d=q.distanceToSquared(ne.p);if(d<bd){bd=d;bp=q;}});
-        const mid=bp.clone().lerp(ne.p,.5).add(new V3((r3()-.5)*.2,(r3()-.5)*.2,(r3()-.5)*.2));
-        net.push(solid(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([bp,mid,ne.p]),24,.017,5,false),effCol(ne.u).getHex()));}}
-    for(let s=0;s<6;s++){const a0=s*Math.PI/3+r3(),pts=[];
-      for(let u=u0;u<=u1;u+=step/2){const f=tframe(tub.curve,u),p=tub.curve.getPointAt(u),R=rf(u)+.04,a=a0+Math.sin(u*45+s*1.7)*.6;
-        pts.push(p.clone().addScaledVector(f.N,Math.cos(a)*R).addScaledVector(f.B,Math.sin(a)*R));}
-      if(pts.length>3)net.push(vtube(new THREE.CatmullRomCurve3(pts),pts.length*6,5,function(){return .015;},function(u){return tmpc.copy(new THREE.Color(c0)).lerp(new THREE.Color(c1),u).clone();}));}
+  /* 혈액 길: 토리 → 토리에서 나온 혈관(짧음) → 세뇨관을 칭칭 감싸는 모세혈관(원위 세뇨관 → 고리 → 근위 세뇨관 순) → 정맥 */
+  const Umd=uOf([-.05,2.95,-.46]),UE=.012;
+  class Wrap extends THREE.Curve{
+    constructor(u0,u1,turns,phase){super();this.u0=u0;this.u1=u1;this.turns=turns;this.ph=phase||0;}
+    getPoint(t,o){o=o||new V3();const u=this.u0+(this.u1-this.u0)*t,f=tframe(tub.curve,u),p=tub.curve.getPointAt(u),R=rf(u)+.045,a=this.ph+t*this.turns*Math.PI*2;
+      return o.copy(p).addScaledVector(f.N,Math.cos(a)*R).addScaledVector(f.B,Math.sin(a)*R);}
   }
-  netAround(.015,U1,.014,PUR,BLUE);
-  netAround(U4,.95,.014,RED,PUR);
-  const netM=new THREE.Mesh(merge(net),pmat(0xffffff,{vertexColors:true,roughness:.4,clearcoat:.4,transparent:true,depthWrite:false,opacity:.6}));S.add(netM);
-  V.part('cap','모세혈관','토리에서 나온 혈관이 세뇨관을 그물처럼 감싸요. 세뇨관에서 재흡수된 물질을 받고, 남은 노폐물을 세뇨관으로 분비해요. 지나면서 동맥혈이 정맥혈로 바뀌어요.',[netM]);
+  const fromCurve=function(c,n){c.arcLengthDivisions=n;const sp2=c.getSpacedPoints(n),len=c.getLength();
+    return {curve:c,len:len,at:function(u){u=Math.max(0,Math.min(1,u));const f=u*(sp2.length-1),i=Math.min(sp2.length-2,Math.floor(f)),t=f-i;return sp2[i].clone().lerp(sp2[i+1],t);}};};
+  const subLen=tub.len*(Umd-UE),wrapC=new Wrap(Umd,UE,Math.round(subLen/.55),0),capP=fromCurve(wrapC,4000);capP.spd=3.2;
+  const capStart=capP.at(0),capEnd=capP.at(1);
+  const eff=P3([[-.42,3.02,.08],[-.34,3.28,.04],[-.18,3.3,-.12],capStart.clone().add(new V3(-.04,.06,0)),capStart]);
+  const veinTop=P3([capEnd,capEnd.clone().add(new V3(-.25,-.05,-.3)),[-1.05,2.0,-.62],[-1.75,1.25,-.68],[-2.05,.7,-.5],[-2.2,.5,-.3]]);
+  const effCol=function(u){return tmpc.copy(cR).lerp(cP,sm(.15,.5,u)).lerp(cB,sm(.5,.95,u));};
+  const net=[vtube(eff.curve,40,10,function(){return .05;},function(){return cR.clone();}),
+    vtube(wrapC,Math.round(subLen/.55)*26,6,function(){return .032;},function(u){return effCol(u).clone();}),
+  ];
+  const veinTopM=new THREE.Mesh(vtube(veinTop.curve,60,10,function(u){return .045+.045*u;}),pmat(BLUE,{roughness:.35,clearcoat:.5,transparent:true,depthWrite:false,opacity:.45}));S.add(veinTopM);
+  V.part('vein','콩팥정맥으로 나가는 혈관','',[veinTopM]);
+  /* 근위 · 원위 세뇨관 둘레의 그물(고리 + 세로 가닥) — 감싼 모세혈관과 같은 둘레에 있어 서로 이어져요 */
+  const r3=rng(23),ucol=function(u){return effCol(Math.max(0,Math.min(1,(Umd-u)/(Umd-UE))));};
+  function netAround(u0,u1,step){
+    for(let u=u0;u<=u1;u+=step*(.8+.4*r3())){const f=tframe(tub.curve,u),p=tub.curve.getPointAt(u),R=rf(u)+.045,pts=[];
+      for(let k=0;k<12;k++){const a=k/12*Math.PI*2;pts.push(p.clone().addScaledVector(f.N,Math.cos(a)*R).addScaledVector(f.B,Math.sin(a)*R));}
+      net.push(solid(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),40,.018,5,true),ucol(u).getHex()));}
+    for(let s2=0;s2<4;s2++){const a0=s2*Math.PI/2+.4,pts=[];
+      for(let u=u0;u<=u1;u+=step/3){const f=tframe(tub.curve,u),p=tub.curve.getPointAt(u),R=rf(u)+.045;pts.push(p.clone().addScaledVector(f.N,Math.cos(a0)*R).addScaledVector(f.B,Math.sin(a0)*R));}
+      if(pts.length>3)net.push(vtube(new THREE.CatmullRomCurve3(pts),pts.length*5,5,function(){return .016;},function(u){return ucol(u0+(u1-u0)*u).clone();}));}
+  }
+  netAround(UE+.005,U1,.03);
+  netAround(U4+.01,Umd,.03);
+  const netM=new THREE.Mesh(merge(net),pmat(0xffffff,{vertexColors:true,roughness:.4,clearcoat:.4,transparent:true,depthWrite:false,opacity:.75}));S.add(netM);
+  V.part('cap','모세혈관','토리에서 나온 혈관이 다시 가는 모세혈관이 되어 세뇨관을 칭칭 감싸요. 세뇨관에서 재흡수된 물질을 받고, 남은 노폐물을 세뇨관으로 분비해요. 지나면서 동맥혈이 정맥혈로 바뀌어 콩팥정맥으로 나가요.',[netM]);
   /* 겉질 · 속질 경계 */
   const bdY=-.45,BX0=-9.4,BX1=5.9,BY0=-6.1,BY1=5.4,BW=BX1-BX0,BH=BY1-BY0;
   /* 배경: 작은 콩팥 단면 + 그 한 곳을 확대한 동그라미(겉질 · 속질) — 아주 연하게 */
@@ -1856,16 +1894,51 @@ function buildNephron(){
   b.strokeStyle='#EADBD0';b.lineWidth=bp*12;b.beginPath();b.moveTo(BX0,4.35);b.quadraticCurveTo(C0.x,4.6,BX1,4.35);b.stroke();
   b.restore();
   b.globalAlpha=.5;b.strokeStyle='#8E5A4A';b.lineWidth=bp*5;b.beginPath();b.arc(C0.x,C0.y,RR,0,6.2832);b.stroke();
-  /* 작은 콩팥 단면 */
-  const K={x:-7.35,y:2.35},KA=1.45,KB=2.1,ind=function(c,s){return c>0?KA*.45*c*Math.exp(-s*s/.07):0;};
-  const KP=new Path2D();for(let k=0;k<=120;k++){const tt=k/120*6.2832,c=Math.cos(tt),sn=Math.sin(tt),x=K.x+c*KA-ind(c,sn),y=K.y+sn*KB;k?KP.lineTo(x,y):KP.moveTo(x,y);}KP.closePath();
-  b.globalAlpha=.55;b.fillStyle='#B0573F';b.fill(KP);
-  b.save();b.clip(KP);const SCk={x:K.x+KA*.38,y:K.y};
-  [70,108,145,180,215,252,290].forEach(function(dg){const a=dg*Math.PI/180,r1=1.15,P=new Path2D(),A={x:SCk.x+Math.cos(a)*.45,y:SCk.y+Math.sin(a)*.6};
-    P.moveTo(A.x,A.y);for(let k=0;k<=8;k++){const t2=a-.24+.48*k/8;P.lineTo(SCk.x+Math.cos(t2)*r1*.98,SCk.y+Math.sin(t2)*r1*1.38);}P.closePath();b.fillStyle='#7A2620';b.fill(P);});
-  b.beginPath();b.ellipse(SCk.x+.25,SCk.y,.45,.75,0,0,6.2832);b.fillStyle='#F0DCA6';b.fill();b.restore();
-  b.strokeStyle='#EADBD0';b.lineWidth=bp*6;b.stroke(KP);b.strokeStyle='#7E3024';b.lineWidth=bp*2;b.stroke(KP);
-  b.strokeStyle='#E0B54E';b.lineWidth=bp*8;b.beginPath();b.moveTo(K.x+KA*.62,K.y-.2);b.quadraticCurveTo(K.x+KA*1.1,K.y-1.4,K.x+KA*.9,K.y-2.9);b.stroke();
+  /* 작은 콩팥 단면(자세히): 피막 · 겉질(알갱이 · 토리) · 피라미드(줄무늬) · 콩팥기둥 · 작은/큰 깔때기 · 콩팥깔때기 · 지방 · 혈관 · 오줌관 */
+  const K={x:-7.05,y:2.05},KA=1.75,KB=2.5,ind=function(c,s){return c>0?KA*.45*c*Math.exp(-s*s/.07):0;};
+  const KPt=[];for(let k=0;k<=160;k++){const tt=k/160*6.2832,c=Math.cos(tt),sn=Math.sin(tt);KPt.push({x:K.x+c*KA-ind(c,sn),y:K.y+sn*KB});}
+  const KP=new Path2D();KPt.forEach(function(p,i){i?KP.lineTo(p.x,p.y):KP.moveTo(p.x,p.y);});KP.closePath();
+  const SCk={x:K.x+KA*.3,y:K.y};
+  const kray=function(a){const dx=Math.cos(a),dy=Math.sin(a);let best=0;for(let i=0;i<KPt.length-1;i++){const p=KPt[i],q=KPt[i+1],ex=q.x-p.x,ey=q.y-p.y,den=dx*ey-dy*ex;if(Math.abs(den)<1e-9)continue;
+    const t=((p.x-SCk.x)*ey-(p.y-SCk.y)*ex)/den,u=((p.x-SCk.x)*dy-(p.y-SCk.y)*dx)/den;if(t>0&&u>=0&&u<=1&&t>best)best=t;}return best;};
+  const kp=function(a,f){const r=kray(a)*f;return {x:SCk.x+Math.cos(a)*r,y:SCk.y+Math.sin(a)*r};};
+  b.globalAlpha=.8;b.fillStyle='#A9503D';b.fill(KP);
+  b.save();b.clip(KP);
+  for(let i=0;i<3200;i++){b.fillStyle=RB()<.55?'rgba(90,25,18,.25)':'rgba(240,195,170,.18)';b.beginPath();b.arc(K.x+(RB()*2-1)*KA,K.y+(RB()*2-1)*KB,bp*(1+RB()*1.6),0,6.2832);b.fill();}
+  /* 콩팥동굴 지방 */
+  b.beginPath();b.ellipse(K.x+KA*.45,K.y,KA*.34,KB*.4,0,0,6.2832);b.fillStyle='#E4C686';b.fill();
+  for(let i=0;i<90;i++){b.beginPath();b.arc(K.x+KA*(.15+RB()*.6),K.y+KB*(RB()*.8-.4),bp*(5+RB()*6),0,6.2832);b.strokeStyle='rgba(160,115,45,.35)';b.lineWidth=bp;b.stroke();}
+  /* 피라미드(속질) */
+  const KPA=[62,96,128,160,192,224,256,290].map(function(d){return d*Math.PI/180;}),KH=.16,kap=[];
+  KPA.forEach(function(a){const A=kp(a,.36),P=new Path2D();kap.push(A);P.moveTo(A.x,A.y);for(let k=0;k<=10;k++){const q=kp(a-KH+2*KH*k/10,.8);P.lineTo(q.x,q.y);}P.closePath();
+    const g=b.createRadialGradient(A.x,A.y,0,A.x,A.y,kray(a)*.5);g.addColorStop(0,'#C27A68');g.addColorStop(.4,'#8E3029');g.addColorStop(1,'#5E1A16');b.fillStyle=g;b.fill(P);
+    b.save();b.clip(P);for(let k=0;k<34;k++){const q=kp(a-KH*1.1+2.2*KH*k/34,.8);b.strokeStyle=k%2?'rgba(45,8,6,.45)':'rgba(240,175,155,.22)';b.lineWidth=bp*1.2;b.beginPath();b.moveTo(A.x,A.y);b.lineTo(q.x,q.y);b.stroke();}b.restore();
+    for(let k=0;k<10;k++){const tt=a-KH+2*KH*(k+.5)/10,q0=kp(tt,.8),q1=kp(tt,.9+RB()*.05);b.strokeStyle='rgba(110,35,25,.3)';b.lineWidth=bp;b.beginPath();b.moveTo(q0.x,q0.y);b.lineTo(q1.x,q1.y);b.stroke();}});
+  /* 토리(겉질 · 콩팥기둥의 붉은 점) */
+  for(let i=0;i<420;i++){const a=RB()*6.2832;if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<.75)continue;const f=.82+RB()*.15,q=kp(a,f);b.fillStyle='rgba(110,10,22,.9)';b.beginPath();b.arc(q.x,q.y,bp*2.4,0,6.2832);b.fill();}
+  /* 혈관: 콩팥동맥 · 정맥 → 엽사이 → 활꼴 → 소엽사이 */
+  const vl=function(pts,c,w){b.strokeStyle=c;b.lineWidth=w;b.beginPath();pts.forEach(function(p,i){i?b.lineTo(p.x,p.y):b.moveTo(p.x,p.y);});b.stroke();};
+  for(let i=0;i<KPA.length-1;i++){const m=(KPA[i]+KPA[i+1])/2,A=[],Vn=[];for(let k=0;k<=8;k++){const f=.3+.5*k/8;A.push(kp(m-.03,f));Vn.push(kp(m+.03,f));}vl(Vn,'#3B4C9B',bp*4);vl(A,'#B8263A',bp*3);}
+  KPA.forEach(function(a){const aa=[],vv=[];for(let k=0;k<=12;k++){const tt=a-KH-.06+(2*KH+.12)*k/12;aa.push(kp(tt,.8));vv.push(kp(tt,.825));}vl(vv,'#3B4C9B',bp*3);vl(aa,'#B8263A',bp*2.4);
+    for(let k=0;k<5;k++){const tt=a-KH+2*KH*(k+.5)/5;vl([kp(tt,.8),kp(tt+.01,.88),kp(tt-.01,.95)],'rgba(184,38,58,.85)',bp*1.3);}});
+  /* 작은 깔때기 → 큰 깔때기 → 콩팥깔때기 */
+  const PCk={x:K.x+KA*.42,y:K.y},HIL={x:K.x+KA*.62,y:K.y-.05},M1={x:K.x+KA*.3,y:K.y+KB*.2},M2={x:K.x+KA*.3,y:K.y-KB*.2};
+  const stem=function(A){const to=A.y>K.y+KB*.12?M1:A.y<K.y-KB*.12?M2:PCk;return [A,{x:(A.x+to.x)/2,y:(A.y+to.y)/2},to];};
+  [[bp*15,'#7A5A1C'],[bp*11,'#F1DFAE']].forEach(function(s){b.strokeStyle=s[1];b.lineWidth=s[0];b.lineCap='round';
+    kap.forEach(function(A){const p=stem(A);b.beginPath();b.moveTo(p[0].x,p[0].y);b.quadraticCurveTo(p[1].x,p[1].y,p[2].x,p[2].y);b.stroke();});
+    [M1,M2].forEach(function(M){b.beginPath();b.moveTo(M.x,M.y);b.quadraticCurveTo(PCk.x,(M.y+PCk.y)/2,PCk.x,PCk.y);b.stroke();});});
+  kap.forEach(function(A){b.beginPath();b.arc(A.x,A.y,bp*9,0,6.2832);b.fillStyle='#F1DFAE';b.fill();b.strokeStyle='#7A5A1C';b.lineWidth=bp*1.5;b.stroke();
+    b.beginPath();b.arc(A.x,A.y,bp*4,0,6.2832);b.fillStyle='#C27A68';b.fill();});
+  b.beginPath();b.ellipse(PCk.x+KA*.06,PCk.y,KA*.13,KB*.12,0,0,6.2832);b.fillStyle='#F1DFAE';b.fill();b.strokeStyle='#7A5A1C';b.lineWidth=bp*2;b.stroke();
+  b.restore();
+  /* 피막 */
+  b.strokeStyle='#EADBD0';b.lineWidth=bp*7;b.stroke(KP);b.strokeStyle='#7E3024';b.lineWidth=bp*2;b.stroke(KP);
+  /* 콩팥문: 콩팥동맥 · 콩팥정맥 · 오줌관 */
+  const hx=K.x+KA*.62,hy=K.y;
+  vl([{x:hx-.25,y:hy+.25},{x:hx+.4,y:hy+.35},{x:hx+1.1,y:hy+.4}],'#B8263A',bp*9);
+  vl([{x:hx-.25,y:hy+.08},{x:hx+.45,y:hy+.12},{x:hx+1.15,y:hy+.12}],'#3B4C9B',bp*11);
+  b.strokeStyle='#7A5A1C';b.lineWidth=bp*12;b.beginPath();b.moveTo(PCk.x+KA*.15,PCk.y-.1);b.quadraticCurveTo(hx+.5,hy-.9,hx+.35,K.y-KB-.6);b.stroke();
+  b.strokeStyle='#E8C25A';b.lineWidth=bp*8;b.stroke();
   /* 확대한 곳 표시와 이어지는 선 */
   const c1={x:K.x+.05,y:K.y+KB-.42},r1=.36;
   b.globalAlpha=.85;b.strokeStyle='#3A3F5C';b.lineWidth=bp*4;b.beginPath();b.arc(c1.x,c1.y,r1,0,6.2832);b.stroke();
@@ -1882,13 +1955,13 @@ function buildNephron(){
   V.label('토리',G.clone().add(new V3(.05,.02,.5)),'glom');
   V.label('보먼주머니',G.clone().add(new V3(-1.0,-.5,0)),'capsule');
   V.label('세뇨관',[-1.55,1.62,.5],'tubule');
-  V.label('모세혈관',eff.at(.5).add(new V3(.5,0,0)),'cap');
+  V.label('모세혈관',capP.at(.42).add(new V3(.5,0,.1)),'cap');
   V.label('콩팥동맥에서 ↑',[-2.55,-4.1,0],'art');V.label('콩팥정맥으로 ↓',[-3.0,-3.4,0],'vein');
-  V.label('집합관',[2.92,-.4,0],'duct');V.label('콩팥깔때기로 ↓',[2.95,-4.45,0],'duct');
+  V.label('집합관',[2.92,-.4,0],'duct');V.label('콩팥깔때기로 ↓',[2.95,-4.45,0]);
   V.label('콩팥겉질 ↑',[4.2,bdY+.38,0]);V.label('콩팥속질 ↓',[4.2,bdY-.38,0]);
   /* 흐름 */
-  const bRoute=route([art,glom,eff,vein],1,1,.03),tmp=new THREE.Color();
-  Flow(V,[bRoute],{n:46,speed:1.0,size:.045,sizeAt:function(p){return p.seg===1||p.seg===2?.028:.045;},color:RED,colorAt:function(p,u){if(p.seg<2)return cR;if(p.seg===3)return cB;return tmp.copy(effCol(u));}});
+  const bRoute=route([art,glom,eff,capP,veinTop,vein],1,1,0),tmp=new THREE.Color();
+  Flow(V,[bRoute],{n:70,speed:1.0,size:.045,sizeAt:function(p){return p.seg>=1&&p.seg<=3?.026:p.seg===4?.034:.045;},color:RED,colorAt:function(p,u){if(p.seg<3)return cR;if(p.seg>3)return cB;return tmp.copy(effCol(u));}});
   const ductTail=P3([[2.9,2.0,0],[2.92,-1,0],[2.95,-4.7,0]]),ductTop=P3([[2.9,3.4,0],[2.9,2.0,0]]);
   Flow(V,[route([tub,ductTail],1,1,.035)],{n:40,speed:.55,size:.045,color:0xD99200});
   Flow(V,[route([ductTop,ductTail],1,1,.05)],{n:8,speed:.6,size:.045,color:0xD99200});
