@@ -80,12 +80,12 @@ a.note .go{margin-top:auto;padding-top:4px;font-family:var(--display);font-size:
 .tab:focus-visible{outline:3px solid #FFE08A;outline-offset:2px;border-radius:6px}
 .tabbed > h2{display:none}
 /* 물화생지: 인덱스 탭 */
-#topicTabs{gap:4px;border-bottom:0;margin-bottom:-30px;flex-wrap:nowrap}
-#topicTabs .tab{opacity:1;color:var(--chalk-dim);background:rgba(0,0,0,.24);border:0;border-top:4px solid var(--tc);border-radius:14px 14px 0 0;margin:0;padding:9px 16px 10px 10px}
-#topicTabs .tab .badge{background:rgba(255,255,255,.08)}
-#topicTabs .tab[aria-selected="true"]{color:var(--chalk);background:rgba(244,241,230,.1)}
-#topicTabs .tab:not([aria-selected="true"]) .badge svg{opacity:.6}
-section.tabbed{background:rgba(244,241,230,.1);border-radius:0 14px 14px 14px;padding:30px 18px 22px}
+.tabs{gap:5px;border-bottom:0;margin-bottom:-30px;flex-wrap:nowrap;align-items:flex-end}
+.tabs .tab{opacity:1;align-self:flex-end;gap:7px;font-size:20px;color:#1E2236;-webkit-text-stroke:.6px currentColor;background:var(--tc);border:0;border-radius:12px 12px 0 0;margin:0;padding:6px 13px 7px 7px}
+.tabs .tab[aria-selected="true"]{padding-top:11px;box-shadow:0 -3px 8px rgba(0,0,0,.18)}
+.tabs .tab .badge{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.6);-webkit-text-stroke:0}
+.tabs .tab .badge svg{width:20px;height:20px}
+section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius:0 14px 14px 14px;padding:30px 18px 22px}
 .empty{color:var(--chalk-dim);margin:6px 0 0;font-size:15px}
 .unit-h{font-family:var(--display);font-size:19px;color:var(--chalk);margin:0 0 14px;display:flex;align-items:center;gap:8px}
 .unit-h .rn{color:var(--c);min-width:1.4em}
@@ -105,9 +105,9 @@ section.tabbed{background:rgba(244,241,230,.1);border-radius:0 14px 14px 14px;pa
   .row h2{font-size:25px}
   .tab{font-size:20px;gap:7px;padding:4px 6px 8px 2px}
   .tab .badge{width:32px;height:32px;border-radius:10px}.tab .badge svg{width:22px;height:22px}
-  #topicTabs .tab{font-size:17px;padding:8px 9px 9px;flex:1;justify-content:center}
-  #topicTabs .tab .badge{display:none}
-  section.tabbed{padding:28px 10px 18px}
+  .tabs .tab{font-size:16.5px;padding:6px 6px 7px;flex:1;justify-content:center}
+  .tabs .tab .badge{display:none}
+  section.tabbed,#by-grade > section{padding:28px 10px 18px}
   .notes{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
   a.note{padding:17px 11px 12px}
   a.note b{font-size:16.5px}
@@ -204,13 +204,13 @@ section.tabbed{background:rgba(244,241,230,.1);border-radius:0 14px 14px 14px;pa
     '물질의 특성': 'Ⅰ', '지권의 변화': 'Ⅱ', '빛과 파동': 'Ⅲ', '물질의 구성': 'Ⅳ', '식물과 에너지': 'Ⅴ', '동물과 에너지': 'Ⅵ', '전기와 자기': 'Ⅶ', '별과 우주': 'Ⅷ',
     '화학 반응의 규칙성': 'Ⅰ', '날씨와 기후 변화': 'Ⅱ', '수권과 해수의 순환': 'Ⅲ', '운동과 에너지': 'Ⅳ', '자극과 반응': 'Ⅴ', '생식과 유전': 'Ⅵ', '재해·재난과 안전': 'Ⅶ', '과학과 나의 미래': 'Ⅷ'
   };
-  var TOPICS = [['physics', '물리', '#FFC48C'], ['chemistry', '화학', '#B9E58C'], ['life-science', '생명과학', '#FF9DB5'], ['earth-science', '지구과학', '#9CC4FF']];
+  var TOPICS = [['physics', '물리', '#F3E4D6'], ['chemistry', '화학', '#E1EBD9'], ['life-science', '생명과학', '#F2DEE3'], ['earth-science', '지구과학', '#DCE5F0']];
   var ICONS = {
     'physics': '<svg viewBox="0 0 36 36"><path d="M20.5 3 8 20h9l-2 13 13-18h-9z" fill="#FFC48C" stroke="#2b2f55" stroke-width="2" stroke-linejoin="round"/></svg>',
     'chemistry': '<svg viewBox="0 0 36 36"><path d="M14 5v9L6.5 27.5Q5 32 10 32h16q5 0 3.5-4.5L22 14V5z" fill="#fff" stroke="#2b2f55" stroke-width="2" stroke-linejoin="round"/><path d="M9.6 22h16.8l2.6 5.5Q30 31 26 31H10q-4 0-3-3.5z" fill="#B9E58C"/><path d="M12 4.5h12" stroke="#2b2f55" stroke-width="2.4" stroke-linecap="round"/></svg>',
     'grade': '<svg viewBox="0 0 36 36"><path d="M5 9c4.5-2.4 9-2.4 13 .8v19.4c-4-3-8.5-3.2-13-.8z" fill="#F4F1E6" stroke="#2b2f55" stroke-width="1.8" stroke-linejoin="round"/><path d="M31 9c-4.5-2.4-9-2.4-13 .8v19.4c4-3 8.5-3.2 13-.8z" fill="#FFFFFF" stroke="#2b2f55" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 14c2.5-.9 5-.8 7 .4M8.5 18.5c2.5-.9 5-.8 7 .4M27.5 14c-2.5-.9-5-.8-7 .4" stroke="#7C8DB5" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>'
   };
-  var GRADES = [['1', '#FF9DB5'], ['2', '#FFE08A'], ['3', '#9CC4FF']];
+  var GRADES = [['1', '#F2DEE3'], ['2', '#F1EAD3'], ['3', '#DCE5F0']];
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   var cards = [].slice.call(document.querySelectorAll('section.row[id] a.note'));
   var topicTabs = document.getElementById('topicTabs'), gradeTabs = document.getElementById('gradeTabs');
