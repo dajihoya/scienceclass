@@ -1,4 +1,5 @@
 [
+  {"id": "heart",       "artifact": "https://claude.ai/artifact/FpzSG7sYUVy6T3XY6NCb8n", "file": "life-science/heart.html",        "back": "../#life-science"},
   {"id": "nephron",     "artifact": "https://claude.ai/artifact/G5g5UhCVj6PEkr4VA6gqD7", "file": "life-science/nephron.html",      "back": "../#life-science"},
   {"id": "diurnal",     "artifact": "https://claude.ai/artifact/TphDiwA8pMVV7nTtue9WDC", "file": "earth-science/diurnal.html",     "back": "../#earth-science"},
   {"id": "sun-annual",  "artifact": "https://claude.ai/artifact/6b1uPbB9ynRJw6JcMNCUvn", "file": "earth-science/sun-annual.html",  "back": "../#earth-science"},

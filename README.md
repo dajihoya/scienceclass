@@ -3,6 +3,7 @@
 수업에서 쓰는 과학 시뮬레이션입니다. 첫 화면에서 시뮬레이션을 골라 엽니다.
 
 - `index.html` — 첫 화면 (칠판 배경, 생명과학·지구과학 줄에 시뮬레이션을 나란히 배치)
+- `life-science/heart.html` — 심장의 구조와 기능 3D 시뮬레이션
 - `life-science/nephron.html` — 콩팥의 구조와 기능
 - `earth-science/diurnal.html` — 천체의 일주운동 시뮬레이션
 - `earth-science/sun-annual.html` — 태양의 연주운동 3D 시뮬레이션
