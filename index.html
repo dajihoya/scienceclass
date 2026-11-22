@@ -186,7 +186,12 @@ a.note .go{margin-top:auto;padding-top:4px;font-family:var(--display);font-size:
 <script>
 (function () {
   /* 단원 번호(로마자): 교과서 차례에 맞게 여기만 고치면 됨 */
-  var UNIT_NO = { '태양계': 'Ⅶ', '동물과 에너지': 'Ⅴ', '별과 우주': 'Ⅶ' };
+  /* 2022 개정 교육과정 단원 번호 */
+  var UNIT_NO = {
+    '과학과 인류의 지속가능한 삶': 'Ⅰ', '생물의 구성과 다양성': 'Ⅱ', '열': 'Ⅲ', '물질의 상태 변화': 'Ⅳ', '힘의 작용': 'Ⅴ', '기체의 성질': 'Ⅵ', '태양계': 'Ⅶ',
+    '물질의 특성': 'Ⅰ', '지권의 변화': 'Ⅱ', '빛과 파동': 'Ⅲ', '물질의 구성': 'Ⅳ', '식물과 에너지': 'Ⅴ', '동물과 에너지': 'Ⅵ', '전기와 자기': 'Ⅶ', '별과 우주': 'Ⅷ',
+    '화학 반응의 규칙성': 'Ⅰ', '날씨와 기후 변화': 'Ⅱ', '수권과 해수의 순환': 'Ⅲ', '운동과 에너지': 'Ⅳ', '자극과 반응': 'Ⅴ', '생식과 유전': 'Ⅵ', '재해·재난과 안전': 'Ⅶ', '과학과 나의 미래': 'Ⅷ'
+  };
   var TOPICS = [['physics', '물리', '#FFC48C'], ['chemistry', '화학', '#B9E58C'], ['life-science', '생명과학', '#FF9DB5'], ['earth-science', '지구과학', '#9CC4FF']];
   var GRADES = [['1', '#FF9DB5'], ['2', '#FFE08A'], ['3', '#9CC4FF']];
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
