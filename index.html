@@ -81,14 +81,19 @@ a.note .go{margin-top:auto;padding-top:4px;font-family:var(--display);font-size:
 .tabbed > h2{display:none}
 /* 물화생지: 인덱스 탭 */
 .tabs{gap:5px;border-bottom:0;margin-bottom:-30px;flex-wrap:nowrap;align-items:flex-end}
-.tabs .tab{opacity:1;align-self:flex-end;gap:7px;font-size:20px;color:#1E2236;-webkit-text-stroke:.6px currentColor;background:var(--tc);border:0;border-radius:12px 12px 0 0;margin:0;padding:6px 13px 7px 7px}
+.tabs .tab{opacity:1;align-self:flex-end;gap:7px;font-size:20px;color:#1E2236;background:var(--tc);border:0;border-radius:12px 12px 0 0;margin:0;padding:6px 13px 7px 7px}
 .tabs .tab[aria-selected="true"]{padding-top:11px;box-shadow:0 -3px 8px rgba(0,0,0,.18)}
 .tabs .tab .badge{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.6);-webkit-text-stroke:0}
 .tabs .tab .badge svg{width:20px;height:20px}
 section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius:0 14px 14px 14px;padding:30px 18px 22px}
 .empty{color:var(--chalk-dim);margin:6px 0 0;font-size:15px}
-.unit-h{font-family:var(--display);font-size:19px;color:var(--chalk);margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.unit-h{font-family:var(--display);font-size:19px;color:var(--chalk);margin:0 0 14px;display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;padding:0;cursor:pointer;text-align:left}
 .unit-h .rn{color:var(--c);min-width:1.4em}
+.unit-h .chev{margin-left:2px;font-size:13px;color:var(--chalk-dim);transition:transform .2s}
+.unit-h:focus-visible{outline:3px solid #FFE08A;outline-offset:3px;border-radius:6px}
+.unit-grp.fold .unit-h{margin-bottom:0}
+.unit-grp.fold .unit-h .chev{transform:rotate(-90deg)}
+.unit-grp.fold .notes{display:none}
 .unit-grp + .unit-grp{margin-top:26px}
 /* 주제별 / 학년별 보기 전환 */
 .modes{display:inline-flex;align-self:flex-start;gap:4px;border:2px solid rgba(244,241,230,.35);border-radius:999px;padding:4px;background:rgba(255,255,255,.06)}
@@ -235,7 +240,20 @@ section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius
     pick(first === null ? 0 : first);
   }
 
-  /* 주제별: 물화생지 탭 */
+  /* 제목을 누르면 접히는 묶음 */
+  function group(title, list, copy) {
+    var grp = document.createElement('div'); grp.className = 'unit-grp';
+    var h = document.createElement('button'); h.type = 'button'; h.className = 'unit-h'; h.setAttribute('aria-expanded', 'true');
+    h.innerHTML = title + '<span class="chev" aria-hidden="true">▼</span>';
+    h.onclick = function () { var f = grp.classList.toggle('fold'); h.setAttribute('aria-expanded', f ? 'false' : 'true'); };
+    var notes = document.createElement('div'); notes.className = 'notes';
+    list.forEach(function (c) { notes.appendChild(copy ? c.cloneNode(true) : c); });
+    grp.appendChild(h); grp.appendChild(notes);
+    return grp;
+  }
+  function gradeOf(c) { return (c.dataset.grade || '').split(' ')[0]; }
+
+  /* 주제별: 물화생지 탭, 탭 안은 1·2·3학년으로 묶음 */
   var topicItems = TOPICS.map(function (t) {
     var sec = document.getElementById(t[0]);
     if (!sec) {
@@ -244,6 +262,16 @@ section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius
       topicTabs.parentNode.insertBefore(sec, document.getElementById('life-science'));
     }
     sec.classList.add('tabbed'); topicPanes.push(sec);
+    var mine = [].slice.call(sec.querySelectorAll('a.note')), box0 = sec.querySelector('.notes');
+    if (mine.length) {
+      GRADES.forEach(function (g) {
+        var l = mine.filter(function (c) { return gradeOf(c) === g[0]; });
+        if (l.length) sec.appendChild(group(g[0] + '학년', l, false));
+      });
+      var rest = mine.filter(function (c) { return !c.parentNode || c.parentNode === box0; });
+      if (rest.length) sec.appendChild(group('기타', rest, false));
+      if (box0) box0.remove();
+    }
     var bd = sec.querySelector('h2 .badge');
     return { id: t[0], label: t[1], color: t[2], count: sec.querySelectorAll('a.note').length, icon: bd ? bd.innerHTML : ICONS[t[0]] };
   });
@@ -257,11 +285,8 @@ section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius
     var units = [];
     list.forEach(function (c) { var u = c.dataset.unit || ''; if (units.indexOf(u) < 0) units.push(u); });
     units.forEach(function (u) {
-      var grp = document.createElement('div'); grp.className = 'unit-grp';
-      if (u) grp.innerHTML = '<h3 class="unit-h">' + (UNIT_NO[u] ? '<span class="rn">' + UNIT_NO[u] + '.</span>' : '') + u + '</h3>';
-      var notes = document.createElement('div'); notes.className = 'notes';
-      list.forEach(function (c) { if ((c.dataset.unit || '') === u) notes.appendChild(c.cloneNode(true)); });
-      grp.appendChild(notes); sec.appendChild(grp);
+      var title = (UNIT_NO[u] ? '<span class="rn">' + UNIT_NO[u] + '.</span>' : '') + (u || '기타');
+      sec.appendChild(group(title, list.filter(function (c) { return (c.dataset.unit || '') === u; }), true));
     });
     box.appendChild(sec); gradePanes.push(sec);
     return { id: g[0], label: g[0] + '학년', color: g[1], count: list.length, icon: ICONS.grade };
