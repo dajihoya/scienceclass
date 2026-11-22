@@ -83,8 +83,8 @@ a.note .go{margin-top:auto;padding-top:4px;font-family:var(--display);font-size:
 .tabbed > h2{display:none}
 /* 물화생지: 인덱스 탭 */
 .tabs{gap:5px;border-bottom:0;margin-bottom:-30px;flex-wrap:nowrap;align-items:flex-end}
-.tabs .tab{opacity:1;align-self:flex-end;gap:7px;font-size:20px;color:#1E2236;background:var(--tc);border:0;border-radius:12px 12px 0 0;margin:0;padding:6px 13px 7px 7px}
-.tabs .tab[aria-selected="true"]{padding-top:11px;box-shadow:0 -3px 8px rgba(0,0,0,.18)}
+.tabs .tab{opacity:1;align-self:flex-end;gap:7px;font-size:20px;color:#1E2236;background:var(--tc);border:0;border-top:7px solid var(--tt);border-radius:3px 3px 0 0;box-shadow:1px -1px 3px rgba(0,0,0,.2);margin:0;padding:5px 13px 7px 7px}
+.tabs .tab[aria-selected="true"]{padding-top:10px;box-shadow:0 -3px 8px rgba(0,0,0,.18)}
 .tabs .tab .badge{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.6);-webkit-text-stroke:0}
 .tabs .tab .badge svg{width:20px;height:20px}
 section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius:0 14px 14px 14px;padding:30px 18px 22px}
@@ -217,6 +217,7 @@ section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius
     'chemistry': '<svg viewBox="0 0 36 36"><path d="M14 5v9L6.5 27.5Q5 32 10 32h16q5 0 3.5-4.5L22 14V5z" fill="#fff" stroke="#2b2f55" stroke-width="2" stroke-linejoin="round"/><path d="M9.6 22h16.8l2.6 5.5Q30 31 26 31H10q-4 0-3-3.5z" fill="#B9E58C"/><path d="M12 4.5h12" stroke="#2b2f55" stroke-width="2.4" stroke-linecap="round"/></svg>',
     'grade': '<svg viewBox="0 0 36 36"><path d="M5 9c4.5-2.4 9-2.4 13 .8v19.4c-4-3-8.5-3.2-13-.8z" fill="#F4F1E6" stroke="#2b2f55" stroke-width="1.8" stroke-linejoin="round"/><path d="M31 9c-4.5-2.4-9-2.4-13 .8v19.4c4-3 8.5-3.2 13-.8z" fill="#FFFFFF" stroke="#2b2f55" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 14c2.5-.9 5-.8 7 .4M8.5 18.5c2.5-.9 5-.8 7 .4M27.5 14c-2.5-.9-5-.8-7 .4" stroke="#7C8DB5" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>'
   };
+  var TIP = { '#F3E4D6': '#E2A574', '#E1EBD9': '#98BE7C', '#F2DEE3': '#E094A7', '#DCE5F0': '#88A4D0', '#F1EAD3': '#D8BD6E' };
   var GRADES = [['1', '#F2DEE3'], ['2', '#F1EAD3'], ['3', '#DCE5F0']];
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   var cards = [].slice.call(document.querySelectorAll('section.row[id] a.note'));
@@ -229,7 +230,7 @@ section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius
     items.forEach(function (it, i) {
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'tab'; b.setAttribute('role', 'tab');
-      b.style.setProperty('--tc', it.color);
+      b.style.setProperty('--tc', it.color); b.style.setProperty('--tt', TIP[it.color]);
       b.innerHTML = '<span class="badge" aria-hidden="true">' + it.icon + '</span>' + it.label;
       b.onclick = function () { pick(i); store(key, it.id); };
       bar.appendChild(b);
