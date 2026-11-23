@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전류, 전압, 저항 사이의 관계 모의실험</title>
+<style>
+@font-face{font-family:'IsYun';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff') format('woff');font-weight:normal;font-style:normal;font-display:swap;}
+:root{--bg:#F3F0FA;--card:#FFFFFF;--line:#E5E0F1;--ink:#2C2A4A;--sub:#6B6890;--yel:#FFC531;--yelD:#E0A800;--A:#E8505B;--B:#2F7DE1;--C:#2BA36B;--cur:#FF8A00;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IsYun',sans-serif;}
+body{padding:18px;}
+.wrap{max-width:1180px;margin:0 auto;}
+header{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.logo{width:56px;height:56px;flex:none;}
+h1{font-size:28px;margin:0;line-height:1.2;}
+.tag{display:inline-block;background:var(--ink);color:#fff;font-size:14px;padding:3px 10px;border-radius:20px;margin-bottom:4px;}
+.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:16px;}
+.card h2{font-size:21px;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+.num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--yel);font-size:16px;}
+svg{display:block;width:100%;height:auto;}
+.ctrl{margin-top:10px;}
+.ctrl .lab{font-size:17px;margin:10px 0 6px;color:var(--sub);}
+.btns{display:flex;flex-wrap:wrap;gap:8px;}
+button{font-family:inherit;font-size:18px;border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:14px;padding:9px 14px;min-height:46px;cursor:pointer;}
+button.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+button.wire.on.a{background:var(--A);border-color:var(--A);}
+button.wire.on.b{background:var(--B);border-color:var(--B);}
+button.wire.on.c{background:var(--C);border-color:var(--C);}
+.sw{width:100%;font-size:20px;margin-top:12px;background:var(--yel);border-color:var(--yelD);}
+.sw.closed{background:#fff;border-color:var(--ink);}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.meter{border:2px solid var(--line);border-radius:18px;padding:10px;text-align:center;}
+.meter.over{border-color:var(--A);background:#FFF0F1;}
+.meter h3{margin:0 0 4px;font-size:19px;}
+.meter .read{font-size:20px;margin:4px 0 8px;min-height:26px;}
+.meter .btns{justify-content:center;gap:6px;}
+.meter button{font-size:15px;padding:6px 8px;min-height:40px;}
+.meter .tl{font-size:14px;color:var(--sub);margin-bottom:4px;}
+.talk{display:flex;gap:10px;align-items:flex-start;margin:12px 0;}
+.talk .face{width:52px;height:52px;flex:none;}
+.bubble{flex:1;background:#FFFBEA;border:2px solid var(--line);border-radius:16px;padding:10px 12px;font-size:18px;line-height:1.45;min-height:52px;}
+.bubble.warn{background:#FFF0F1;border-color:#F6B9BE;}
+.rec{width:100%;font-size:21px;background:var(--ink);color:#fff;border-color:var(--ink);}
+.rec:disabled{opacity:.35;}
+.row2{display:flex;gap:8px;margin-top:8px;}
+.row2 button{flex:1;font-size:16px;}
+.chk{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--sub);margin-top:8px;}
+.chk input{width:22px;height:22px;}
+table{width:100%;border-collapse:collapse;font-size:17px;}
+th,td{border-bottom:1.5px solid var(--line);padding:7px 4px;text-align:center;}
+th{color:var(--sub);font-weight:normal;}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+.empty{color:var(--sub);text-align:center;padding:18px 0;font-size:17px;}
+.legend{display:flex;gap:14px;justify-content:center;font-size:16px;margin-top:6px;flex-wrap:wrap;}
+.steps{margin:0;padding-left:22px;font-size:17px;line-height:1.7;}
+.q{border:2px dashed var(--line);border-radius:16px;padding:12px;margin-bottom:10px;font-size:18px;}
+.q .ans{display:none;margin-top:8px;color:#1B6E46;}
+.q.show .ans{display:block;}
+.q button{font-size:15px;min-height:38px;padding:5px 12px;margin-top:8px;}
+.concl{background:var(--ink);color:#fff;border-radius:16px;padding:14px;font-size:19px;line-height:1.6;display:none;}
+.concl.show{display:block;}
+.concl b{color:var(--yel);font-weight:normal;}
+.full{grid-column:1/-1;}
+.tableBox{max-height:330px;overflow:auto;}
+@media (max-width:900px){.grid{grid-template-columns:1fr;}h1{font-size:24px;}}
+.tabs{display:inline-flex;gap:0;margin-bottom:14px;}
+.tab{font-size:16px;min-height:40px;padding:6px 18px;border-radius:0;}
+.tab:first-child{border-radius:20px 0 0 20px;}
+.tab:last-child{border-radius:0 20px 20px 0;border-left:none;}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.qz{max-width:760px;margin:0 auto;}
+.qtop{display:flex;justify-content:space-between;align-items:center;font-size:17px;color:var(--sub);margin-bottom:8px;}
+.bar{height:12px;background:#EEF0F5;border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.bar i{display:block;height:100%;background:var(--yel);width:0;transition:width .3s;}
+.qtext{font-size:22px;line-height:1.5;margin:4px 0 14px;}
+.opts{display:grid;gap:10px;}
+.opt{text-align:left;font-size:19px;padding:12px 16px;min-height:54px;}
+.opt.ok{background:#E3F6EC;border-color:var(--C);color:#1B6E46;}
+.opt.no{background:#FFF0F1;border-color:var(--A);color:#B8303A;}
+.exp{display:none;margin-top:12px;font-size:18px;line-height:1.55;}
+.exp.show{display:block;}
+.next{width:100%;margin-top:14px;font-size:20px;background:var(--ink);color:#fff;border-color:var(--ink);display:none;}
+.next.show{display:block;}
+.res{text-align:center;padding:10px 0;}
+.res .big{font-size:52px;margin:6px 0;}
+.res p{font-size:20px;line-height:1.5;}
+.res button{font-size:20px;background:var(--yel);border-color:var(--yelD);}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.wig{animation:wiggle .5s ease 2;transform-origin:50% 50%;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <svg class="logo" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="#FFC531"/><path d="M33 8 L18 33 H29 L25 52 L42 25 H31 Z" fill="#fff" stroke="#2C2A4A" stroke-width="2.5" stroke-linejoin="round"/><circle cx="26.5" cy="29" r="1.8" fill="#2C2A4A"/><circle cx="33" cy="29" r="1.8" fill="#2C2A4A"/></svg>
+  <div><span class="tag">Ⅶ. 전기와 자기 · 모의실험</span><h1>전류, 전압, 저항 사이의 관계 탐구하기</h1></div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab on" data-tab="sim">⚡ 모의실험</button>
+  <button class="tab" data-tab="quiz">✏️ 확인 퀴즈</button>
+</div>
+
+<div id="sim">
+<div class="grid">
+  <!-- 회로 -->
+  <div class="card">
+    <h2><span class="num">1</span>회로 꾸미기</h2>
+    <svg id="circuit" viewBox="0 0 600 410">
+      <!-- wires -->
+      <g stroke="#2C2A4A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="285,60 60,60 60,158"/>
+        <polyline points="60,202 60,300 245,300"/>
+        <polyline points="355,300 540,300 540,208"/>
+        <polyline points="540,152 540,60 315,60"/>
+        <polyline points="230,300 230,360 270,360"/>
+        <polyline points="330,360 370,360 370,300"/>
+      </g>
+      <circle cx="230" cy="300" r="5" fill="#2C2A4A"/><circle cx="370" cy="300" r="5" fill="#2C2A4A"/>
+      <!-- electrons layer -->
+      <g id="electrons"></g>
+      <!-- battery -->
+      <rect x="250" y="22" width="100" height="76" rx="14" fill="#FFFBEA" stroke="#E0A800" stroke-width="2.5"/>
+      <line x1="290" y1="36" x2="290" y2="84" stroke="#2C2A4A" stroke-width="5"/>
+      <line x1="310" y1="48" x2="310" y2="72" stroke="#2C2A4A" stroke-width="8"/>
+      <text x="276" y="48" font-size="20" fill="#E8505B" text-anchor="middle">+</text>
+      <text x="326" y="48" font-size="22" fill="#2F7DE1" text-anchor="middle">−</text>
+      <text x="300" y="16" font-size="17" fill="#2C2A4A" text-anchor="middle" id="srcLabel">전원 장치 1.5 V</text>
+      <!-- switch -->
+      <circle cx="60" cy="158" r="6" fill="#fff" stroke="#2C2A4A" stroke-width="3"/>
+      <circle cx="60" cy="202" r="6" fill="#fff" stroke="#2C2A4A" stroke-width="3"/>
+      <line id="lever" x1="60" y1="202" x2="60" y2="160" stroke="#2C2A4A" stroke-width="5" stroke-linecap="round" style="transform-origin:60px 202px;transition:transform .3s"/>
+      <text x="22" y="186" font-size="16" fill="#2C2A4A" text-anchor="middle">스위치</text>
+      <!-- resistor (nichrome) -->
+      <rect x="240" y="282" width="120" height="36" rx="10" fill="#fff"/>
+      <polyline id="nich" points="245,300 255,286 267,314 279,286 291,314 303,286 315,314 327,286 339,314 351,286 355,300" fill="none" stroke="#E8505B" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+      <text x="300" y="276" font-size="17" text-anchor="middle" fill="#2C2A4A" id="nichLabel">니크롬선 A (10 Ω)</text>
+      <!-- voltmeter -->
+      <circle cx="300" cy="360" r="30" fill="#fff" stroke="#2F7DE1" stroke-width="4"/>
+      <text x="300" y="369" font-size="26" text-anchor="middle" fill="#2F7DE1">V</text>
+      <text x="258" y="352" font-size="17" fill="#E8505B" text-anchor="middle">+</text>
+      <text x="342" y="352" font-size="19" fill="#2F7DE1" text-anchor="middle">−</text>
+      <text x="300" y="406" font-size="15" text-anchor="middle" fill="#6B6890">전압계 (니크롬선과 병렬)</text>
+      <!-- ammeter -->
+      <circle cx="540" cy="180" r="30" fill="#fff" stroke="#E8505B" stroke-width="4"/>
+      <text x="540" y="189" font-size="26" text-anchor="middle" fill="#E8505B">A</text>
+      <text x="558" y="228" font-size="17" fill="#E8505B">+</text>
+      <text x="558" y="144" font-size="19" fill="#2F7DE1">−</text>
+      <text x="500" y="186" font-size="15" text-anchor="end" fill="#6B6890">전류계 (직렬)</text>
+      <!-- current arrows -->
+      <g id="arrows" fill="#FF8A00" opacity="0">
+        <path d="M60,235 l-9,-14 h18 z"/>
+        <path d="M150,300 l-14,-9 v18 z"/>
+        <path d="M455,300 l-14,-9 v18 z" transform="rotate(0)"/>
+        <path d="M540,250 l-9,14 h18 z"/>
+        <path d="M150,60 l14,-9 v18 z"/>
+        <path d="M450,60 l14,-9 v18 z"/>
+      </g>
+      <!-- legend -->
+      <g font-size="15" fill="#2C2A4A">
+        <path d="M92,92 h40" stroke="#FF8A00" stroke-width="4"/><path d="M140,92 l-10,-7 v14 z" fill="#FF8A00"/>
+        <text x="148" y="97">전류 방향 (+ → −)</text>
+        <circle cx="104" cy="120" r="7" fill="#FFE071" stroke="#2C2A4A" stroke-width="1.5"/>
+        <text x="118" y="125">전자 (− → +)</text>
+      </g>
+    </svg>
+
+    <div class="ctrl">
+      <div class="lab">① 니크롬선 고르기</div>
+      <div class="btns" id="wireBtns">
+        <button class="wire a on" data-w="A">A (10 Ω)</button>
+        <button class="wire b" data-w="B">B (20 Ω)</button>
+        <button class="wire c" data-w="C">C (30 Ω)</button>
+      </div>
+      <div class="lab">② 전원 장치 전압</div>
+      <div class="btns" id="voltBtns">
+        <button class="on" data-v="1.5">1.5 V</button>
+        <button data-v="3">3.0 V</button>
+        <button data-v="4.5">4.5 V</button>
+        <button data-v="6">6.0 V</button>
+      </div>
+      <button class="sw" id="swBtn">🔌 스위치 닫기 (회로 연결)</button>
+    </div>
+  </div>
+
+  <!-- 측정 -->
+  <div class="card">
+    <h2><span class="num">2</span>측정하기</h2>
+    <div class="meters">
+      <div class="meter" id="mA">
+        <h3 style="color:var(--A)">전류계</h3>
+        <svg viewBox="0 0 220 150" id="dialA"></svg>
+        <div class="read" id="readA">0 A</div>
+        <div class="tl">(−) 단자 고르기</div>
+        <div class="btns" id="termA">
+          <button data-t="0.05">50 mA</button>
+          <button data-t="0.5">500 mA</button>
+          <button data-t="5" class="on">5 A</button>
+        </div>
+      </div>
+      <div class="meter" id="mV">
+        <h3 style="color:var(--B)">전압계</h3>
+        <svg viewBox="0 0 220 150" id="dialV"></svg>
+        <div class="read" id="readV">0 V</div>
+        <div class="tl">(−) 단자 고르기</div>
+        <div class="btns" id="termV">
+          <button data-t="3">3 V</button>
+          <button data-t="15">15 V</button>
+          <button data-t="300" class="on">300 V</button>
+        </div>
+      </div>
+    </div>
+    <label class="chk"><input type="checkbox" id="showNum" checked> 측정값 숫자로 보여 주기</label>
+    <div class="talk">
+      <svg class="face" id="face" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="#FFC531"/><path d="M33 8 L18 33 H29 L25 52 L42 25 H31 Z" fill="#fff" stroke="#2C2A4A" stroke-width="2.5" stroke-linejoin="round"/><circle cx="26.5" cy="29" r="1.8" fill="#2C2A4A"/><circle cx="33" cy="29" r="1.8" fill="#2C2A4A"/></svg>
+      <div class="bubble" id="bubble"></div>
+    </div>
+    <button class="rec" id="recBtn">📝 측정값 기록하기</button>
+    <div class="row2">
+      <button id="clearBtn">🗑️ 기록 모두 지우기</button>
+    </div>
+  </div>
+
+  <!-- 그래프 -->
+  <div class="card">
+    <h2><span class="num">3</span>전압-전류 그래프</h2>
+    <svg id="graph" viewBox="0 0 520 360"></svg>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--A)"></span>A (10 Ω)</span>
+      <span><span class="dot" style="background:var(--B)"></span>B (20 Ω)</span>
+      <span><span class="dot" style="background:var(--C)"></span>C (30 Ω)</span>
+    </div>
+  </div>
+
+  <!-- 표 -->
+  <div class="card">
+    <h2><span class="num">4</span>측정 기록표</h2>
+    <div class="tableBox">
+      <table>
+        <thead><tr><th>니크롬선</th><th>전압(V)</th><th>전류(A)</th><th>전압 ÷ 전류</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty">아직 기록이 없어요. 측정하고 기록해 보세요!</div>
+    </div>
+  </div>
+
+  <!-- 정리 -->
+  <div class="card full">
+    <h2><span class="num">5</span>탐구 결과 정리하기</h2>
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
+      <div>
+        <ol class="steps">
+          <li>니크롬선 하나를 고르고, 전류계·전압계는 <b>가장 큰 (−) 단자</b>부터 연결해요.</li>
+          <li>스위치를 닫고 바늘이 조금만 움직이면 더 작은 단자로 바꿔요.</li>
+          <li>전압을 1.5 V씩 높이며 전류를 측정해 기록해요.</li>
+          <li>다른 니크롬선으로 바꿔 같은 방법으로 측정해요.</li>
+          <li>그래프와 표를 보고 아래 질문에 답해 봐요.</li>
+        </ol>
+      </div>
+      <div>
+        <div class="q"><b>Q1.</b> 같은 니크롬선에서 전압을 2배로 높이면 전류는 어떻게 될까요?
+          <div class="ans">👉 전류도 2배가 돼요. 전류는 전압에 비례해요.</div><button>정답 보기</button></div>
+        <div class="q"><b>Q2.</b> 같은 전압에서 저항이 큰 니크롬선일수록 전류는?
+          <div class="ans">👉 전류가 작아져요. 전류는 저항에 반비례해요.</div><button>정답 보기</button></div>
+        <div class="q"><b>Q3.</b> 그래프의 기울기가 가장 큰 니크롬선은 무엇일까요?
+          <div class="ans">👉 저항이 가장 작은 A예요. (기울기 = 전류 ÷ 전압 = 1 ÷ 저항)</div><button>정답 보기</button></div>
+      </div>
+    </div>
+    <button id="conclBtn" style="margin:6px 0 10px;">💡 결론 보기</button>
+    <div class="concl" id="concl">
+      전압-전류 그래프는 원점을 지나는 <b>직선</b>이에요. ➜ 전류는 전압에 <b>비례</b>하고, 저항에 <b>반비례</b>해요.<br>
+      <b>옴의 법칙</b> : 전류(I) = 전압(V) ÷ 저항(R) &nbsp;&nbsp;또는&nbsp;&nbsp; V = I R<br>
+      표의 '전압 ÷ 전류' 값이 바로 그 니크롬선의 <b>저항(Ω)</b>이에요.
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="quiz" hidden>
+  <div class="card qz" id="qzBox"></div>
+</div>
+</div>
+
+<script>
+(function(){
+var NS='http://www.w3.org/2000/svg';
+var R={A:10,B:20,C:30};
+var COL={A:'#E8505B',B:'#2F7DE1',C:'#2BA36B'};
+var st={w:'A',v:1.5,closed:false,tA:5,tV:300};
+var records=[];
+
+function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function fmt(n,d){return (Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);}
+function current(){return st.closed? st.v/R[st.w] : 0;}
+function voltage(){return st.closed? st.v : 0;}
+
+/* ---------- dials ---------- */
+var CX=110,CY=132,RAD=96;
+function pt(deg,r){var a=deg*Math.PI/180;return [CX+r*Math.sin(a),CY-r*Math.cos(a)];}
+function buildDial(svg,color){
+  svg.innerHTML='';
+  el('rect',{x:4,y:4,width:212,height:142,rx:16,fill:'#FFFDF5',stroke:'#F0DFA8','stroke-width':2},svg);
+  var a=pt(-50,RAD),b=pt(50,RAD);
+  el('path',{d:'M'+a[0]+','+a[1]+' A'+RAD+','+RAD+' 0 0 1 '+b[0]+','+b[1],fill:'none',stroke:'#2C2A4A','stroke-width':2},svg);
+  var g=el('g',{},svg);
+  var needle=el('line',{x1:CX,y1:CY,x2:CX,y2:CY-90,stroke:color,'stroke-width':3.5,'stroke-linecap':'round'},svg);
+  needle.style.transformOrigin=CX+'px '+CY+'px';
+  needle.style.transition='transform .45s cubic-bezier(.3,1.4,.6,1)';
+  el('circle',{cx:CX,cy:CY,r:7,fill:color},svg);
+  var unit=el('text',{x:CX,y:CY-30,'font-size':20,'text-anchor':'middle',fill:color},svg);
+  return {g:g,needle:needle,unit:unit};
+}
+function scaleOf(t,isA){
+  if(isA){
+    if(t===0.05)return {max:50,div:5,unit:'mA',k:1000};
+    if(t===0.5)return {max:500,div:5,unit:'mA',k:1000};
+    return {max:5,div:5,unit:'A',k:1};
+  }
+  if(t===3)return {max:3,div:3,unit:'V',k:1};
+  if(t===15)return {max:15,div:5,unit:'V',k:1};
+  return {max:300,div:3,unit:'V',k:1};
+}
+function drawTicks(d,sc){
+  d.g.innerHTML='';
+  var minor=sc.div*5;
+  for(var i=0;i<=minor;i++){
+    var deg=-50+100*i/minor,maj=i%5===0;
+    var p1=pt(deg,RAD),p2=pt(deg,RAD-(maj?13:7));
+    el('line',{x1:p1[0],y1:p1[1],x2:p2[0],y2:p2[1],stroke:'#2C2A4A','stroke-width':maj?2.2:1.2},d.g);
+    if(maj){var p3=pt(deg,RAD-27);var t=el('text',{x:p3[0],y:p3[1]+5,'font-size':15,'text-anchor':'middle',fill:'#2C2A4A'},d.g);t.textContent=String(sc.max*(i/5)/sc.div);}
+  }
+  d.unit.textContent=sc.unit;
+}
+var dA=buildDial(document.getElementById('dialA'),'#E8505B');
+var dV=buildDial(document.getElementById('dialV'),'#2F7DE1');
+
+/* ---------- circuit ---------- */
+var path=[[315,60],[540,60],[540,300],[60,300],[60,60],[285,60],[315,60]];
+var segs=[],L=0;
+for(var i=0;i<path.length-1;i++){var dx=path[i+1][0]-path[i][0],dy=path[i+1][1]-path[i][1],len=Math.hypot(dx,dy);segs.push({s:L,len:len,p:path[i],dx:dx,dy:dy});L+=len;}
+function posAt(s){s=((s%L)+L)%L;for(var i=0;i<segs.length;i++){var g=segs[i];if(s<=g.s+g.len){var f=(s-g.s)/g.len;return {x:g.p[0]+g.dx*f,y:g.p[1]+g.dy*f,inBat:i===segs.length-1};}}return {x:path[0][0],y:path[0][1],inBat:true};}
+var eLayer=document.getElementById('electrons');
+var NE=24,es=[];
+for(var j=0;j<NE;j++){
+  var g=el('g',{},eLayer);
+  el('circle',{r:7.5,fill:'#FFE071',stroke:'#2C2A4A','stroke-width':1.5},g);
+  el('circle',{cx:-2.4,cy:-1,r:1.2,fill:'#2C2A4A'},g);
+  el('circle',{cx:2.4,cy:-1,r:1.2,fill:'#2C2A4A'},g);
+  el('path',{d:'M-2.2,2.2 Q0,4 2.2,2.2',stroke:'#2C2A4A','stroke-width':1,fill:'none'},g);
+  es.push({g:g,s:j*L/NE});
+}
+var last=null,wob=0;
+function frame(t){
+  var dt=last===null?0:Math.min(0.05,(t-last)/1000);last=t;wob+=dt;
+  var I=current(),speed=I*320;
+  for(var k=0;k<es.length;k++){
+    var e=es[k];e.s+=speed*dt;var p=posAt(e.s);
+    var jig=st.closed?0:Math.sin(wob*3+k*1.7)*1.5;
+    e.g.setAttribute('transform','translate('+(p.x+jig)+','+(p.y+jig*0.6)+')');
+    e.g.setAttribute('opacity',p.inBat?0:(st.closed?1:0.55));
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ---------- UI ---------- */
+var bubble=document.getElementById('bubble'),face=document.getElementById('face');
+function say(msg,warn){
+  if(bubble.innerHTML!==msg){bubble.innerHTML=msg;face.classList.remove('wig');void face.getBoundingClientRect();face.classList.add('wig');}
+  bubble.classList.toggle('warn',!!warn);
+}
+function smallerOK(isA,val){
+  var list=isA?[0.05,0.5,5]:[3,15,300];var cur=isA?st.tA:st.tV;
+  for(var i=0;i<list.length;i++){if(list[i]<cur&&val<=list[i])return true;}return false;
+}
+function update(){
+  var I=current(),V=voltage();
+  var sA=scaleOf(st.tA,true),sV=scaleOf(st.tV,false);
+  drawTicks(dA,sA);drawTicks(dV,sV);
+  var overA=I>st.tA+1e-9,overV=V>st.tV+1e-9;
+  var degA=overA?56:-50+100*(I/st.tA),degV=overV?56:-50+100*(V/st.tV);
+  dA.needle.style.transform='rotate('+degA+'deg)';
+  dV.needle.style.transform='rotate('+degV+'deg)';
+  document.getElementById('mA').classList.toggle('over',overA);
+  document.getElementById('mV').classList.toggle('over',overV);
+  var show=document.getElementById('showNum').checked;
+  var rA=document.getElementById('readA'),rV=document.getElementById('readV');
+  if(!show){rA.textContent='눈금을 읽어 봐요';rV.textContent='눈금을 읽어 봐요';}
+  else{
+    rA.textContent=overA?'측정 불가!':(sA.unit==='mA'?fmt(I*1000,0)+' mA':fmt(I,2)+' A');
+    rV.textContent=overV?'측정 불가!':fmt(V,1)+' V';
+  }
+  document.getElementById('srcLabel').textContent='전원 장치 '+fmt(st.v,1)+' V';
+  document.getElementById('nich').setAttribute('stroke',COL[st.w]);
+  document.getElementById('nichLabel').textContent='니크롬선 '+st.w+' ('+R[st.w]+' Ω)';
+  document.getElementById('lever').style.transform=st.closed?'rotate(0deg)':'rotate(-38deg)';
+  document.getElementById('arrows').setAttribute('opacity',st.closed?1:0);
+  var sw=document.getElementById('swBtn');
+  sw.textContent=st.closed?'✋ 스위치 열기 (회로 끊기)':'🔌 스위치 닫기 (회로 연결)';
+  sw.classList.toggle('closed',st.closed);
+  var rec=document.getElementById('recBtn');
+  rec.disabled=!st.closed||overA||overV;
+  if(!st.closed)say('스위치를 닫아 회로를 연결해 보세요! 회로가 끊겨 있으면 전자가 한 방향으로 흐르지 않아요.');
+  else if(overA)say('앗! <b>전류계</b> 바늘이 눈금 끝을 넘었어요. 더 큰 (−) 단자로 바꿔야 전류계가 고장 나지 않아요.',true);
+  else if(overV)say('앗! <b>전압계</b> 바늘이 눈금 끝을 넘었어요. 더 큰 (−) 단자로 바꿔 주세요.',true);
+  else if(I<st.tA*0.1&&smallerOK(true,I))say('전류계 바늘이 아주 조금만 움직여요. 한 단계 작은 (−) 단자로 바꾸면 더 정확하게 읽을 수 있어요.');
+  else if(V<st.tV*0.1&&smallerOK(false,V))say('전압계 바늘이 아주 조금만 움직여요. 한 단계 작은 (−) 단자로 바꿔 보세요.');
+  else say('측정 준비 완료! 니크롬선 '+st.w+'에 '+fmt(V,1)+' V를 걸었더니 전류가 '+fmt(I,2)+' A 흘러요. <b>기록하기</b>를 눌러요.');
+}
+function group(id,attr,fn){
+  var box=document.getElementById(id);
+  box.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!box.contains(b))return;
+    Array.prototype.forEach.call(box.querySelectorAll('button'),function(x){x.classList.remove('on');});
+    b.classList.add('on');fn(b.getAttribute(attr));update();});
+}
+group('wireBtns','data-w',function(v){st.w=v;});
+group('voltBtns','data-v',function(v){st.v=parseFloat(v);});
+group('termA','data-t',function(v){st.tA=parseFloat(v);});
+group('termV','data-t',function(v){st.tV=parseFloat(v);});
+document.getElementById('swBtn').onclick=function(){st.closed=!st.closed;update();};
+document.getElementById('showNum').onchange=update;
+
+/* ---------- records ---------- */
+document.getElementById('recBtn').onclick=function(){
+  if(this.disabled)return;
+  var V=voltage(),I=current();
+  records=records.filter(function(r){return !(r.w===st.w&&Math.abs(r.v-V)<1e-9);});
+  records.push({w:st.w,v:V,i:I});
+  records.sort(function(a,b){return a.w<b.w?-1:a.w>b.w?1:a.v-b.v;});
+  renderRecords();
+  say('기록 완료! ✏️ 이번엔 전압을 바꾸거나 다른 니크롬선으로도 측정해 봐요.');
+};
+document.getElementById('clearBtn').onclick=function(){records=[];renderRecords();};
+function renderRecords(){
+  var tb=document.getElementById('tbody');tb.innerHTML='';
+  records.forEach(function(r){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><span class="dot" style="background:'+COL[r.w]+'"></span>'+r.w+'</td><td>'+fmt(r.v,1)+'</td><td>'+fmt(r.i,2)+'</td><td>'+fmt(r.v/r.i,0)+' Ω</td>';
+    tb.appendChild(tr);
+  });
+  document.getElementById('empty').style.display=records.length?'none':'block';
+  drawGraph();
+}
+
+/* ---------- graph ---------- */
+var G=document.getElementById('graph');
+var gx0=62,gy0=310,gw=430,gh=270,XMAX=7,YMAX=0.7;
+function gx(v){return gx0+v/XMAX*gw;}
+function gy(i){return gy0-i/YMAX*gh;}
+function drawGraph(){
+  G.innerHTML='';
+  for(var y=0;y<=7;y++){var yy=gy(y/10);el('line',{x1:gx0,y1:yy,x2:gx0+gw,y2:yy,stroke:'#F3E7C2','stroke-width':1},G);var t=el('text',{x:gx0-8,y:yy+5,'font-size':14,'text-anchor':'end',fill:'#2C2A4A'},G);t.textContent=(y/10).toFixed(1);}
+  [0,1.5,3,4.5,6].forEach(function(v){var xx=gx(v);el('line',{x1:xx,y1:gy0,x2:xx,y2:gy0-gh,stroke:'#F3E7C2','stroke-width':1},G);var t=el('text',{x:xx,y:gy0+20,'font-size':14,'text-anchor':'middle',fill:'#2C2A4A'},G);t.textContent=String(v);});
+  el('line',{x1:gx0,y1:gy0,x2:gx0+gw+8,y2:gy0,stroke:'#2C2A4A','stroke-width':2},G);
+  el('line',{x1:gx0,y1:gy0,x2:gx0,y2:gy0-gh-8,stroke:'#2C2A4A','stroke-width':2},G);
+  var tx=el('text',{x:gx0+gw,y:gy0+42,'font-size':16,'text-anchor':'end',fill:'#2C2A4A'},G);tx.textContent='전압 (V)';
+  var ty=el('text',{x:gx0-4,y:gy0-gh-16,'font-size':16,'text-anchor':'start',fill:'#2C2A4A'},G);ty.textContent='전류 (A)';
+  ['A','B','C'].forEach(function(w){
+    var pts=records.filter(function(r){return r.w===w;});
+    if(pts.length>=2){
+      var sxy=0,sxx=0;pts.forEach(function(p){sxy+=p.v*p.i;sxx+=p.v*p.v;});
+      var m=sxy/sxx,xe=Math.min(XMAX,YMAX/m);
+      el('line',{x1:gx(0),y1:gy(0),x2:gx(xe),y2:gy(m*xe),stroke:COL[w],'stroke-width':3,'stroke-linecap':'round',opacity:.8},G);
+    }
+    pts.forEach(function(p){el('circle',{cx:gx(p.v),cy:gy(p.i),r:7,fill:COL[w],stroke:'#fff','stroke-width':2},G);});
+  });
+  if(!records.length){var e=el('text',{x:gx0+gw/2,y:gy0-gh/2,'font-size':17,'text-anchor':'middle',fill:'#6B6890'},G);e.textContent='기록하면 점이 찍혀요 📍';}
+}
+
+/* ---------- questions ---------- */
+Array.prototype.forEach.call(document.querySelectorAll('.q button'),function(b){
+  b.onclick=function(){var q=b.parentNode;q.classList.toggle('show');b.textContent=q.classList.contains('show')?'정답 숨기기':'정답 보기';};
+});
+document.getElementById('conclBtn').onclick=function(){var c=document.getElementById('concl');c.classList.toggle('show');this.textContent=c.classList.contains('show')?'💡 결론 숨기기':'💡 결론 보기';};
+
+/* ---------- tabs ---------- */
+document.getElementById('tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(x){x.classList.toggle('on',x===b);});
+  var t=b.getAttribute('data-tab');document.getElementById('sim').hidden=t!=='sim';document.getElementById('quiz').hidden=t!=='quiz';window.scrollTo(0,0);});
+
+/* ---------- quiz ---------- */
+var QZ=[
+ {q:'전류계는 회로에 어떻게 연결해야 할까요?',o:['측정하려는 부분에 직렬로 연결한다','측정하려는 부분에 병렬로 연결한다','전원 장치의 양 끝에 바로 연결한다','아무렇게나 연결해도 된다'],a:0,e:'전류계는 회로에 <b>직렬</b>로 연결해요. 전류계를 전원에 바로 연결하면 큰 전류가 흘러 고장 날 수 있어요.'},
+ {q:'전압계는 니크롬선에 어떻게 연결해야 할까요?',o:['니크롬선과 직렬로 연결한다','니크롬선과 병렬로 연결한다','스위치와 직렬로 연결한다','전류계와 병렬로 연결한다'],a:1,e:'전압계는 전압을 측정하려는 부분(니크롬선)에 <b>병렬</b>로 연결해요.'},
+ {q:'측정값의 크기를 예상할 수 없을 때, 전류계와 전압계의 (−) 단자는 어느 것부터 연결할까요?',o:['가장 작은 단자','가운데 단자','가장 큰 단자','아무 단자나'],a:2,e:'바늘이 눈금을 넘어 고장 나지 않도록 <b>가장 큰 (−) 단자</b>부터 연결하고, 바늘이 조금만 움직이면 작은 단자로 바꿔요.'},
+ {q:'전류의 방향과 전자의 이동 방향을 바르게 짝지은 것은?',o:['전류: (−)→(+), 전자: (+)→(−)','전류: (+)→(−), 전자: (−)→(+)','전류와 전자 모두 (+)→(−)','전류와 전자 모두 (−)→(+)'],a:1,e:'전류는 전지의 <b>(+)극 → (−)극</b>으로 흐르고, 전자는 반대로 <b>(−)극 → (+)극</b>으로 이동해요.'},
+ {q:'저항이 일정한 니크롬선에 걸린 전압을 2배로 높이면 전류는 어떻게 될까요?',o:['1/2배가 된다','변하지 않는다','2배가 된다','4배가 된다'],a:2,e:'저항이 일정할 때 전류는 전압에 <b>비례</b>해요. 전압이 2배면 전류도 2배!'},
+ {q:'니크롬선에 걸린 전압과 흐르는 전류의 관계를 그래프로 그리면 어떤 모양일까요?',o:['원점을 지나는 직선','가로축에 나란한 직선','점점 줄어드는 곡선','원점을 지나지 않는 직선'],a:0,e:'전류가 전압에 비례하므로 그래프는 <b>원점을 지나는 직선</b>이에요.'},
+ {q:'저항이 10 Ω인 니크롬선에 3 V의 전압을 걸었어요. 흐르는 전류는?',o:['0.03 A','0.3 A','3 A','30 A'],a:1,e:'전류 = 전압 ÷ 저항 = 3 V ÷ 10 Ω = <b>0.3 A</b>'},
+ {q:'어떤 니크롬선에 6 V의 전압을 걸었더니 0.2 A의 전류가 흘렀어요. 이 니크롬선의 저항은?',o:['1.2 Ω','3 Ω','12 Ω','30 Ω'],a:3,e:'저항 = 전압 ÷ 전류 = 6 V ÷ 0.2 A = <b>30 Ω</b>'},
+ {q:'같은 전압을 걸었을 때, 저항이 2배인 니크롬선에 흐르는 전류는?',o:['2배가 된다','1/2배가 된다','변하지 않는다','4배가 된다'],a:1,e:'전압이 같을 때 전류는 저항에 <b>반비례</b>해요. 저항이 2배면 전류는 1/2배!'},
+ {q:'니크롬선 A, B의 전압-전류 그래프에서 A의 기울기가 B보다 더 커요. 옳은 것은?',o:['A의 저항이 B보다 크다','A의 저항이 B보다 작다','A와 B의 저항은 같다','기울기로는 알 수 없다'],a:1,e:'전압-전류 그래프의 기울기(전류 ÷ 전압)는 <b>1 ÷ 저항</b>이에요. 기울기가 클수록 저항이 작아요.'}
+];
+var qi=0,score=0,box=document.getElementById('qzBox');
+function showQ(){
+  var d=QZ[qi];
+  var h='<div class="qtop"><span>문제 '+(qi+1)+' / '+QZ.length+'</span><span>⭐ '+score+'점</span></div><div class="bar"><i style="width:'+(qi/QZ.length*100)+'%"></i></div>';
+  h+='<div class="qtext"><b>Q'+(qi+1)+'.</b> '+d.q+'</div><div class="opts">';
+  d.o.forEach(function(t,k){h+='<button class="opt" data-k="'+k+'">'+'①②③④'.charAt(k)+' '+t+'</button>';});
+  h+='</div><div class="exp" id="exp"></div><button class="next" id="nextBtn">'+(qi<QZ.length-1?'다음 문제 ➜':'결과 보기 🎉')+'</button>';
+  box.innerHTML=h;
+}
+box.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.classList.contains('opt')){
+    if(box.querySelector('.opt[disabled]'))return;
+    var d=QZ[qi],k=parseInt(b.getAttribute('data-k'),10),opts=box.querySelectorAll('.opt');
+    Array.prototype.forEach.call(opts,function(x){x.disabled=true;});
+    opts[d.a].classList.add('ok');
+    var ex=document.getElementById('exp');
+    if(k===d.a){score++;ex.innerHTML='🎉 <b>정답!</b> '+d.e;}
+    else{b.classList.add('no');ex.innerHTML='😅 <b>아쉬워요!</b> 정답은 '+'①②③④'.charAt(d.a)+'번이에요. '+d.e;}
+    ex.classList.add('show');document.getElementById('nextBtn').classList.add('show');
+    box.querySelector('.qtop span:last-child').textContent='⭐ '+score+'점';
+  }else if(b.id==='nextBtn'){
+    qi++;if(qi<QZ.length)showQ();else showRes();
+  }else if(b.id==='retry'){qi=0;score=0;showQ();}
+});
+function showRes(){
+  var m=score===QZ.length?['🏆','완벽해요! 옴의 법칙 박사님이네요!']:score>=7?['😊','잘했어요! 틀린 문제만 다시 확인해 봐요.']:['💪','모의실험을 한 번 더 해 보고 다시 도전해요!'];
+  box.innerHTML='<div class="res"><div class="big">'+m[0]+'</div><p style="font-size:28px;margin:4px 0;">'+QZ.length+'문제 중 <b>'+score+'</b>문제 정답</p><p>'+m[1]+'</p><button id="retry">🔄 다시 풀기</button></div>';
+}
+showQ();
+
+renderRecords();update();
+})();
+</script>
+<a href="../#physics" data-sync-home style="position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:2147483000;font-family:Jua,'Gowun Dodum',sans-serif;font-size:14px;text-decoration:none;color:#2b2f55;background:#fff;border:2px solid #dde2f7;border-radius:999px;padding:4px 12px;box-shadow:0 4px 12px rgba(90,100,170,.18)">⌂ 처음으로</a>
+<!--wm-->
+<!-- © Science Class by Teacher 노글라쓰 · https://dajihoya.github.io/scienceclass/ -->
+<div data-wm style="position:fixed;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:2147483000;pointer-events:none;font:12px/1.4 IsYun,Jua,'Gowun Dodum',sans-serif;color:#2b2f55;background:#fff;border:1px solid #dde2f7;border-radius:999px;padding:2px 10px;opacity:.9">© Science Class by Teacher 노글라쓰</div>
+<script>(function(){var T='© Science Class by Teacher 노글라쓰',S='position:fixed;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:2147483647;pointer-events:none;font:12px/1.4 IsYun,Jua,sans-serif;color:#2b2f55;background:#fff;border:1px solid #dde2f7;border-radius:999px;padding:2px 10px;opacity:.9;display:block;visibility:visible;transform:none;filter:none;clip-path:none';var h,r,t;function mk(){h=document.createElement('noh-mark');h.setAttribute('style','all:initial;'+S);r=h.attachShadow({mode:'closed'});t=document.createElement('span');t.textContent=T;r.appendChild(t);}function ok(){if(!h||!h.isConnected||!t.isConnected||t.textContent!==T)return false;var c=getComputedStyle(h);return c.display!=='none'&&c.visibility!=='hidden'&&+c.opacity>.5&&c.position==='fixed';}function fix(){if(ok())return;if(h&&h.remove)h.remove();mk();(document.body||document.documentElement).appendChild(h);document.querySelectorAll('[data-wm]').forEach(function(e){e.style.display='none'});}fix();new MutationObserver(fix).observe(document.documentElement,{childList:true,subtree:true,attributes:true});setInterval(fix,1500);})();</script>
+<!--/wm-->
+</body>
+</html>
