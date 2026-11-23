@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>별의 표면 온도와 등급 모의실험</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
+<style>
+@font-face{font-family:'IsYun';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff') format('woff');font-weight:normal;font-style:normal;}
+:root{--bg:#1F2547;--card:#2B3260;--line:#454E8A;--soft:#353D72;--ink:#F4F1FF;--muted:#B9BDE6;--accent:#FFD66B;--accent-d:#FFD66B;--accent-s:#454E8A;--gold:#E0A526;--gold-d:#FFD66B;--gold-s:#151A38;--stage:#151A38;--mint:#7FE0C4;--red:#FF8F8F;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IsYun','Gaegu','Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
+body{font-size:17px;line-height:1.6;padding:16px 16px 40px;}
+button{font-family:inherit;}
+.wrap{max-width:1180px;margin:0 auto;}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;margin-bottom:14px;}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
+.tag{font-size:14px;padding:2px 12px;border-radius:999px;background:var(--accent-s);color:var(--accent-d);}
+.tag.gold{background:var(--gold-s);color:var(--gold-d);}
+h1{margin:0;color:#FFD66B;font-size:32px;font-weight:bold;letter-spacing:-.5px;line-height:1.25;}
+h1 .dot{color:var(--gold);}
+.sub{font-size:16px;color:#C9CCF2;margin-top:2px;}
+.tabs{display:flex;gap:6px;background:var(--card);padding:6px;border-radius:999px;border:2px solid var(--line);flex-wrap:wrap;}
+.tab{font-size:18px;border:none;background:transparent;color:var(--ink);padding:9px 18px;border-radius:999px;cursor:pointer;min-height:46px;}
+.tab.on{background:var(--accent);color:#2B2550;}
+@media (max-width:920px){.tabs{border-radius:22px;width:100%;}.tab{flex:1 1 auto;}}
+.panel{display:none;}
+.panel.on{display:block;}
+.card{background:var(--card);border-radius:20px;border:2px solid var(--line);padding:16px;margin-bottom:16px;min-width:0;}
+.card h2{margin:0 0 6px;font-size:21px;font-weight:normal;color:var(--accent-d);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.badge{background:var(--gold);color:#fff;font-size:14px;padding:3px 10px;border-radius:999px;}
+.card .desc{margin:0 0 12px;color:var(--muted);font-size:16px;}
+.grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:start;}
+@media(min-width:760px){.grid{grid-template-columns:1fr 1fr;}}
+.box{background:var(--soft);border-radius:14px;padding:14px;min-width:0;}
+.stage{background:var(--stage);color:#f4f1ff;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;}
+.bubble{background:#fff;color:#2B2550;border-radius:16px;padding:8px 14px;font-size:16px;margin-bottom:10px;position:relative;text-align:center;max-width:95%;}
+.bubble:after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-9px;border:9px solid transparent;border-bottom:0;border-top-color:#fff;}
+svg.starchar{width:170px;height:170px;}
+label.lb{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;margin:6px 0 2px;}
+label.lb b{color:var(--gold-d);font-size:20px;font-weight:normal;}
+input[type=range]{width:100%;height:36px;accent-color:var(--accent);margin:2px 0 8px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px;}
+.chip{font-size:16px;border:2px solid var(--accent);background:var(--card);color:var(--accent);padding:7px 14px;border-radius:999px;cursor:pointer;min-height:44px;}
+.chip:active{background:var(--accent);color:#2B2550;}
+.info{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:17px;margin:0;}
+.info dt{color:var(--accent);}
+.info dd{margin:0;}
+.spec{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px;}
+.spec button{border:2px solid var(--line);border-radius:12px;padding:8px 0 6px;cursor:pointer;color:#2B2550;font-size:17px;line-height:1.2;}
+.spec button small{display:block;font-size:13px;}
+.spec button.on{border-color:#fff;box-shadow:0 0 0 2px #fff;}
+.arrowline{display:flex;justify-content:space-between;color:var(--muted);font-size:15px;margin-top:4px;}
+.skyrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sky{background:var(--stage);color:#f4f1ff;border-radius:14px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 8px;text-align:center;}
+.sky .t{font-size:15px;color:#b9bde6;}
+.sky .v{font-size:18px;}
+.glowholder{height:130px;display:flex;align-items:center;justify-content:center;}
+.glow{border-radius:50%;background:#fff6d8;}
+.result{margin-top:12px;background:var(--gold-s);border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.55;}
+.result .big{font-size:19px;color:var(--gold-d);}
+.result b{font-weight:normal;color:var(--gold-d);}
+.tip{font-size:15px;color:var(--muted);margin:8px 0 0;}
+.tip b{font-weight:normal;color:var(--accent-d);background:var(--accent-s);padding:0 5px;border-radius:6px;}
+.sumwrap{overflow-x:auto;background:var(--stage);color:#f4f1ff;border-radius:14px;padding:12px;}
+.sum{display:grid;grid-template-columns:repeat(7,minmax(96px,1fr));gap:6px;min-width:700px;text-align:center;}
+.sum .cell{background:rgba(255,255,255,0.14);border-radius:14px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.sum .dot{width:48px;height:48px;border-radius:50%;}
+.sum .nm{font-size:18px;}
+.sum .k{color:#ffd66b;font-size:15px;line-height:1.3;min-height:2.6em;display:flex;align-items:center;justify-content:center;}
+.sum .ex{font-size:15px;line-height:1.35;min-height:2.7em;white-space:nowrap;}
+.sum .ty{font-size:13px;color:#b9bde6;}
+.temparrow{display:flex;align-items:center;gap:8px;min-width:700px;margin:10px 0 2px;color:#b9bde6;}
+.temparrow b{font-weight:normal;}
+.temparrow .bar{flex:1;height:4px;background:#b9bde6;border-radius:2px;}
+.skymap{display:block;width:100%;height:auto;background:var(--stage);border-radius:14px;margin-bottom:14px;touch-action:none;user-select:none;-webkit-user-select:none;}
+.skymap text{font-family:'IsYun','Gaegu',sans-serif;fill:#f4f1ff;}
+.skymap .lbl{paint-order:stroke;stroke:#151A38;stroke-width:4px;stroke-linejoin:round;}
+.skymap .star{cursor:grab;}
+.rank ol{margin:6px 0 0;padding-left:1.4em;line-height:1.8;}
+.rank h3,.sinfo h3{margin:0 0 6px;font-size:18px;font-weight:normal;color:var(--accent-d);}
+.missions{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media (max-width:700px){.missions{grid-template-columns:1fr;}}
+.missions li{display:flex;gap:10px;align-items:flex-start;background:var(--soft);border-radius:14px;padding:10px 12px;font-size:17px;line-height:1.45;}
+.missions li .ck{flex:0 0 30px;height:30px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--accent);}
+.missions li.done{background:var(--soft);color:var(--mint);box-shadow:inset 0 0 0 2px var(--mint);}
+.missions li.done .ck{background:var(--mint);border-color:var(--mint);color:#1F2547;}
+.missions li .a{display:none;font-size:15px;margin-top:4px;}
+.missions li.done .a{display:block;}
+.quiz{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:14px;}
+#qList{display:flex;flex-direction:column;gap:14px;}
+.qcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px;}
+.qcard .qt{font-size:20px;margin-bottom:10px;line-height:1.5;}
+.qcard .qt .n{display:inline-block;background:var(--accent);width:32px;height:32px;line-height:32px;text-align:center;border-radius:50%;margin-right:8px;font-size:17px;color:#2B2550;}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media (max-width:600px){.opts{grid-template-columns:1fr;}}
+.opt{font-size:18px;text-align:left;border:2px solid var(--line);background:var(--soft);color:var(--ink);padding:11px 14px;border-radius:14px;cursor:pointer;min-height:50px;line-height:1.4;}
+.opt.right{background:var(--mint);border-color:var(--mint);color:#1F2547;}
+.opt.wrong{background:var(--red);border-color:var(--red);color:#2B2550;}
+.opt:disabled{cursor:default;}
+.exp{display:none;font-size:16px;margin-top:10px;color:var(--ink);line-height:1.55;background:var(--stage);border-radius:12px;padding:10px 12px;}
+.exp.show{display:block;}
+.exp b{font-weight:normal;color:var(--gold-d);}
+.score{text-align:center;font-size:22px;background:var(--card);border:2px solid var(--gold);border-radius:20px;padding:14px;}
+.btn{font-size:17px;border:2px solid var(--accent);background:transparent;color:var(--accent);padding:8px 16px;border-radius:999px;cursor:pointer;min-height:46px;margin-left:10px;}
+.final{display:none;font-size:18px;margin-top:8px;}
+.final.show{display:block;}
+.note{font-size:14px;color:#9EA3D6;text-align:center;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <div class="tags"><span class="tag">지구과학</span><span class="tag">별과 우주 · 별의 특성</span></div>
+    <h1>별의 표면 온도와 등급 <span class="dot">✨</span></h1>
+    <div class="sub">별의 색으로 표면 온도를, 등급으로 밝기와 거리를 알아봐요</div>
+  </div>
+  <nav class="tabs">
+    <button type="button" class="tab on" data-tab="temp">① 표면 온도</button>
+    <button type="button" class="tab" data-tab="lab">② 등급 실험실</button>
+    <button type="button" class="tab" data-tab="mag">③ 겉보기·절대 등급</button>
+    <button type="button" class="tab" data-tab="quiz">④ 확인 퀴즈</button>
+  </nav>
+</header>
+
+<!-- ===================== 모의실험 ===================== -->
+<section class="panel on" id="temp">
+
+  <div class="card">
+    <h2>표면 온도와 별의 색 <span class="badge">온도 막대를 움직여 보세요</span></h2>
+    <p class="desc">온도 막대를 움직여 별의 표면 온도를 바꿔 보세요. 별의 색이 어떻게 달라질까요?</p>
+    <div class="grid">
+      <div class="box stage">
+        <div class="bubble" id="bubble">안녕! 나는 태양과 같은 황색 별이야!</div>
+        <svg class="starchar" id="starSvg" viewBox="0 0 200 200" aria-label="별 캐릭터">
+          <polygon id="starBody" points="100,18 123,72 182,76 137,114 151,172 100,141 49,172 63,114 18,76 77,72" stroke-linejoin="round" stroke-width="18"/>
+          <ellipse cx="82" cy="102" rx="7" ry="9" fill="#2b2550"/>
+          <ellipse cx="118" cy="102" rx="7" ry="9" fill="#2b2550"/>
+          <circle cx="84" cy="99" r="2.6" fill="#fff"/>
+          <circle cx="120" cy="99" r="2.6" fill="#fff"/>
+          <ellipse cx="70" cy="119" rx="9" ry="5.5" fill="#ff8fb1" opacity=".75"/>
+          <ellipse cx="130" cy="119" rx="9" ry="5.5" fill="#ff8fb1" opacity=".75"/>
+          <path d="M90 118 Q100 128 110 118" stroke="#2b2550" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="box">
+        <label class="lb" for="tSlider">표면 온도 <b><span id="tVal">5800</span> K</b></label>
+        <input type="range" id="tSlider" min="2500" max="40000" step="100" value="8500">
+        <div class="chips">
+          <button class="chip" data-t="3500">베텔게우스 (약 3500 K)</button>
+          <button class="chip" data-t="5800">태양 (약 5800 K)</button>
+          <button class="chip" data-t="9600">직녀성 (약 9600 K)</button>
+          <button class="chip" data-t="12000">리겔 (약 12000 K)</button>
+        </div>
+        <dl class="info">
+          <dt>별의 색</dt><dd id="cName">황색</dd>
+          <dt>분광형</dt><dd id="cType">G형</dd>
+          <dt>온도 범위</dt><dd id="cRange">약 5,000~6,000 K</dd>
+          <dt>예시 별</dt><dd id="cEx">태양</dd>
+          <dt>최대 에너지 파장<br><small>(고등 심화)</small></dt><dd id="cWien">약 500 nm (가시광선)</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="spec" id="spec"></div>
+    <div class="arrowline"><span>◀ 표면 온도 높음 (청색)</span><span>표면 온도 낮음 (적색) ▶</span></div>
+    <p class="tip">💡 별의 표면 온도가 높을수록 청색, 낮을수록 적색을 띠어요. 순서: 청색 → 청백색 → 백색 → 황백색 → 황색 → 주황색 → 적색</p>
+  </div>
+
+  <div class="card">
+    <h2>정리: 별의 색과 표면 온도 <span class="badge">칸을 눌러 보세요</span></h2>
+    <p class="desc">별의 색에 따라 표면 온도가 달라요. 표면 온도는 청색 별이 가장 높고 적색 별이 가장 낮아요.</p>
+    <div class="sumwrap">
+      <div class="sum" id="sumGrid"></div>
+      <div class="temparrow"><b>표면 온도 높다</b><span>◀</span><div class="bar"></div><span>▶</span><b>낮다</b></div>
+    </div>
+    <p class="tip">💡 온도 범위는 대략적인 값이에요. 각 칸을 누르면 위의 별이 그 색으로 바뀌어요.</p>
+  </div>
+
+  <div class="card">
+    <h2>🎯 탐구 미션 <span class="badge" id="mProgT">미션 0 / 2 완료</span></h2>
+    <ul class="missions" id="missionsT"></ul>
+  </div>
+</section>
+
+<section class="panel" id="lab">
+  <div class="card">
+    <h2>별을 직접 옮겨 보는 등급 실험실 <span class="badge">별 A·B를 끌어 보세요</span></h2>
+    <p class="desc">교과서의 다섯 별은 제자리에 고정되어 있어요(눌러서 정보 보기). <b style="color:var(--accent)">별 A</b>와 <b style="color:var(--accent)">별 B</b>를 손가락으로 끌어 멀리, 또는 가까이 옮겨 보세요. 노란 원(10 pc)에 올려놓으면 겉보기 등급 = 절대 등급이 돼요.</p>
+    <div class="chips">
+      <button class="chip" id="rsView">⭐ 교과서 별을 10 pc에 두면?</button>
+      <button class="chip" id="rsReset">↩ 별 A·B 처음 위치로</button>
+    </div>
+    <svg class="skymap" id="skymap" viewBox="0 0 640 560" aria-label="별을 옮겨 보는 지도"></svg>
+    <div class="grid">
+      <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+        <div class="box">
+          <label class="lb" for="mA">별 A의 절대 등급 <b id="mAV">1.0</b></label>
+          <input type="range" id="mA" min="-8" max="10" step="0.1" value="1">
+          <label class="lb" for="mB">별 B의 절대 등급 <b id="mBV">−3.0</b></label>
+          <input type="range" id="mB" min="-8" max="10" step="0.1" value="-3">
+        </div>
+        <div class="box sinfo" id="sinfo"><h3>⭐ 별 정보</h3>별을 누르거나 별 A·B를 끌어 보세요!</div>
+      </div>
+      <div class="box rank">
+        <h3>🌍 지구에서 밝게 보이는 순서 (지금)</h3><ol id="rankList"></ol>
+        <h3 style="margin-top:12px">💡 실제로 밝은 순서 (절대 등급)</h3><ol id="rankAbs"></ol>
+      </div>
+    </div>
+    <p class="tip">💡 지도 속 거리는 로그 눈금이라 실제 비율과 달라요. 별 주위 빛의 크기가 지구에서 보이는 밝기를 나타내요. 겉보기 등급이 6보다 커지면 맨눈으로 보기 어려워 별이 흐려져요.</p>
+  </div>
+
+  <div class="card">
+    <h2>🎯 탐구 미션 <span class="badge" id="mProgL">미션 0 / 4 완료</span></h2>
+    <ul class="missions" id="missionsL"></ul>
+  </div>
+</section>
+
+<section class="panel" id="mag">
+  <div class="card">
+    <h2>겉보기 등급과 절대 등급 <span class="badge">거리를 바꿔 보세요</span></h2>
+    <p class="desc">별의 실제 밝기(절대 등급)와 거리를 바꿔 보세요. 지구에서 보이는 밝기(겉보기 등급)는 어떻게 변할까요?</p>
+    <div class="grid">
+      <div class="box">
+        <label class="lb" for="mAbs">절대 등급 (M) <b id="mAbsVal">4.8</b></label>
+        <input type="range" id="mAbs" min="-8" max="15" step="0.1" value="4.8">
+        <label class="lb" for="dist">별까지의 거리 <b><span id="dVal">25.1</span> pc</b></label>
+        <input type="range" id="dist" min="0" max="3" step="0.01" value="1.40">
+        <div class="chips">
+          <button class="chip" data-d="0.5">약 3 pc</button>
+          <button class="chip" data-d="1">10 pc</button>
+          <button class="chip" data-d="2">100 pc</button>
+          <button class="chip" data-d="3">1000 pc</button>
+        </div>
+        <p class="tip" id="lyText">약 81.8 광년 (1 pc ≈ 3.26 광년)</p>
+      </div>
+      <div class="box">
+        <div class="skyrow">
+          <div class="sky">
+            <div class="t">지구에서 보이는 밝기</div>
+            <div class="glowholder"><div class="glow" id="glowM"></div></div>
+            <div class="v">겉보기 등급 <span id="mAppVal">6.8</span></div>
+          </div>
+          <div class="sky">
+            <div class="t">10 pc에 두었을 때</div>
+            <div class="glowholder"><div class="glow" id="glowA"></div></div>
+            <div class="v">절대 등급 <span id="mAbsVal2">4.8</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="result" id="distResult"></div>
+    <p class="tip">💡 등급은 숫자가 <b>작을수록</b> 밝아요. 절대 등급은 모든 별을 <b>10 pc</b> 거리에 두었다고 가정할 때의 등급이에요. 거리가 2배가 되면 밝기는 1/4로 줄어들어요.</p>
+  </div>
+
+  <div class="card">
+    <h2>등급 차이와 밝기 비교 <span class="badge">1등급 = 약 2.5배</span></h2>
+    <p class="desc">두 별의 등급을 정하고, 어느 별이 몇 배 더 밝은지 비교해 보세요.</p>
+    <div class="grid">
+      <div class="box">
+        <label class="lb" for="magA">⭐ 별 A의 등급 <b id="magAVal">1</b></label>
+        <input type="range" id="magA" min="-1" max="6" step="1" value="1">
+        <label class="lb" for="magB">🌟 별 B의 등급 <b id="magBVal">2</b></label>
+        <input type="range" id="magB" min="-1" max="6" step="1" value="2">
+      </div>
+      <div class="box">
+        <div class="skyrow">
+          <div class="sky"><div class="t">별 A</div><div class="glowholder"><div class="glow" id="glowCA"></div></div><div class="v" id="cAlab">1등급</div></div>
+          <div class="sky"><div class="t">별 B</div><div class="glowholder"><div class="glow" id="glowCB"></div></div><div class="v" id="cBlab">2등급</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="result" id="cmpResult"></div>
+    <p class="tip">💡 1등급 차이는 약 2.5배, 5등급 차이는 정확히 100배의 밝기 차이예요.</p>
+  </div>
+
+  <div class="card">
+    <h2>🎯 탐구 미션 <span class="badge" id="mProgM">미션 0 / 4 완료</span></h2>
+    <ul class="missions" id="missionsM"></ul>
+  </div>
+</section>
+
+<!-- ===================== 확인 퀴즈 ===================== -->
+<section class="panel" id="quiz">
+  <div class="quiz">
+    <div id="qList"></div>
+    <div class="score"><span id="score">맞힌 문제 0 / 10</span><button type="button" class="btn" id="resetQuiz">↺ 다시 풀기</button><div class="final" id="final"></div></div>
+  </div>
+</section>
+
+<p class="note">별의 표면 온도·등급 모의실험 · 수치는 교과서 기준의 대략적인 값이에요.</p>
+</div>
+
+<script>
+(function(){
+  // ---------- 탭 ----------
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<tabs.length;i++){
+    tabs[i].addEventListener('click',function(){
+      for(var j=0;j<tabs.length;j++){tabs[j].classList.remove('on');}
+      this.classList.add('on');
+      var key=this.dataset.tab;
+      ['temp','lab','mag','quiz'].forEach(function(id){document.getElementById(id).classList.toggle('on',id===key);});
+      window.scrollTo(0,0);
+    });
+  }
+
+  // ---------- ① 표면 온도와 색 ----------
+  var TYPES=[
+    {c:'O',min:30000,name:'청색',k:'약 30,000 K 이상',ex:'나오스, 민타카',rep:35000,say:'나는 엄청 뜨거운 청색 별이야! 3만 K가 넘어!'},
+    {c:'B',min:10000,name:'청백색',k:'약 10,000~30,000 K',ex:'스피카, 리겔',rep:20000,say:'나는 아주 뜨거운 청백색 별이야!'},
+    {c:'A',min:7500,name:'백색',k:'약 7,500~10,000 K',ex:'견우성, 직녀성',rep:8500,say:'나는 하얗게 빛나는 백색 별이야!'},
+    {c:'F',min:6000,name:'황백색',k:'약 6,000~7,500 K',ex:'프로키온, 북극성',rep:6500,say:'나는 노르스름한 황백색 별이야!'},
+    {c:'G',min:5000,name:'황색',k:'약 5,000~6,000 K',ex:'태양, 카펠라',rep:5500,say:'안녕! 나는 태양과 같은 황색 별이야!'},
+    {c:'K',min:3500,name:'주황색',k:'약 3,500~5,000 K',ex:'아크투루스, 알데바란',rep:4200,say:'나는 따뜻한 주황색 별이야!'},
+    {c:'M',min:0,name:'적색',k:'약 3,500 K 이하',ex:'베텔게우스, 안타레스',rep:3000,say:'나는 표면 온도가 낮은 적색 별이야~'}
+  ];
+  // 경계: O >30000, B 10000 초과~30000, ... M 3500 이하
+  function typeOf(T){
+    for(var i=0;i<TYPES.length;i++){ if(T>TYPES[i].min) return TYPES[i]; }
+    return TYPES[TYPES.length-1];
+  }
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  // 교과서 그림 기준 색 (온도 사이는 부드럽게 이어짐)
+  var ANCH=[[3000,[240,74,58]],[4200,[255,154,26]],[5500,[255,225,26]],[6500,[255,243,170]],[8500,[255,255,255]],[20000,[200,230,255]],[35000,[74,123,208]]];
+  function tempRGB(T){
+    if(T<=ANCH[0][0]) return ANCH[0][1].slice();
+    var L=ANCH.length; if(T>=ANCH[L-1][0]) return ANCH[L-1][1].slice();
+    for(var i=0;i<L-1;i++){
+      var a=ANCH[i],b=ANCH[i+1];
+      if(T<=b[0]){
+        var f=(Math.log(T)-Math.log(a[0]))/(Math.log(b[0])-Math.log(a[0]));
+        return [0,1,2].map(function(k){return Math.round(a[1][k]+(b[1][k]-a[1][k])*f);});
+      }
+    }
+  }
+  function rgbStr(c){return 'rgb('+c[0]+','+c[1]+','+c[2]+')';}
+
+  var tSlider=document.getElementById('tSlider');
+  var specEl=document.getElementById('spec');
+  TYPES.forEach(function(ty){
+    var b=document.createElement('button');
+    b.style.background=rgbStr(tempRGB(ty.rep));
+    b.innerHTML=ty.c+'<small>'+ty.name+'</small>';
+    b.dataset.c=ty.c;
+    b.addEventListener('click',function(){tSlider.value=ty.rep;updateTemp();});
+    specEl.appendChild(b);
+  });
+
+  var sumGrid=document.getElementById('sumGrid');
+  TYPES.forEach(function(ty){
+    var c=document.createElement('div'); c.className='cell'; c.style.cursor='pointer';
+    var col=rgbStr(tempRGB(ty.rep));
+    c.innerHTML='<div class="dot" style="background:'+col+';box-shadow:0 0 12px '+col+'"></div><div class="nm">'+ty.name+'</div><div class="ty">'+ty.c+'형</div><div class="k">'+ty.k+'</div><div class="ex">'+ty.ex.replace(', ',',<br>')+'</div>';
+    c.addEventListener('click',function(){tSlider.value=ty.rep;updateTemp();window.scrollTo(0,0);});
+    sumGrid.appendChild(c);
+  });
+
+  var curType='G';
+  function updateTemp(){
+    var T=Number(tSlider.value);
+    var ty=typeOf(T); curType=ty.c;
+    var col=rgbStr(tempRGB(T));
+    var body=document.getElementById('starBody');
+    body.setAttribute('fill',col); body.setAttribute('stroke',col);
+    document.getElementById('starSvg').style.filter='drop-shadow(0 0 14px '+col+')';
+    document.getElementById('tVal').textContent=T.toLocaleString('ko-KR');
+    document.getElementById('cName').textContent=ty.name;
+    document.getElementById('cType').textContent=ty.c+'형';
+    document.getElementById('cRange').textContent=ty.k;
+    document.getElementById('cEx').textContent=ty.ex;
+    document.getElementById('bubble').textContent=ty.say;
+    var lam=Math.round(2.898e6/T);
+    var region=lam<380?'자외선':(lam<=750?'가시광선':'적외선');
+    document.getElementById('cWien').textContent='약 '+lam+' nm ('+region+')';
+    var bs=specEl.querySelectorAll('button');
+    for(var i=0;i<bs.length;i++){bs[i].classList.toggle('on',bs[i].dataset.c===ty.c);}
+    checkMissions();
+  }
+  tSlider.addEventListener('input',updateTemp);
+  document.querySelectorAll('[data-t]').forEach(function(b){
+    b.addEventListener('click',function(){tSlider.value=b.dataset.t;updateTemp();});
+  });
+
+  // ---------- ② 겉보기/절대 등급 ----------
+  var mAbs=document.getElementById('mAbs'), dist=document.getElementById('dist');
+  function glowStyle(el,mag){
+    var s=clamp(60*Math.pow(10,-0.1*mag),5,120);
+    var op=clamp(1.15-0.04*mag,0.25,1);
+    el.style.width=s+'px'; el.style.height=s+'px'; el.style.opacity=op;
+    el.style.boxShadow='0 0 '+Math.round(s*0.5)+'px '+Math.round(s*0.18)+'px rgba(255,236,170,'+op+')';
+  }
+  function fmt1(x){var v=Math.round(x*10)/10; if(Object.is(v,-0)) v=0; return v.toFixed(1);}
+  var curLog=1.4, curM=4.8, curm=6.8;
+  function updateMag(){
+    curM=Number(mAbs.value); curLog=Number(dist.value);
+    var d=Math.pow(10,curLog);
+    curm=curM+5*curLog-5; // m = M + 5log(d/10)
+    document.getElementById('mAbsVal').textContent=fmt1(curM);
+    document.getElementById('mAbsVal2').textContent=fmt1(curM);
+    document.getElementById('mAppVal').textContent=fmt1(curm);
+    document.getElementById('dVal').textContent=d<100?(Math.round(d*10)/10).toFixed(1):Math.round(d).toLocaleString('ko-KR');
+    document.getElementById('lyText').textContent='약 '+Math.round(d*3.26).toLocaleString('ko-KR')+' 광년 (1 pc ≈ 3.26 광년)';
+    glowStyle(document.getElementById('glowM'),curm);
+    glowStyle(document.getElementById('glowA'),curM);
+    var diff=curm-curM, txt;
+    var ratio=Math.pow(10/d,2); // 10 pc 대비 밝기
+    if(Math.abs(curLog-1)<0.001){
+      txt='<span class="big">겉보기 등급 = 절대 등급</span><br>별이 딱 <b>10 pc</b> 거리에 있어요. 그래서 두 등급이 같아요.';
+    }else if(diff<0){
+      txt='<span class="big">겉보기 등급 &lt; 절대 등급</span> (m − M = '+fmt1(diff)+')<br>별이 <b>10 pc보다 가까이</b> 있어서, 10 pc에 둘 때보다 약 <b>'+niceNum(ratio)+'배</b> 밝게 보여요.';
+    }else{
+      txt='<span class="big">겉보기 등급 &gt; 절대 등급</span> (m − M = '+fmt1(diff)+')<br>별이 <b>10 pc보다 멀리</b> 있어서, 10 pc에 둘 때의 약 <b>1/'+niceNum(1/ratio)+'</b> 밝기로 어둡게 보여요.';
+    }
+    if(curm<=6){txt+='<br>👀 겉보기 등급이 6등급 이하라서 맨눈으로 볼 수 있어요.';}
+    else{txt+='<br>🔭 겉보기 등급이 6등급보다 커서 맨눈으로는 보기 어려워요.';}
+    document.getElementById('distResult').innerHTML=txt;
+    checkMissions();
+  }
+  function niceNum(x){
+    if(x>=100) return Math.round(x).toLocaleString('ko-KR');
+    if(x>=10) return String(Math.round(x));
+    return (Math.round(x*10)/10).toFixed(1);
+  }
+  mAbs.addEventListener('input',updateMag);
+  dist.addEventListener('input',updateMag);
+  document.querySelectorAll('[data-d]').forEach(function(b){
+    b.addEventListener('click',function(){dist.value=b.dataset.d;updateMag();});
+  });
+
+  // ---------- ③ 등급 비교 ----------
+  var magA=document.getElementById('magA'), magB=document.getElementById('magB');
+  var curDelta=1;
+  function updateCmp(){
+    var a=Number(magA.value), b=Number(magB.value);
+    document.getElementById('magAVal').textContent=a;
+    document.getElementById('magBVal').textContent=b;
+    document.getElementById('cAlab').textContent=a+'등급';
+    document.getElementById('cBlab').textContent=b+'등급';
+    glowStyle(document.getElementById('glowCA'),a);
+    glowStyle(document.getElementById('glowCB'),b);
+    var delta=Math.abs(a-b); curDelta=delta;
+    var r=Math.pow(100,delta/5), out;
+    if(delta===0){out='<span class="big">두 별의 밝기가 같아요!</span>';}
+    else{
+      var bright=a<b?'별 A':'별 B', dim=a<b?'별 B':'별 A';
+      var rs=delta===5?'100':(r<10?(Math.round(r*10)/10).toFixed(1):String(Math.round(r)));
+      out='<span class="big">'+bright+'가 '+dim+'보다 약 '+rs+'배 밝아요!</span><br>등급 차이: '+delta+'등급 → 약 2.5를 '+delta+'번 곱한 값 (2.5<sup>'+delta+'</sup>)'+(delta===5?' = 정확히 100배':'');
+    }
+    document.getElementById('cmpResult').innerHTML=out;
+    checkMissions();
+  }
+  magA.addEventListener('input',updateCmp);
+  magB.addEventListener('input',updateCmp);
+
+  // ---------- ① 별 옮기기 실험실 ----------
+  var NS='http://www.w3.org/2000/svg';
+  var RS=[
+    {n:'태양',ly:0.000016,m0:-26.8,M:4.8,col:[255,214,40],ang0:100},
+    {n:'시리우스',ly:8.6,m0:-1.5,M:1.4,col:[235,240,255],ang0:-15},
+    {n:'베텔게우스',ly:640,m0:0.42,M:-6.0,col:[240,84,64],ang0:62},
+    {n:'데네브',ly:2600,m0:1.3,M:-8.4,col:[140,185,255],ang0:28},
+    {n:'북극성',ly:400,m0:2.0,M:-3.6,col:[255,240,160],ang0:-48},
+    {n:'별 A',ly:3*3.26,M:1.0,col:[255,196,214],ang0:160,free:true},
+    {n:'별 B',ly:300*3.26,M:-3.0,col:[176,236,214],ang0:196,free:true}
+  ];
+  var viewMode=0;
+  var CX=320,CY=285,RMIN=54,RMAX=238;
+  function d2r(d){var L=Math.log10(d);return L<0?90+L/6*36:90+L*46.67;}
+  function r2d(r){var L=r<90?(r-90)/36*6:(r-90)/46.67;return Math.pow(10,L);}
+  var R10=d2r(10);
+  var realSel=null,dragging=null,animId=null;
+  RS.forEach(function(st){st.d0=st.ly/3.26;st.d=st.d0;st.ang=st.ang0;if(st.free)st.m0=st.M+5*Math.log10(st.d0/10);});
+  function isAt10(n){var st=RS.filter(function(x){return x.n===n;})[0];return !!st&&st.d===10;}
+  function appM(st){
+    if(st.free) return st.M+5*Math.log10(st.d/10);
+    // 교과서 값(원래 위치의 겉보기 등급, 10 pc의 절대 등급)과 정확히 일치하도록 보정
+    var base=st.M+5*Math.log10(st.d/10);
+    var off=st.m0-(st.M+5*Math.log10(st.d0/10));
+    var t=Math.log10(st.d/10)/Math.log10(st.d0/10);
+    return base+off*clamp(t,0,1);
+  }
+  function mk(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs){e.setAttribute(k,attrs[k]);}if(parent)parent.appendChild(e);return e;}
+  function mstr(v){var a=Math.round(Math.abs(v)*100)/100;var t=a.toFixed(2);if(t.charAt(t.length-1)==='0')t=a.toFixed(1);if(a===0)return t;return (v<0?'−':'')+t;}
+  function shade(c,f){return 'rgb('+c.map(function(v){return Math.round(f>0?v+(255-v)*f:v*(1+f));}).join(',')+')';}
+  function lyStr(d){var ly=d*3.26;if(ly<0.01)return ly.toPrecision(2);if(ly<100)return (Math.round(ly*10)/10).toFixed(1);return Math.round(ly).toLocaleString('ko-KR');}
+  function pcStr(d){if(d<0.01)return d.toPrecision(2);if(d<100)return (Math.round(d*10)/10).toFixed(1);return Math.round(d).toLocaleString('ko-KR');}
+
+  var map=document.getElementById('skymap');
+  var defs=mk('defs',{},map);
+  // 배경 작은 별
+  var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+  for(var i=0;i<55;i++){mk('circle',{cx:rnd()*640,cy:rnd()*560,r:rnd()*1.3+0.4,fill:'#fff',opacity:(rnd()*0.5+0.2).toFixed(2)},map);}
+  // 거리 원
+  [[1,'1 pc'],[10,'10 pc'],[100,'100 pc'],[1000,'1000 pc']].forEach(function(o){
+    var rr=d2r(o[0]), is10=o[0]===10;
+    mk('circle',{cx:CX,cy:CY,r:rr,fill:'none',stroke:is10?'#ffd66b':'#5a62a0','stroke-width':is10?3:1.5,'stroke-dasharray':is10?'8 6':'4 6'},map);
+    var a=235*Math.PI/180;
+    var t=mk('text',{x:CX+rr*Math.cos(a)-4,y:CY-rr*Math.sin(a)+16,'text-anchor':'middle','font-size':is10?17:14,fill:is10?'#ffd66b':'#9aa0d8','class':'lbl'},map);
+    t.textContent=o[1];
+  });
+  var haloLayer=mk('g',{},map);
+  // 지구
+  var eg=mk('radialGradient',{id:'gEarth',cx:'35%',cy:'30%',r:'75%'},defs);
+  mk('stop',{offset:'0%','stop-color':'#9fd0ff'},eg);mk('stop',{offset:'60%','stop-color':'#3f86e0'},eg);mk('stop',{offset:'100%','stop-color':'#2457a8'},eg);
+  var earth=mk('g',{transform:'translate('+CX+','+CY+')'},map);
+  mk('circle',{r:26,fill:'url(#gEarth)'},earth);
+  mk('path',{d:'M-17 -10 q8 -9 17 -3 q2 7 -6 9 q-6 4 -11 -6z M6 8 q9 -4 14 3 q-3 9 -12 7z',fill:'#6cc26c',opacity:.9},earth);
+  mk('ellipse',{cx:-8,cy:-13,rx:6,ry:3.5,fill:'#fff',opacity:.55},earth);
+  mk('circle',{cx:-7,cy:2,r:2.6,fill:'#1f2547'},earth);mk('circle',{cx:7,cy:2,r:2.6,fill:'#1f2547'},earth);
+  mk('path',{d:'M-4 9 q4 4 8 0',stroke:'#1f2547','stroke-width':2,fill:'none','stroke-linecap':'round'},earth);
+  var et=mk('text',{y:44,'font-size':16,'text-anchor':'middle','class':'lbl'},earth);et.textContent='지구 🌏';
+
+  // 별 캐릭터
+  RS.forEach(function(st,i){
+    var gid='gS'+i, rg=mk('radialGradient',{id:gid,cx:'35%',cy:'30%',r:'75%'},defs);
+    mk('stop',{offset:'0%','stop-color':shade(st.col,0.7)},rg);
+    mk('stop',{offset:'55%','stop-color':shade(st.col,0)},rg);
+    mk('stop',{offset:'100%','stop-color':shade(st.col,-0.35)},rg);
+    var g=mk('g',{'class':'star'},map); if(!st.free) g.style.cursor='pointer';
+    st.g=g;
+    st.hg=mk('g',{},haloLayer);
+    st.halo=mk('circle',{fill:shade(st.col,0.2)},st.hg);
+    st.halo2=mk('circle',{fill:shade(st.col,0.3)},st.hg);
+    st.body=mk('circle',{r:16,fill:'url(#'+gid+')'},g);
+    mk('ellipse',{cx:-6,cy:-8,rx:5,ry:3,fill:'#fff',opacity:.75},g);
+    mk('ellipse',{cx:-5.5,cy:0,rx:2.2,ry:2.8,fill:'#2b2550'},g);
+    mk('ellipse',{cx:5.5,cy:0,rx:2.2,ry:2.8,fill:'#2b2550'},g);
+    mk('ellipse',{cx:-10,cy:5,rx:3.2,ry:2,fill:'#ff8fb1',opacity:.8},g);
+    mk('ellipse',{cx:10,cy:5,rx:3.2,ry:2,fill:'#ff8fb1',opacity:.8},g);
+    st.smile=mk('path',{d:'M-3.5 5.5 q3.5 3.5 7 0',stroke:'#2b2550','stroke-width':1.8,fill:'none','stroke-linecap':'round'},g);
+    st.oh=mk('ellipse',{cx:0,cy:7,rx:2.2,ry:2.6,fill:'#2b2550',display:'none'},g);
+    st.ring=mk('circle',{r:20,fill:'none',stroke:'#ffd66b','stroke-width':3,display:'none'},g);
+    mk('circle',{r:26,fill:'transparent'},g);
+    st.t1=mk('text',{y:34,'font-size':16,'font-weight':'bold','text-anchor':'middle','class':'lbl'},g);st.t1.textContent=st.n;
+    st.t2=mk('text',{y:52,'font-size':14,fill:'#ffd66b','text-anchor':'middle','class':'lbl'},g);
+    g.addEventListener('pointerdown',function(e){
+      e.preventDefault();
+      st.animTok=null;
+      realSel=st.n; if(st.free) dragging=st; else setTimeout(checkMissions,0);
+      try{map.setPointerCapture(e.pointerId);}catch(err){}
+      renderMap();showInfo();
+    });
+  });
+  function svgPt(e){var pt=map.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(map.getScreenCTM().inverse());}
+  map.addEventListener('pointermove',function(e){
+    if(!dragging) return;
+    var p=svgPt(e), dx=p.x-CX, dy=p.y-CY;
+    var rr=clamp(Math.sqrt(dx*dx+dy*dy),RMIN,RMAX);
+    dragging.ang=Math.atan2(-dy,dx)*180/Math.PI;
+    dragging.d=Math.abs(rr-R10)<7?10:r2d(rr);
+    renderMap();showInfo();
+  });
+  function endDrag(){if(!dragging)return;dragging=null;renderMap();showInfo();checkMissions();}
+  map.addEventListener('pointerup',endDrag);
+  map.addEventListener('pointercancel',endDrag);
+
+  function renderMap(){
+    RS.forEach(function(st){
+      var rr=d2r(st.d), a=st.ang*Math.PI/180;
+      var x=CX+rr*Math.cos(a), y=CY-rr*Math.sin(a);
+      var m=appM(st);
+      var hr=clamp(20+2.6*(2-m),17,50), op=clamp(0.25+0.04*(2-m),0.12,0.55);
+      var tr='translate('+x.toFixed(1)+','+y.toFixed(1)+')';st.g.setAttribute('transform',tr);st.hg.setAttribute('transform',tr);
+      st.halo.setAttribute('r',hr.toFixed(1));st.halo.setAttribute('opacity',(op*0.55).toFixed(2));
+      st.halo2.setAttribute('r',(16+(hr-16)*0.45).toFixed(1));st.halo2.setAttribute('opacity',op.toFixed(2));
+      st.body.setAttribute('opacity',m>6?0.5:1);
+      var up=rr<100&&y<CY;st.t1.setAttribute('y',up?-44:34);st.t2.setAttribute('y',up?-26:52);
+      st.t2.textContent=(st.d===10?'⭐ 절대 등급 ':'겉보기 ')+mstr(m)+(m>6?' 🔭':'');
+      st.ring.setAttribute('display',realSel===st.n?'inline':'none');
+      st.smile.setAttribute('display',dragging===st?'none':'inline');
+      st.oh.setAttribute('display',dragging===st?'inline':'none');
+    });
+    if(dragging) map.appendChild(dragging.g);
+    renderRank();
+  }
+  function showInfo(){
+    var st=RS.filter(function(x){return x.n===realSel;})[0];
+    if(!st) return;
+    var m=appM(st), diff=m-st.M, concl;
+    if(st.d===10){concl='🎯 <b>딱 10 pc!</b> 그래서 겉보기 등급 = 절대 등급 ('+mstr(st.M)+')이에요.';}
+    else if(diff<0){concl='겉보기 등급 &lt; 절대 등급 → <b>10 pc보다 가까이</b> 있어요.';}
+    else{concl='겉보기 등급 &gt; 절대 등급 → <b>10 pc보다 멀리</b> 있어요.';}
+    var ratio=st.free?Math.pow(st.d0/st.d,2):Math.pow(10,-0.4*(m-st.m0)), rtxt;
+    if(Math.abs(Math.log10(st.d/st.d0))<1e-6){rtxt=st.free?'처음 위치예요. 끌어서 옮겨 보세요!':'교과서에 나온 원래 위치예요.';}
+    else if(ratio>1){rtxt='처음 위치보다 가까워져서 약 <b>'+niceNum(ratio)+'배</b> 밝아졌어요.';}
+    else{rtxt='처음 위치보다 멀어져서 밝기가 약 <b>1/'+niceNum(1/ratio)+'</b>로 어두워졌어요.';}
+    document.getElementById('sinfo').innerHTML='<h3>⭐ '+st.n+'</h3><dl class="info">'+
+      (st.free?'':'<dt>교과서 거리</dt><dd>약 '+lyStr(st.d0)+' 광년</dd>')+
+      '<dt>지금 거리</dt><dd>약 '+lyStr(st.d)+' 광년 ('+pcStr(st.d)+' pc)</dd>'+
+      '<dt>겉보기 등급</dt><dd>'+mstr(m)+(m<=6?' 👀 맨눈으로 보여요':' 🔭 맨눈으로 보기 어려워요')+'</dd>'+
+      '<dt>절대 등급</dt><dd>'+mstr(st.M)+' (거리와 상관없이 그대로)</dd></dl>'+
+      '<p class="tip" style="margin-top:8px">'+concl+'<br>'+rtxt+'</p>';
+  }
+  function renderRank(){
+    var cur=RS.slice().sort(function(a,b){return appM(a)-appM(b);});
+    document.getElementById('rankList').innerHTML=cur.map(function(st){return '<li>'+st.n+' ('+mstr(appM(st))+')</li>';}).join('');
+    var ab=RS.slice().sort(function(a,b){return a.M-b.M;});
+    document.getElementById('rankAbs').innerHTML=ab.map(function(st){return '<li>'+st.n+' ('+mstr(st.M)+')</li>';}).join('');
+  }
+  function animateTo(targetFn,only){
+    var tok={};RS.forEach(function(st){if(only(st))st.animTok=tok;});
+    var from=RS.map(function(st){return {L:Math.log10(st.d),a:st.ang};});
+    var to=RS.map(targetFn), start=null;
+    function step(ts){
+      if(start===null) start=ts;
+      var f=Math.min(1,(ts-start)/900), e=f<.5?2*f*f:1-Math.pow(-2*f+2,2)/2;
+      RS.forEach(function(st,i){
+        if(st.animTok!==tok||st===dragging) return;
+        var da=((to[i].a-from[i].a+540)%360)-180;
+        st.ang=from[i].a+da*e;
+        st.d=f===1?to[i].d:Math.pow(10,from[i].L+(Math.log10(to[i].d)-from[i].L)*e);
+      });
+      renderMap();showInfo();
+      if(f<1){requestAnimationFrame(step);}else{checkMissions();}
+    }
+    requestAnimationFrame(step);
+  }
+  function isFixed(st){return !st.free;}
+  document.getElementById('rsView').addEventListener('click',function(){
+    viewMode=1-viewMode;
+    this.textContent=viewMode?'↩ 교과서 별 원래 자리로':'⭐ 교과서 별을 10 pc에 두면?';
+    animateTo(function(st){return {d:viewMode?10:st.d0,a:st.ang0};},isFixed);
+  });
+  document.getElementById('rsReset').addEventListener('click',function(){animateTo(function(st){return {d:st.d0,a:st.ang0};},function(st){return !!st.free;});});
+  function setAbs(id,name){
+    var el=document.getElementById(id), st=RS.filter(function(x){return x.n===name;})[0];
+    el.addEventListener('input',function(){st.M=Number(el.value);document.getElementById(id+'V').textContent=mstr(st.M);renderMap();showInfo();checkMissions();});
+  }
+  setAbs('mA','별 A'); setAbs('mB','별 B');
+  renderMap();
+
+  // ---------- 탐구 미션 ----------
+  var MISSIONS=[
+    {g:'T',q:'청백색 별(B형)을 만들어 보세요.',a:'정답! B형 별은 표면 온도가 약 10000~30000 K인 청백색 별이에요. 리겔이 대표적이에요.',ok:function(){return curType==='B';}},
+    {g:'T',q:'태양과 같은 분광형의 별을 만들어 보세요.',a:'정답! 태양은 표면 온도 약 5800 K인 G형(황색) 별이에요.',ok:function(){return curType==='G';}},
+    {g:'L',q:'별 A를 노란 원(10 pc)에 올려 보세요. 겉보기 등급은 어떻게 될까요?',a:'정답! 10 pc에 있으면 겉보기 등급 = 절대 등급이에요.',ok:function(){return isAt10('별 A');}},
+    {g:'L',q:'별 B를 멀리 옮겨서 맨눈으로 보기 어렵게(겉보기 등급 6보다 크게) 만들어 보세요.',a:'정답! 거리가 멀어질수록 겉보기 등급이 커지고(어두워지고), 6등급보다 어두우면 맨눈으로 보기 어려워요.',ok:function(){var b=RS.filter(function(x){return x.n==='별 B';})[0];return appM(b)>6;}},
+    {g:'L',q:'절대 등급이 다른 별 A와 별 B의 겉보기 등급을 같게 만들어 보세요.',a:'정답! 실제로 더 밝은 별(절대 등급이 작은 별)이 더 멀리 있으면 두 별이 같은 밝기로 보일 수 있어요.',ok:function(){var a=RS.filter(function(x){return x.n==='별 A';})[0],b=RS.filter(function(x){return x.n==='별 B';})[0];return Math.abs(a.M-b.M)>=0.5&&Math.abs(appM(a)-appM(b))<0.15;}},
+    {g:'L',q:'교과서 별을 10 pc에 두고, 실제로 가장 밝은 교과서 별을 눌러 보세요.',a:'정답! 같은 거리에 두면 절대 등급으로 비교할 수 있어요. 절대 등급이 −8.4로 가장 작은 데네브가 실제로 가장 밝아요.',ok:function(){return viewMode===1&&realSel==='데네브'&&isAt10('데네브');}},
+    {g:'M',q:'겉보기 등급과 절대 등급이 같아지도록 거리를 맞춰 보세요.',a:'정답! 별이 10 pc에 있으면 겉보기 등급 = 절대 등급이에요.',ok:function(){return Math.abs(curLog-1)<0.001;}},
+    {g:'M',q:'겉보기 등급이 절대 등급보다 작아지게(더 밝게 보이게) 만들어 보세요.',a:'정답! 별이 10 pc보다 가까우면 겉보기 등급이 절대 등급보다 작아요.',ok:function(){return curm<curM-0.0001;}},
+    {g:'M',q:'겉보기 등급이 절대 등급보다 정확히 5 크게 되는 거리를 찾아보세요.',a:'정답! 100 pc는 10 pc의 10배 거리 → 밝기는 1/100 → 5등급 어두워져요.',ok:function(){return Math.abs(curLog-2)<0.001;}},
+    {g:'M',q:'등급 차이 비교에서 두 별의 밝기가 100배 차이 나게 만들어 보세요.',a:'정답! 5등급 차이 = 100배 밝기 차이예요.',ok:function(){return curDelta===5;}}
+  ];
+  var done=[];
+  var cnt={T:0,M:0,L:0};
+  MISSIONS.forEach(function(m,i){
+    var ul=document.getElementById('missions'+m.g);
+    cnt[m.g]++;
+    done.push(false);
+    var li=document.createElement('li');
+    li.innerHTML='<div class="ck">'+cnt[m.g]+'</div><div><div class="q"></div><div class="a"></div></div>';
+    li.querySelector('.q').textContent=m.q;
+    li.querySelector('.a').textContent='✅ '+m.a;
+    ul.appendChild(li); m.el=li;
+  });
+  function checkMissions(){
+    var n={T:0,M:0,L:0};
+    MISSIONS.forEach(function(m,i){
+      if(!done[i] && m.ok()){done[i]=true; m.el.classList.add('done'); m.el.querySelector('.ck').textContent='★';}
+      if(done[i]) n[m.g]++;
+    });
+    ['T','M','L'].forEach(function(g){
+      document.getElementById('mProg'+g).textContent='미션 '+n[g]+' / '+cnt[g]+' 완료'+(n[g]===cnt[g]?' 🎉 모두 성공!':'');
+    });
+  }
+
+  // ---------- 확인 퀴즈 ----------
+  var QUIZ=[
+    {q:'표면 온도가 가장 높은 별은 어떤 색을 띨까요?',o:['적색','황색','백색','청색'],a:3,e:'별은 표면 온도가 높을수록 <b>청색</b>, 낮을수록 <b>적색</b>을 띠어요.'},
+    {q:'별의 표면 온도가 높은 것부터 순서대로 바르게 나열한 것은?',o:['적색 > 황색 > 백색 > 청색','청색 > 백색 > 황색 > 적색','황색 > 청색 > 적색 > 백색','백색 > 청색 > 적색 > 황색'],a:1,e:'표면 온도는 <b>청색 > 청백색 > 백색 > 황백색 > 황색 > 주황색 > 적색</b> 순으로 높아요.'},
+    {q:'태양에 대한 설명으로 옳은 것은?',o:['표면 온도 약 3500 K인 적색 별','표면 온도 약 5800 K인 황색 별','표면 온도 약 10000 K인 백색 별','표면 온도 약 30000 K인 청색 별'],a:1,e:'태양은 표면 온도가 약 <b>5800 K</b>인 <b>황색(G형)</b> 별이에요.'},
+    {q:'오리온자리의 리겔(청백색)과 베텔게우스(적색) 중 표면 온도가 더 높은 별은?',o:['리겔','베텔게우스','두 별의 표면 온도는 같다','색으로는 알 수 없다'],a:0,e:'청백색인 <b>리겔</b>이 적색인 베텔게우스보다 표면 온도가 높아요. 별의 색으로 표면 온도를 비교할 수 있어요.'},
+    {q:'1등급인 별은 6등급인 별보다 약 몇 배 밝을까요?',o:['약 2.5배','약 5배','약 10배','약 100배'],a:3,e:'5등급 차이는 <b>100배</b>의 밝기 차이예요. 등급이 작을수록 밝아요.'},
+    {q:'3등급인 별과 4등급인 별의 밝기 관계로 옳은 것은?',o:['4등급 별이 약 2.5배 밝다','3등급 별이 약 2.5배 밝다','3등급 별이 약 100배 밝다','두 별의 밝기는 같다'],a:1,e:'1등급 차이는 약 <b>2.5배</b>예요. 숫자가 작은 <b>3등급 별</b>이 더 밝아요.'},
+    {q:'절대 등급에 대한 설명으로 옳은 것은?',o:['지구에서 맨눈으로 보이는 밝기를 나타낸 등급','별을 10 pc 거리에 두었다고 가정할 때의 밝기 등급','별을 1 광년 거리에 두었다고 가정할 때의 밝기 등급','별의 표면 온도를 나타낸 등급'],a:1,e:'절대 등급은 모든 별을 <b>10 pc(약 32.6 광년)</b> 거리에 두었다고 가정하고 정한 등급이에요. 별의 실제 밝기를 비교할 수 있어요.'},
+    {q:'겉보기 등급이 2, 절대 등급이 5인 별까지의 거리는?',o:['10 pc보다 가깝다','정확히 10 pc이다','10 pc보다 멀다','알 수 없다'],a:0,e:'겉보기 등급 < 절대 등급이면, 10 pc에 둘 때보다 밝게 보이는 것이므로 <b>10 pc보다 가까이</b> 있어요.'},
+    {q:'절대 등급이 같은 두 별 중 한 별은 10 pc, 다른 별은 100 pc 거리에 있어요. 100 pc에 있는 별의 겉보기 밝기는?',o:['10배 밝다','같다','1/10로 어둡다','1/100로 어둡다'],a:3,e:'거리가 10배 멀어지면 밝기는 1/10<sup>2</sup> = <b>1/100</b>이 돼요. 그래서 겉보기 등급이 5만큼 커져요.'},
+    {q:'별 A는 겉보기 등급 1, 절대 등급 5이고, 별 B는 겉보기 등급 3, 절대 등급 −2예요. 실제로 더 밝은 별은?',o:['별 A','별 B','두 별의 실제 밝기는 같다','표면 온도를 알아야 비교할 수 있다'],a:1,e:'실제 밝기는 <b>절대 등급</b>으로 비교해요. 절대 등급이 더 작은 <b>별 B</b>가 실제로 더 밝아요. (지구에서 더 밝게 보이는 별은 겉보기 등급이 작은 별 A예요.)'}
+  ];
+  var answered, correct;
+  function buildQuiz(){
+    answered=0; correct=0;
+    var list=document.getElementById('qList'); list.innerHTML='';
+    document.getElementById('final').classList.remove('show');
+    QUIZ.forEach(function(item,qi){
+      var c=document.createElement('div'); c.className='qcard';
+      c.innerHTML='<div class="qt"><span class="n">'+(qi+1)+'</span><span class="qx"></span></div><div class="opts"></div><div class="exp"></div>';
+      c.querySelector('.qx').textContent=item.q;
+      var opts=c.querySelector('.opts'), exp=c.querySelector('.exp');
+      item.o.forEach(function(t,oi){
+        var b=document.createElement('button'); b.className='opt';
+        b.textContent=['①','②','③','④'][oi]+' '+t;
+        b.addEventListener('click',function(){
+          var all=opts.querySelectorAll('.opt');
+          for(var k=0;k<all.length;k++){all[k].disabled=true;}
+          all[item.a].classList.add('right');
+          var ok=oi===item.a;
+          if(ok){correct++;}else{b.classList.add('wrong');}
+          answered++;
+          exp.innerHTML=(ok?'🎉 <b>정답이에요!</b> ':'🙂 <b>아쉬워요! 정답은 '+['①','②','③','④'][item.a]+'</b> ')+item.e;
+          exp.classList.add('show');
+          updateScore();
+        });
+        opts.appendChild(b);
+      });
+      list.appendChild(c);
+    });
+    updateScore();
+  }
+  function updateScore(){
+    document.getElementById('score').textContent='맞힌 문제 '+correct+' / '+QUIZ.length;
+    if(answered===QUIZ.length){
+      var f=document.getElementById('final');
+      var msg=correct===QUIZ.length?'🌟 만점! 별 박사님이네요!':(correct>=7?'⭐ 잘했어요! 틀린 문제의 해설을 다시 읽어 봐요.':'💫 모의실험을 다시 해 보고 도전해 봐요!');
+      f.innerHTML='총 '+QUIZ.length+'문제 중 <b>'+correct+'문제</b> 정답!<br>'+msg;
+      f.classList.add('show');
+    }
+  }
+  document.getElementById('resetQuiz').addEventListener('click',function(){buildQuiz();window.scrollTo(0,0);});
+
+  // ---------- 시작 ----------
+  updateTemp(); updateMag(); updateCmp(); buildQuiz();
+})();
+</script>
+</body>
+</html>
