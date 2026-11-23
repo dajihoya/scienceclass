@@ -143,12 +143,18 @@ body input,body select,body textarea{font-family:var(--body)!important;font-weig
 body small,body .hint,body .sub,body .foot,body .legend{font-family:var(--body)!important;font-size:13px!important;line-height:1.5!important}
 body strong,body b{font-weight:700!important}
 </style>
+<style id="topic-mascot-and-heading-standard">
+.topic-mascot{display:inline-flex;width:1.05em;height:1.05em;vertical-align:-.13em;margin-right:.24em;flex:0 0 auto}
+.topic-mascot svg{display:block;width:100%;height:100%;overflow:visible}
+body header h1,body header h1 *{font-family:"Jua","Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif!important;font-weight:400!important;-webkit-text-stroke:0!important;text-shadow:none!important}
+body header h1{font-size:clamp(28px,4.4vw,40px)!important;line-height:1.15!important}
+</style>
 </head>
 <body>
 <div id="app">
   <header>
     <div class="logo"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.4-9.3C1.4 8.6 3.3 5 6.8 5c2.1 0 3.5 1.1 4.2 2.4h2C13.7 6.1 15.1 5 17.2 5c3.5 0 5.4 3.6 4.2 6.7C19.5 16.4 12 21 12 21z" fill="#fff"/></svg></div>
-    <div><h1>심장의 구조와 기능</h1><p>3D 모형으로 살펴보는 심장 · 중학교 2학년 과학 (동물과 에너지)</p></div>
+    <div><h1><span class="topic-mascot" aria-hidden="true"><svg viewBox="0 0 58 58"><path d="M29 49S7 36 7 21C7 8 23 5 29 18 35 5 51 8 51 21c0 15-22 28-22 28Z" fill="#f28ca1" stroke="#38415d" stroke-width="2.4"/><path d="M11 29h10l4-8 7 17 5-9h10" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>심장의 구조와 기능</h1><p>3D 모형으로 살펴보는 심장 · 중학교 2학년 과학 (동물과 에너지)</p></div>
   </header>
   <main>
     <section id="viewer">
