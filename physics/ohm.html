@@ -91,6 +91,29 @@ th{color:var(--sub);font-weight:normal;}
 .res button{font-size:20px;background:var(--yel);border-color:var(--yelD);}
 @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
 .wig{animation:wiggle .5s ease 2;transform-origin:50% 50%;}
+/* 입체 효과 */
+.card{border-radius:28px;box-shadow:0 6px 0 #DDD6EC;}
+button{box-shadow:0 3px 0 #D6CEE8;transition:transform .08s,box-shadow .08s;}
+button:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 #D6CEE8;}
+button.on,.rec,.next{box-shadow:0 3px 0 #171B26;}
+button.wire.on.a{box-shadow:0 3px 0 #A85A70;}
+button.wire.on.b{box-shadow:0 3px 0 #344A6B;}
+button.wire.on.c{box-shadow:0 3px 0 #4A7A62;}
+.sw,.res button{box-shadow:0 4px 0 #C99A00;}
+.sw.closed{box-shadow:0 4px 0 #171B26;}
+.rec:disabled{box-shadow:none;}
+.tabs .tab{box-shadow:none;}
+.tabs .tab.on{box-shadow:0 3px 0 #171B26;}
+.opt.ok{box-shadow:0 3px 0 #8FC4A5;}
+.opt.no{box-shadow:0 3px 0 #F3B3A6;}
+.meter{box-shadow:inset 0 -5px 0 #EEEAF6;}
+.bubble,.q{box-shadow:0 3px 0 #E6E0F2;}
+.num{box-shadow:0 3px 0 #C99A00;}
+.concl{box-shadow:0 5px 0 #171B26;}
+h1,.card h2{-webkit-text-stroke:.8px currentColor;paint-order:stroke fill;}
+#circuit rect,#circuit circle,#board rect,#board circle,.meter svg rect{filter:drop-shadow(0 3px 0 rgba(46,52,69,.16));}
+#graph circle,#lenGraph circle{filter:drop-shadow(0 2px 0 rgba(46,52,69,.25));}
+.logo,.face{filter:drop-shadow(0 3px 0 rgba(201,154,0,.55));}
 </style>
 </head>
 <body>
