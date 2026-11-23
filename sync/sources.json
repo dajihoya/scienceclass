@@ -9,5 +9,6 @@
   {"id": "star-distance", "artifact": "https://claude.ai/artifact/JNjExJJnZixNcnyPmZjGYU", "file": "earth-science/star-distance.html", "back": "../#earth-science"},
   {"id": "gas-exchange", "artifact": "https://claude.ai/artifact/BP4S5AYEB6y2nte1atmuiM", "file": "life-science/gas-exchange.html", "back": "../#life-science"},
   {"id": "organ-systems", "artifact": "https://claude.ai/artifact/3q2BZp8zjgQGDpZhDynjQE", "file": "life-science/organ-systems.html", "back": "../#life-science", "extra": ["organ-anatomy.json", "organ-anatomy.b64.txt"]},
-  {"id": "ohm", "artifact": "https://claude.ai/artifact/4GEPzDFz7rAU56MsHqndW6", "file": "physics/ohm.html", "back": "../#physics"}
+  {"id": "ohm", "artifact": "https://claude.ai/artifact/4GEPzDFz7rAU56MsHqndW6", "file": "physics/ohm.html", "back": "../#physics"},
+  {"id": "induction", "artifact": "https://claude.ai/artifact/MQB54nwvBqP4kUnxgNFzYT", "file": "physics/induction.html", "back": "../#physics"}
 ]
