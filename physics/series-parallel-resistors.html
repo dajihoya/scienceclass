@@ -133,12 +133,18 @@ body input,body select,body textarea{font-family:var(--body)!important;font-weig
 body small,body .hint,body .sub,body .foot,body .legend{font-family:var(--body)!important;font-size:13px!important;line-height:1.5!important}
 body strong,body b{font-weight:700!important}
 </style>
+<style id="topic-mascot-and-heading-standard">
+.topic-mascot{display:inline-flex;width:1.05em;height:1.05em;vertical-align:-.13em;margin-right:.24em;flex:0 0 auto}
+.topic-mascot svg{display:block;width:100%;height:100%;overflow:visible}
+body header h1,body header h1 *{font-family:"Jua","Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif!important;font-weight:400!important;-webkit-text-stroke:0!important;text-shadow:none!important}
+body header h1{font-size:clamp(28px,4.4vw,40px)!important;line-height:1.15!important}
+</style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <div class="tags"><span class="tag">전기와 자기</span><span class="tag gold">탐구 실험</span></div>
-  <h1><span class="emo">💡</span>저항의 직렬연결과 병렬연결<span class="emo b">⚡</span></h1>
+  <h1><span class="topic-mascot" aria-hidden="true"><svg viewBox="0 0 58 58"><path d="M7 29h8m0 0V13h10m-10 16v16h10m8-32h10v16m-10 16h10V29m0 0h8" fill="none" stroke="#38415d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="25" y="8" width="8" height="10" rx="2" fill="#f3c85c" stroke="#38415d" stroke-width="1.8"/><rect x="25" y="40" width="8" height="10" rx="2" fill="#f3c85c" stroke="#38415d" stroke-width="1.8"/></svg></span>저항의 직렬연결과 병렬연결</h1>
   <p class="sub">전구(저항)를 직렬과 병렬로 연결하고, 전류·전압·전체 저항이 어떻게 달라지는지 비교해 보자.</p>
 </header>
 <div class="tabs" id="tabs"><button data-t="sim" class="on">① 모의실험</button><button data-t="quiz">② 확인 퀴즈</button></div>
