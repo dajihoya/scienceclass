@@ -6,6 +6,7 @@
 - `life-science/heart.html` — 심장의 구조와 기능 3D 시뮬레이션
 - `life-science/nephron.html` — 콩팥의 구조와 기능
 - `life-science/gas-exchange.html` — 인체의 기체 교환 원리
+- `life-science/organ-systems.html` — 소화계, 순환계, 호흡계, 배설계의 유기적 관계 (3D 모형 파일 `organ-anatomy.json`, `organ-anatomy.b64.txt`를 같은 폴더에 함께 둠)
 - `earth-science/diurnal.html` — 천체의 일주운동 시뮬레이션
 - `earth-science/sun-annual.html` — 태양의 연주운동 3D 시뮬레이션
 - `earth-science/moon-phases.html` — 달의 위상 변화 관찰 시뮬레이션
