@@ -21,6 +21,12 @@ body small,body .hint,body .sub,body .foot,body .legend{font-family:var(--body)!
 body strong,body b{font-weight:700!important}
 </style>
 <style id="title-mascot-standard">.title-mascot{display:inline-flex;width:1.05em;height:1.05em;vertical-align:-.13em;margin-right:.24em;flex:none}.title-mascot svg{display:block;width:100%;height:100%}</style>
+<style id="topic-mascot-and-heading-standard">
+.topic-mascot{display:inline-flex;width:1.05em;height:1.05em;vertical-align:-.13em;margin-right:.24em;flex:0 0 auto}
+.topic-mascot svg{display:block;width:100%;height:100%;overflow:visible}
+body header h1,body header h1 *{font-family:"Jua","Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif!important;font-weight:400!important;-webkit-text-stroke:0!important;text-shadow:none!important}
+body header h1{font-size:clamp(28px,4.4vw,40px)!important;line-height:1.15!important}
+</style>
 </head><body>
 <title>일식과 월식 시뮬레이션</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -347,7 +353,7 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
 <div class="wrap" id="app" data-mode="solar">
   <header class="page-top">
     <p class="eyebrow">중1 과학 · Ⅶ. 태양계</p>
-    <h1><span class="title-mascot" aria-hidden="true"><svg viewBox="0 0 58 58"><path d="M29 5l6.6 14.2 15.4 1.9-11.4 10.6 3 15.3L29 39.4 15.4 47l3-15.3L7 21.1l15.4-1.9z" fill="#ffd166" stroke="#2b2f55" stroke-width="2.4" stroke-linejoin="round"/><circle cx="24" cy="26" r="2" fill="#2b2f55"/><circle cx="34" cy="26" r="2" fill="#2b2f55"/><path d="M24.5 31.5q4.5 4 9 0" fill="none" stroke="#2b2f55" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="31" r="2.4" fill="#ff9ebb"/><circle cx="38" cy="31" r="2.4" fill="#ff9ebb"/></svg></span>일식과 월식</h1>
+    <h1><span class="topic-mascot" aria-hidden="true"><svg viewBox="0 0 58 58"><circle cx="29" cy="29" r="19" fill="#ffd45c" stroke="#38415d" stroke-width="2.2"/><circle cx="37" cy="24" r="17" fill="#56617f" stroke="#38415d" stroke-width="2"/><path d="M7 10l3 4M29 3v5M50 10l-3 4" stroke="#f2a93b" stroke-width="2.5" stroke-linecap="round"/><circle cx="26" cy="34" r="1.5" fill="#fff"/></svg></span>일식과 월식</h1>
   </header>
   <div class="tabs" id="mainTabs" role="tablist" aria-label="실험 고르기">
     <button type="button" role="tab" id="tabbtn-model" data-tab="model" aria-controls="tab-model" aria-selected="true"><span class="dot"></span>모의실험</button>
