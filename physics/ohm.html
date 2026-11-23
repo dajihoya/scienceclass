@@ -6,7 +6,7 @@
 <title>전류, 전압, 저항 사이의 관계 모의실험</title>
 <style>
 @font-face{font-family:'IsYun';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff') format('woff');font-weight:normal;font-style:normal;font-display:swap;}
-:root{--bg:#F3F0FA;--card:#FFFFFF;--line:#E5E0F1;--ink:#2C2A4A;--sub:#6B6890;--yel:#FFC531;--yelD:#E0A800;--A:#E8505B;--B:#2F7DE1;--C:#2BA36B;--cur:#FF8A00;}
+:root{--bg:#F3F0FA;--card:#FFFFFF;--line:#E5E0F1;--ink:#2C2A4A;--sub:#6B6890;--yel:#FFC531;--yelD:#E0A800;--A:#D9839B;--B:#4F6D9A;--C:#6FA58A;--cur:#FF8A00;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IsYun',sans-serif;}
 body{padding:18px;}
@@ -347,7 +347,7 @@ th{color:var(--sub);font-weight:normal;}
 (function(){
 var NS='http://www.w3.org/2000/svg';
 var R={A:10,B:20,C:30};
-var COL={A:'#E8505B',B:'#2F7DE1',C:'#2BA36B'};
+var COL={A:'#D9839B',B:'#4F6D9A',C:'#6FA58A'};
 var st={w:'A',v:1.5,closed:false,tA:5,tV:300};
 var records=[];
 
@@ -588,7 +588,7 @@ document.getElementById('lenRec').onclick=function(){
   lenRecs.sort(function(a,b){return a.t-b.t||a.l-b.l;});renderLen();
 };
 document.getElementById('lenClear').onclick=function(){lenRecs=[];renderLen();};
-var LCOL={1:'#2F7DE1',2:'#2BA36B'};
+var LCOL={1:'#4F6D9A',2:'#6FA58A'};
 function renderLen(){
   var tb=document.getElementById('lenBody');tb.innerHTML='';
   lenRecs.forEach(function(r){var tr=document.createElement('tr');
