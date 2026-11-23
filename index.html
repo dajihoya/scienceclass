@@ -324,6 +324,12 @@ section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius
     if (!list.length) sec.innerHTML = '<p class="empty">아직 올린 자료가 없어요.</p>';
     var units = [];
     list.forEach(function (c) { var u = c.dataset.unit || ''; if (units.indexOf(u) < 0) units.push(u); });
+    /* 교과서 단원 번호 순서로 정렬 (예: 동물과 에너지 Ⅵ → 전기와 자기 Ⅶ) */
+    var romanOrder = { 'Ⅰ': 1, 'Ⅱ': 2, 'Ⅲ': 3, 'Ⅳ': 4, 'Ⅴ': 5, 'Ⅵ': 6, 'Ⅶ': 7, 'Ⅷ': 8, 'Ⅸ': 9, 'Ⅹ': 10 };
+    units.sort(function (a, b) {
+      var na = romanOrder[UNIT_NO[a]] || 99, nb = romanOrder[UNIT_NO[b]] || 99;
+      return na - nb;
+    });
     units.forEach(function (u) {
       var title = (UNIT_NO[u] ? '<span class="rn">' + UNIT_NO[u] + '.</span>' : '') + (u || '기타');
       sec.appendChild(group(title, list.filter(function (c) { return (c.dataset.unit || '') === u; }), true));
