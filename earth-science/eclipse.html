@@ -170,7 +170,7 @@ canvas{display:block;width:100%;max-width:100%;border-radius:14px}
 .stage{grid-template-areas:"space sky" "info sky";grid-template-rows:auto 1fr}
 .p-space{grid-area:space}
 .p-sky{grid-area:sky}
-.p-info{grid-area:info;align-self:start}
+.p-player{grid-area:info;align-self:start}\n.p-info{align-self:start}\n.ev-groups-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}\n.ev-group{display:grid;gap:8px}\n.ev-group-title{margin:0;display:flex;align-items:center;gap:8px;font-size:1.05rem;padding:7px 10px;border-radius:10px;background:var(--soft)}\n.ev-solar-group .ev-group-icon{color:var(--sun)}\n.ev-lunar-group .ev-group-icon{color:var(--copper)}\n.ev-group .ev-grid{grid-template-columns:minmax(0,1fr)}\n.ev-group .ev{height:100%}
 .evcard{padding:16px;display:grid;gap:12px;min-width:0}
 .ev-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 .ev-head h2{font-size:1.18rem}
@@ -192,7 +192,7 @@ canvas{display:block;width:100%;max-width:100%;border-radius:14px}
 .ev-next{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .ev-next .ev{background:transparent;border:1.5px dashed var(--line)}
 @media (max-width:480px){.ev-next{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:880px){.stage{grid-template-areas:"space" "sky" "info";grid-template-rows:auto}}
+@media (max-width:880px){.stage{grid-template-areas:"space" "sky" "info";grid-template-rows:auto}}\n@media(max-width:620px){.ev-groups-wrap{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:480px){.ev-grid{grid-template-columns:minmax(0,1fr)}}
 /* 비교하기 · 궁금해요: 옆으로 넘기는 탭 */
 .learn{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
@@ -480,6 +480,12 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
     </div>
   </header>
 
+  
+
+  
+
+  
+
   <section class="stage">
     <figure class="panel p-space">
       <figcaption><strong>우주에서 본 모습</strong><span>북극 위에서 내려다봤어요. 달은 시계 반대 방향으로 돌아요.</span></figcaption>
@@ -500,49 +506,8 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
       </div>
       <p class="safety" id="safety"></p>
     </figure>
-    <section class="card evcard p-info" aria-labelledby="evTitle">
-      <div class="ev-head"><h2 id="evTitle">우리나라에서 보는 일식·월식</h2><span>시간은 모두 한국 시간이에요</span></div>
-      <div class="ev-grid">
-        <article class="ev ev-solar">
-          <div class="ev-top"><span class="ev-k">최근 일식</span><span class="ev-date">2020. 6. 21.</span></div>
-          <b>부분일식</b>
-          <p>서울에서 태양의 약 45%가 가려졌어요.</p>
-          <p>오후 3시 53분 ~ 6시 4분 (가장 많이 가려진 때 5시 2분, 서울 기준)</p>
-        </article>
-        <article class="ev ev-lunar">
-          <div class="ev-top"><span class="ev-k">최근 월식</span><span class="ev-date">2026. 3. 3.</span></div>
-          <b>개기월식</b>
-          <p>달 전체가 지구 그림자에 들어가 붉게 보였어요.</p>
-          <p>저녁 6시 50분 ~ 밤 10시 17분 (달 전체가 가려진 때 8시 4분 ~ 9시 3분)</p>
-        </article>
-        <article class="ev ev-solar">
-          <div class="ev-top"><span class="ev-k">다음 일식</span><span class="ev-date">2030. 6. 1.</span></div>
-          <b>부분일식</b>
-          <p>오후에 태양의 일부가 달에 가려져요.</p>
-          <p class="ev-kr">2020년 이후 10년 만에 우리나라에서 보는 일식이에요.</p>
-        </article>
-        <article class="ev ev-lunar">
-          <div class="ev-top"><span class="ev-k">다음 월식</span><span class="ev-date">2028. 7. 7.</span></div>
-          <b>부분월식</b>
-          <p>새벽에 달의 일부가 지구 그림자에 가려져요.</p>
-          <p>새벽 2시 9분 ~ 4시 30분 (가장 많이 가려질 때 3시 20분)</p>
-        </article>
-      </div>
-      <div class="ev-next">
-        <article class="ev ev-lunar">
-          <div class="ev-top"><span class="ev-k">다음 개기월식</span><span class="ev-date">2028. 12. 31. ~ 2029. 1. 1.</span></div>
-          <p>1월 1일 새벽 1시 16분 ~ 2시 28분에 달 전체가 가려져 붉게 보여요.</p>
-        </article>
-        <article class="ev ev-solar">
-          <div class="ev-top"><span class="ev-k">다음 개기일식</span><span class="ev-date">2035. 9. 2.</span></div>
-          <p>오전 9시 40분쯤. 남한에서는 강원도 고성 등 북쪽 끝 일부 지역에서만 개기일식으로 보이고, 서울 등 나머지 지역에서는 부분일식으로 보여요.</p>
-        </article>
-      </div>
-      <p class="ev-src">맨눈으로 알아보기 어려운 반영월식은 뺐어요. 자료: 한국천문연구원, NASA (2026년 11월 확인)</p>
-    </section>
-  </section>
-
-  <section class="card control">
+    
+  <section class="card control p-player">
     <div class="status">
       <div class="order" id="order"></div>
       <div class="phase" aria-live="polite"><span class="chip" id="phaseChip"></span><p id="phaseText"></p></div>
@@ -564,36 +529,15 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
       </div>
     </div>
   </section>
-
-  <section class="card shadows" aria-labelledby="shTitle">
-    <div class="sh-head"><h2 id="shTitle">개기식과 부분식</h2><span>그림자의 어느 부분에 들어가느냐에 따라 보이는 모습이 달라요</span></div>
-    <div class="sh-grid">
-      <article class="sh-col sh-solar">
-        <h3><span class="sh-tag">일식</span><span class="sh-order">태양 – 달 – 지구</span></h3>
-        <canvas id="shSolar" class="sh-cv" role="img" aria-label="일식 그림: 달의 본그림자가 닿는 좁은 지역에서는 개기일식, 반그림자가 닿는 지역에서는 부분일식이 보여요."></canvas>
-        <ul class="sh-list">
-          <li><canvas class="sh-ic" data-ic="solar-total" aria-hidden="true"></canvas><div><b>개기일식</b><p>달이 태양 전체를 가려요. 달의 본그림자가 닿는 좁은 지역에서 볼 수 있어요.</p></div></li>
-          <li><canvas class="sh-ic" data-ic="solar-partial" aria-hidden="true"></canvas><div><b>부분일식</b><p>달이 태양의 일부만 가려요. 달의 반그림자가 닿는 지역에서 볼 수 있어요.</p></div></li>
-        </ul>
-        <p class="sh-note">달의 그림자는 지구의 일부에만 생겨서, 일식은 그림자가 닿는 낮인 지역에서만 볼 수 있어요.</p>
-      </article>
-      <article class="sh-col sh-lunar">
-        <h3><span class="sh-tag">월식</span><span class="sh-order">태양 – 지구 – 달</span></h3>
-        <canvas id="shLunar" class="sh-cv" role="img" aria-label="월식 그림: 달 전체가 지구의 본그림자 속에 들어가면 개기월식, 달의 일부만 들어가면 부분월식이에요."></canvas>
-        <ul class="sh-list">
-          <li><canvas class="sh-ic" data-ic="lunar-total" aria-hidden="true"></canvas><div><b>개기월식</b><p>달 전체가 지구의 본그림자 속에 들어가요. 달이 어둡고 붉게 보여요.</p></div></li>
-          <li><canvas class="sh-ic" data-ic="lunar-partial" aria-hidden="true"></canvas><div><b>부분월식</b><p>달의 일부만 지구의 본그림자 속에 들어가요. 들어간 부분만 어둡게 가려져요.</p></div></li>
-        </ul>
-        <p class="sh-note">달이 지구의 그림자 속에 들어가는 것이라서, 월식은 달이 떠 있는 밤인 지역이면 어디서나 볼 수 있어요.</p>
-      </article>
-    </div>
   </section>
 
   <section class="card learn" aria-label="일식과 월식 정리">
     <div class="lt-head">
       <div class="tabs lt-tabs" role="tablist" aria-label="정리 자료">
-        <button type="button" role="tab" id="lt-compare" aria-controls="lp-compare" aria-selected="true"><span class="dot"></span>일식과 월식 비교하기</button>
+        <button type="button" role="tab" id="lt-shadows" aria-controls="lp-shadows" aria-selected="true"><span class="dot"></span>개기식과 부분식</button>
+        <button type="button" role="tab" id="lt-compare" aria-controls="lp-compare" aria-selected="false" tabindex="-1"><span class="dot"></span>일식과 월식 비교하기</button>
         <button type="button" role="tab" id="lt-qa" aria-controls="lp-qa" aria-selected="false" tabindex="-1"><span class="dot"></span>궁금해요</button>
+        <button type="button" role="tab" id="lt-events" aria-controls="lp-events" aria-selected="false" tabindex="-1"><span class="dot"></span>언제 일어날까?</button>
       </div>
       <div class="lt-nav">
         <span class="lt-hint">옆으로 넘겨 보세요</span>
@@ -631,8 +575,108 @@ footer{color:var(--muted);font-size:.85rem;text-align:center;padding-top:2px}
         <p>태양의 지름은 달의 약 400배지만, 지구에서 달보다 약 400배 멀리 있어요. 그래서 하늘에서는 태양과 달이 거의 같은 크기로 보이고, 달이 태양을 꼭 맞게 가릴 수 있어요.</p>
       </article>
     </div>
+    <div class="lt-slide" role="tabpanel" id="lp-shadows" aria-labelledby="lt-shadows"><section class="card shadows" aria-labelledby="shTitle">
+    <div class="sh-head"><h2 id="shTitle">개기식과 부분식</h2><span>그림자의 어느 부분에 들어가느냐에 따라 보이는 모습이 달라요</span></div>
+    <div class="sh-grid">
+      <article class="sh-col sh-solar">
+        <h3><span class="sh-tag">일식</span><span class="sh-order">태양 – 달 – 지구</span></h3>
+        <canvas id="shSolar" class="sh-cv" role="img" aria-label="일식 그림: 달의 본그림자가 닿는 좁은 지역에서는 개기일식, 반그림자가 닿는 지역에서는 부분일식이 보여요."></canvas>
+        <ul class="sh-list">
+          <li><canvas class="sh-ic" data-ic="solar-total" aria-hidden="true"></canvas><div><b>개기일식</b><p>달이 태양 전체를 가려요. 달의 본그림자가 닿는 좁은 지역에서 볼 수 있어요.</p></div></li>
+          <li><canvas class="sh-ic" data-ic="solar-partial" aria-hidden="true"></canvas><div><b>부분일식</b><p>달이 태양의 일부만 가려요. 달의 반그림자가 닿는 지역에서 볼 수 있어요.</p></div></li>
+        </ul>
+        <p class="sh-note">달의 그림자는 지구의 일부에만 생겨서, 일식은 그림자가 닿는 낮인 지역에서만 볼 수 있어요.</p>
+      </article>
+      <article class="sh-col sh-lunar">
+        <h3><span class="sh-tag">월식</span><span class="sh-order">태양 – 지구 – 달</span></h3>
+        <canvas id="shLunar" class="sh-cv" role="img" aria-label="월식 그림: 달 전체가 지구의 본그림자 속에 들어가면 개기월식, 달의 일부만 들어가면 부분월식이에요."></canvas>
+        <ul class="sh-list">
+          <li><canvas class="sh-ic" data-ic="lunar-total" aria-hidden="true"></canvas><div><b>개기월식</b><p>달 전체가 지구의 본그림자 속에 들어가요. 달이 어둡고 붉게 보여요.</p></div></li>
+          <li><canvas class="sh-ic" data-ic="lunar-partial" aria-hidden="true"></canvas><div><b>부분월식</b><p>달의 일부만 지구의 본그림자 속에 들어가요. 들어간 부분만 어둡게 가려져요.</p></div></li>
+        </ul>
+        <p class="sh-note">달이 지구의 그림자 속에 들어가는 것이라서, 월식은 달이 떠 있는 밤인 지역이면 어디서나 볼 수 있어요.</p>
+      </article>
     </div>
-    <div class="lt-dots" aria-hidden="true"><i class="on"></i><i></i></div>
+  </section></div>
+<div class="lt-slide" role="tabpanel" id="lp-events" aria-labelledby="lt-events"><section class="card evcard p-info" aria-labelledby="evTitle">
+      <div class="ev-head"><h2 id="evTitle">언제 일어날까?</h2><span>시간은 모두 한국 시간이에요</span></div>
+      <div class="ev-groups-wrap">
+      <div class="ev-group ev-solar-group">
+        <h3 class="ev-group-title"><span class="ev-group-icon">☀</span> 일식</h3>
+        <div class="ev-grid"><article class="ev ev-solar">
+          <div class="ev-top"><span class="ev-k">최근 일식</span><span class="ev-date">2020. 6. 21.</span></div>
+          <b>부분일식</b>
+          <p>서울에서 태양의 약 45%가 가려졌어요.</p>
+          <p>오후 3시 53분 ~ 6시 4분 (가장 많이 가려진 때 5시 2분, 서울 기준)</p>
+        </article>
+<article class="ev ev-solar">
+          <div class="ev-top"><span class="ev-k">다음 일식</span><span class="ev-date">2030. 6. 1.</span></div>
+          <b>부분일식</b>
+          <p>오후에 태양의 일부가 달에 가려져요.</p>
+          <p class="ev-kr">2020년 이후 10년 만에 우리나라에서 보는 일식이에요.</p>
+        </article>
+<article class="ev ev-solar">
+          <div class="ev-top"><span class="ev-k">다음 개기일식</span><span class="ev-date">2035. 9. 2.</span></div>
+          <p>오전 9시 40분쯤. 남한에서는 강원도 고성 등 북쪽 끝 일부 지역에서만 개기일식으로 보이고, 서울 등 나머지 지역에서는 부분일식으로 보여요.</p>
+        </article></div>
+      </div>
+      <div class="ev-group ev-lunar-group">
+        <h3 class="ev-group-title"><span class="ev-group-icon">☾</span> 월식</h3>
+        <div class="ev-grid"><article class="ev ev-lunar">
+          <div class="ev-top"><span class="ev-k">최근 월식</span><span class="ev-date">2026. 3. 3.</span></div>
+          <b>개기월식</b>
+          <p>달 전체가 지구 그림자에 들어가 붉게 보였어요.</p>
+          <p>저녁 6시 50분 ~ 밤 10시 17분 (달 전체가 가려진 때 8시 4분 ~ 9시 3분)</p>
+        </article>
+<article class="ev ev-lunar">
+          <div class="ev-top"><span class="ev-k">다음 월식</span><span class="ev-date">2028. 7. 7.</span></div>
+          <b>부분월식</b>
+          <p>새벽에 달의 일부가 지구 그림자에 가려져요.</p>
+          <p>새벽 2시 9분 ~ 4시 30분 (가장 많이 가려질 때 3시 20분)</p>
+        </article>
+<article class="ev ev-lunar">
+          <div class="ev-top"><span class="ev-k">다음 개기월식</span><span class="ev-date">2028. 12. 31. ~ 2029. 1. 1.</span></div>
+          <p>1월 1일 새벽 1시 16분 ~ 2시 28분에 달 전체가 가려져 붉게 보여요.</p>
+        </article></div>
+      </div>
+    </div>
+          <b>부분일식</b>
+          <p>서울에서 태양의 약 45%가 가려졌어요.</p>
+          <p>오후 3시 53분 ~ 6시 4분 (가장 많이 가려진 때 5시 2분, 서울 기준)</p>
+        </article>
+        <article class="ev ev-lunar">
+          <div class="ev-top"><span class="ev-k">최근 월식</span><span class="ev-date">2026. 3. 3.</span></div>
+          <b>개기월식</b>
+          <p>달 전체가 지구 그림자에 들어가 붉게 보였어요.</p>
+          <p>저녁 6시 50분 ~ 밤 10시 17분 (달 전체가 가려진 때 8시 4분 ~ 9시 3분)</p>
+        </article>
+        <article class="ev ev-solar">
+          <div class="ev-top"><span class="ev-k">다음 일식</span><span class="ev-date">2030. 6. 1.</span></div>
+          <b>부분일식</b>
+          <p>오후에 태양의 일부가 달에 가려져요.</p>
+          <p class="ev-kr">2020년 이후 10년 만에 우리나라에서 보는 일식이에요.</p>
+        </article>
+        <article class="ev ev-lunar">
+          <div class="ev-top"><span class="ev-k">다음 월식</span><span class="ev-date">2028. 7. 7.</span></div>
+          <b>부분월식</b>
+          <p>새벽에 달의 일부가 지구 그림자에 가려져요.</p>
+          <p>새벽 2시 9분 ~ 4시 30분 (가장 많이 가려질 때 3시 20분)</p>
+        </article>
+      </div>
+      <div class="ev-next">
+        <article class="ev ev-lunar">
+          <div class="ev-top"><span class="ev-k">다음 개기월식</span><span class="ev-date">2028. 12. 31. ~ 2029. 1. 1.</span></div>
+          <p>1월 1일 새벽 1시 16분 ~ 2시 28분에 달 전체가 가려져 붉게 보여요.</p>
+        </article>
+        <article class="ev ev-solar">
+          <div class="ev-top"><span class="ev-k">다음 개기일식</span><span class="ev-date">2035. 9. 2.</span></div>
+          <p>오전 9시 40분쯤. 남한에서는 강원도 고성 등 북쪽 끝 일부 지역에서만 개기일식으로 보이고, 서울 등 나머지 지역에서는 부분일식으로 보여요.</p>
+        </article>
+      </div>
+      <p class="ev-src">맨눈으로 알아보기 어려운 반영월식은 뺐어요. 자료: 한국천문연구원, NASA (2026년 11월 확인)</p>
+    </section></div>
+    </div>
+    <div class="lt-dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
   </section>
   <footer>그림 속 크기와 거리, 움직이는 빠르기는 이해를 돕기 위해 실제와 다르게 그렸어요.</footer>
   </div>
