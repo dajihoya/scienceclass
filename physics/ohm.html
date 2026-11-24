@@ -729,5 +729,29 @@ renderRecords();update();
 <div data-wm style="position:fixed;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:2147483000;pointer-events:none;font:12px/1.4 IsYun,Jua,'NanumSquareRound',sans-serif;color:#2b2f55;background:#fff;border:1px solid #dde2f7;border-radius:999px;padding:2px 10px;opacity:.9">© Science Class by Teacher 노글라쓰</div>
 <script>(function(){var T='© Science Class by Teacher 노글라쓰',S='position:fixed;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:2147483647;pointer-events:none;font:12px/1.4 IsYun,Jua,sans-serif;color:#2b2f55;background:#fff;border:1px solid #dde2f7;border-radius:999px;padding:2px 10px;opacity:.9;display:block;visibility:visible;transform:none;filter:none;clip-path:none';var h,r,t;function mk(){h=document.createElement('noh-mark');h.setAttribute('style','all:initial;'+S);r=h.attachShadow({mode:'closed'});t=document.createElement('span');t.textContent=T;r.appendChild(t);}function ok(){if(!h||!h.isConnected||!t.isConnected||t.textContent!==T)return false;var c=getComputedStyle(h);return c.display!=='none'&&c.visibility!=='hidden'&&+c.opacity>.5&&c.position==='fixed';}function fix(){if(ok())return;if(h&&h.remove)h.remove();mk();(document.body||document.documentElement).appendChild(h);document.querySelectorAll('[data-wm]').forEach(function(e){e.style.display='none'});}fix();new MutationObserver(fix).observe(document.documentElement,{childList:true,subtree:true,attributes:true});setInterval(fix,1500);})();</script>
 <!--/wm-->
+
+<style id="mobile-responsive-fix">
+/* 휴대폰 공통 반응형 보정: 기존 시뮬레이션 배치와 캔버스 비율은 유지 */
+*,*::before,*::after{box-sizing:border-box}
+html{max-width:100%;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{width:100%;min-width:0;max-width:100%;overflow-x:hidden}
+body *{min-width:0}
+img,svg,video,iframe{max-width:100%}
+canvas{display:block;max-width:100%;height:auto}
+input,select,textarea,button{max-width:100%;font:inherit}
+input[type=range]{min-height:32px;touch-action:pan-y}
+button,[role=button],[role=tab]{touch-action:manipulation}
+pre,table{max-width:100%;overflow-x:auto}
+@media (max-width:640px){
+ body{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}
+ main,header,footer,section,article,aside,.wrap,.container,.app,.shell,.layout,.content,.stage,.workspace,.simulator,.simulation{max-width:100%}
+ .wrap,.container,.app,.shell,.layout,.content,.workspace,.simulator,.simulation{min-width:0}
+ button,[role=button],[role=tab],input[type=button],input[type=submit]{min-height:40px}
+ input:not([type=range]),select,textarea{font-size:16px}
+ .controls,.toolbar,.actions,.button-row,.btn-row{flex-wrap:wrap;max-width:100%}
+ .controls>*,.toolbar>*,.actions>*,.button-row>*,.btn-row>*{max-width:100%}
+ p,li,label,.note,.desc,.description,.explain,.help,.caption{overflow-wrap:anywhere}
+}
+</style>
 </body>
 </html>
