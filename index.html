@@ -356,5 +356,15 @@ section.tabbed,#by-grade > section{background:rgba(244,241,230,.1);border-radius
   render();
 })();
 </script>
+
+<style id="mobile-responsive-fix">
+*,*::before,*::after{box-sizing:border-box}
+html{max-width:100%;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{width:100%;min-width:0;max-width:100%;overflow-x:hidden}
+body *{min-width:0}
+img,svg,video,iframe{max-width:100%}
+input,select,textarea,button{max-width:100%;font:inherit}
+@media(max-width:640px){main,header,footer,section,article,.wrap,.container,.app,.shell,.layout,.content{max-width:100%;min-width:0}button,[role=button],input[type=button],input[type=submit]{min-height:40px}input:not([type=range]),select,textarea{font-size:16px}p,li,label{overflow-wrap:anywhere}}
+</style>
 </body>
 </html>
