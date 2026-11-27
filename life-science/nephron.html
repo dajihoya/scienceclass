@@ -2044,7 +2044,8 @@ function buildNephron(){
   /* 혈액 흐름: 동맥 → 토리 → (그물 또는 곧은 모세혈관) → 정맥 */
   const tmp=new THREE.Color(),artIn=P3([[XL,YA,ZA],[-3.6,YA+.02,ZA],[-2.55,YA,ZA]]);
   const arcVfrom=function(x){return linePath([[x,YV,ZV],[XL,YV,ZV]]);};
-  const ilVLfrom=function(y){return linePath([[-3.02,y,-.5],[-3.04,.6,-.62],[-3.05,YV,ZV]]);},ilVRfrom=function(y){return linePath([[2.33,y,-.55],[2.35,.6,-.72],[2.36,YV,ZV]]);};
+  /* 정맥으로 모이는 혈류는 경계면을 따라 짧게 이동하며, 위로 솟는 피질 정맥 기둥은 표시하지 않음 */
+  const ilVLfrom=function(y){return linePath([[-2.85,YV-.04,ZV],[-3.05,YV,ZV]]);},ilVRfrom=function(y){return linePath([[2.85,YV-.04,ZV],[2.36,YV,ZV]]);};
   const netPath=function(to){const pr=new Array(nodes.length).fill(-1),d=new Array(nodes.length).fill(1e9);d[nIn]=0;const q=[nIn];
     while(q.length){q.sort(function(a,b2){return d[a]-d[b2];});const x=q.shift();if(x===to)break;adj[x].forEach(function(e){const nd=d[x]+e[1]*(.7+R5()*.6);if(nd<d[e[0]]){d[e[0]]=nd;pr[e[0]]=x;q.push(e[0]);}});}
     const ch=[];for(let x=to;x>=0;x=pr[x]){ch.push(nodes[x]);if(x===nIn)break;}return linePath(ch.reverse());};
