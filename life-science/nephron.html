@@ -1930,7 +1930,7 @@ function buildNephron(){
   /* 곧은 모세혈관: 고리를 따라 속질로 내려갔다 U자로 돌아 올라와 경계의 정맥으로 */
   const VRd=[[.0,.28],[.42,-.32],[.82,.3],[1.25,-.28]],VRa=[[.18,-.3],[.6,.32],[1.05,-.32],[1.4,.3]],VRy=[-3.4,-3.95,-3.6,-3.1],vr=[];
   for(let k=0;k<4;k++){const xd=VRd[k][0],zd=VRd[k][1],xa=VRa[k][0],za=VRa[k][1],yh=VRy[k];
-    const P=P3([S0,[xd,bdY-.3,zd*.6],[xd,-1.8,zd],[xd,yh+.35,zd],[(xd+xa)/2,yh,(zd+za)/2],[xa,yh+.35,za],[xa,-1.8,za],[xa,bdY-.3,za*.6],[xa,YV,ZV]]);
+    const P=P3([S0,[xd,bdY-.22,zd*.6],[xd,-1.25,zd],[xd,yh+.48,zd],[(xd+xa)/2,yh,(zd+za)/2],[xa,yh+.48,za],[xa,-1.25,za],[xa,bdY-.22,za*.6],[xa+.12,YV+.08,ZV],[xa+.28,YV,ZV]]);
     vr.push(P);net.push(vtube(P.curve,160,6,function(){return .024;},function(u){return capCol(sm(.0,1,u));}));
     [-1.3,-2.5].forEach(function(y){if(y<yh+.4)return;const a=new V3(xd,y,zd),c=new V3(xa,y-.15,za),m=a.clone().lerp(c,.5).add(new V3(0,-.05,0));
       net.push(vtube(new THREE.CatmullRomCurve3([a,m,c]),12,5,function(){return .016;},function(u){return capCol(.45+.1*u);}));});}
