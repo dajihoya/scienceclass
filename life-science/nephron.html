@@ -1887,9 +1887,8 @@ function buildNephron(){
   /* 다른 콩팥 단위로 가는 가지(잘린 끝) */
   [[[-2.5,1.3,-.4],[-3.0,1.55,-.3],[-3.45,1.6,-.2]],[[-2.45,2.4,-.22],[-1.95,2.55,-.5],[-1.6,2.5,-.75]]].forEach(function(p){const P=P3(p);artMeshes.push(new THREE.Mesh(tubeOf(P,.05,.035),mArtV));});
   artMeshes.slice(0,3).concat(artMeshes.slice(4)).forEach(function(m){S.add(m);});
-  /* 정맥: 겉질에서 내려오는 정맥(왼쪽 · 오른쪽) */
-  const ilVL=P3([[-3.0,3.7,-.38],[-3.02,2.0,-.48],[-3.04,.6,-.62],[-3.05,YV,ZV]]),ilVR=P3([[4.05,3.5,-.5],[4.08,2.0,-.58],[4.1,.6,-.72],[4.12,YV,ZV]]);
-  const veinMeshes=[arcVM,new THREE.Mesh(tubeOf(ilVL,.07,.12),mVeinV),new THREE.Mesh(tubeOf(ilVR,.06,.11),mVeinV)];veinMeshes.slice(1).forEach(function(m){S.add(m);});
+  /* 정맥: 세뇨관 주변 모세혈관에서 짧은 세정맥으로 모여 경계의 활꼴정맥에 합류 */
+  const veinMeshes=[arcVM];
   /* 세뇨관 둘레 모세혈관 그물: 겉질의 구불구불한 세뇨관 사이사이를 불규칙한 그물이 채움 */
   const R5=rng(41),tsp=tub.curve.getSpacedPoints(600);
   const nearT=function(p){let b=0,bd=1e9;for(let i=0;i<tsp.length;i++){const d=tsp[i].distanceToSquared(p);if(d<bd){bd=d;b=i;}}return {d:Math.sqrt(bd),u:b/600};};
@@ -1935,8 +1934,8 @@ function buildNephron(){
     [-1.3,-2.5].forEach(function(y){if(y<yh+.4)return;const a=new V3(xd,y,zd),c=new V3(xa,y-.15,za),m=a.clone().lerp(c,.5).add(new V3(0,-.05,0));
       net.push(vtube(new THREE.CatmullRomCurve3([a,m,c]),12,5,function(){return .016;},function(u){return capCol(.45+.1*u);}));});}
   /* 그물에서 정맥으로 나가는 작은 정맥 */
-  const venL=outL.map(function(n,k){const a=nodes[n];return P3([a,[(a.x-3.02)/2-.2,a.y-.1,-.45],[-3.02,a.y-.35,-.5]]);});
-  const venR=P3([nodes[outR],[2.3,nodes[outR].y-.1,-.4],[2.33,nodes[outR].y-.3,-.55]]);
+  const venL=outL.map(function(n,k){const a=nodes[n];return P3([a,[-2.35,a.y-.12,-.72],[-2.85,YV-.04,ZV]]);});
+  const venR=P3([nodes[outR],[2.45,nodes[outR].y-.12,-.72],[2.85,YV-.04,ZV]]);
   venL.concat([venR]).forEach(function(P){const m=new THREE.Mesh(tubeOf(P,.025,.05),mVeinV);S.add(m);veinMeshes.push(m);});
   const netM=new THREE.Mesh(merge(net),pmat(0xffffff,{vertexColors:true,roughness:.4,clearcoat:.4,transparent:true,depthWrite:false,opacity:.85}));S.add(netM);
   V.part('art','콩팥동맥에서 온 혈관','콩팥동맥이 콩팥 안에서 갈라진 혈관이에요. 겉질과 속질의 경계를 따라 지나다가 겉질 쪽으로 가지를 뻗고, 그 가지가 토리로 혈액을 보내요.',artMeshes);
