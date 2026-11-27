@@ -819,9 +819,13 @@ function makeLung(stage){
   const venPts=[V(-2.35,1.4,1.2),V(-2.75,2.5,.95),V(-3.05,3.7,.45),V(-3.35,4.9,-.15),V(-3.7,6.1,-.7),V(-4.0,7.1,-1.1)];
   const artM=vesselMat(0x5A6AA6,tStripeRing(),.78),venM=vesselMat(0xBD4A45,tStripeRing(),.78);
   function tStripeRing(){const t=stripeTex({n:18,base:[255,255,255],edge:[175,175,175],str:3,wob:.02});t.nrm.repeat.set(6,1);return t.nrm;}
-  const artP=P3(artPts.concat([srcP])),venP=P3([snkP].concat(venPts));
-  const am=tag(tubeOn(artP.c,.15,artM,90,16),'pa',v),vm=tag(tubeOn(venP.c,.17,venM,90,16),'pv',v);G.add(am,vm);
-  for(let k=0;k<4;k++){const rr=rng(100+k);const P=P3(artPts.concat(net.path(rr),venPts));S.paths.push({path:P,uS:P.near(srcP),uE:P.near(snkP),real:true});}
+  /* 혈관은 허파꽈리 표면의 모세혈관 그물에 접선 방향으로 부드럽게 이어지도록 연결 */
+  const srcN=srcP.clone().normalize(),snkN=snkP.clone().normalize();
+  const artJoin=[srcP.clone().addScaledVector(srcN,.82),srcP.clone().addScaledVector(srcN,.38),srcP];
+  const venJoin=[snkP,snkP.clone().addScaledVector(snkN,.38),snkP.clone().addScaledVector(snkN,.82)];
+  const artP=P3(artPts.concat(artJoin)),venP=P3(venJoin.concat(venPts));
+  const am=tag(tubeOn(artP.c,.15,artM,120,16),'pa',v),vm=tag(tubeOn(venP.c,.17,venM,120,16),'pv',v);G.add(am,vm);
+  for(let k=0;k<4;k++){const rr=rng(100+k),capPath=net.path(rr);const P=P3(artPts.concat(artJoin.slice(0,2),capPath.slice(1,-1),venJoin.slice(1),venPts));S.paths.push({path:P,uS:P.near(srcP),uE:P.near(snkP),real:true});}
   for(let k=0;k<7;k++){const rr=rng(200+k);const P=P3(net.path(rr));S.decor.push({path:P,uS:0,uE:1,nb:-1,center:V(0,0,0)});}
   /* 적혈구 */
   S.rbcs=[];
