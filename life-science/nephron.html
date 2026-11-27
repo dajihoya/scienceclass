@@ -1885,10 +1885,10 @@ function buildNephron(){
   const aff=P3([[-2.36,3.32,-.06],[-1.9,3.55,.08],[-1.35,3.42,.14],[-.92,3.08,.12]]);
   const artMeshes=[new THREE.Mesh(tubeOf(ilA,.1,.085),mArtV),new THREE.Mesh(tubeOf(ilAtop,.085,.05),mArtV),new THREE.Mesh(tubeOf(aff,.065,.05),mArtV),arcAM];
   /* 다른 콩팥 단위로 가는 가지(잘린 끝) */
-  [[[-2.5,1.3,-.4],[-3.0,1.55,-.3],[-3.45,1.6,-.2]],[[-2.45,2.4,-.22],[-1.95,2.55,-.5],[-1.6,2.5,-.75]],[[1.6,YA,ZA],[1.7,.4,-.6],[1.78,1.0,-.62]]].forEach(function(p){const P=P3(p);artMeshes.push(new THREE.Mesh(tubeOf(P,.05,.035),mArtV));});
+  [[[-2.5,1.3,-.4],[-3.0,1.55,-.3],[-3.45,1.6,-.2]],[[-2.45,2.4,-.22],[-1.95,2.55,-.5],[-1.6,2.5,-.75]]].forEach(function(p){const P=P3(p);artMeshes.push(new THREE.Mesh(tubeOf(P,.05,.035),mArtV));});
   artMeshes.slice(0,3).concat(artMeshes.slice(4)).forEach(function(m){S.add(m);});
   /* 정맥: 겉질에서 내려오는 정맥(왼쪽 · 오른쪽) */
-  const ilVL=P3([[-3.0,3.7,-.38],[-3.02,2.0,-.48],[-3.04,.6,-.62],[-3.05,YV,ZV]]),ilVR=P3([[2.32,3.5,-.5],[2.34,2.0,-.58],[2.35,.6,-.72],[2.36,YV,ZV]]);
+  const ilVL=P3([[-3.0,3.7,-.38],[-3.02,2.0,-.48],[-3.04,.6,-.62],[-3.05,YV,ZV]]),ilVR=P3([[4.05,3.5,-.5],[4.08,2.0,-.58],[4.1,.6,-.72],[4.12,YV,ZV]]);
   const veinMeshes=[arcVM,new THREE.Mesh(tubeOf(ilVL,.07,.12),mVeinV),new THREE.Mesh(tubeOf(ilVR,.06,.11),mVeinV)];veinMeshes.slice(1).forEach(function(m){S.add(m);});
   /* 세뇨관 둘레 모세혈관 그물: 겉질의 구불구불한 세뇨관 사이사이를 불규칙한 그물이 채움 */
   const R5=rng(41),tsp=tub.curve.getSpacedPoints(600);
